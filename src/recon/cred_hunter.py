@@ -255,93 +255,98 @@ class CredentialHunter:
             await asyncio.gather(*tasks)
 
     def _generate_github_dorks(self) -> List[str]:
-        """Generate comprehensive GitHub search dork queries for manual hunting."""
+        """Generate comprehensive GitHub search dork queries as full clickable URLs."""
         domain = self.target_domain
         company = self.company_name
+        
+        def dork_url(query: str) -> str:
+            """Convert a search query into a full GitHub code search URL."""
+            from urllib.parse import quote
+            return f"https://github.com/search?q={quote(query)}&type=code"
         
         dorks = []
         
         # ── Category 1: Direct credential leaks ──
         dorks.append(f"# ═══ CREDENTIAL LEAKS ═══")
-        dorks.append(f'"{domain}" password')
-        dorks.append(f'"{domain}" secret')
-        dorks.append(f'"{domain}" api_key')
-        dorks.append(f'"{domain}" apikey')
-        dorks.append(f'"{domain}" access_token')
-        dorks.append(f'"{domain}" auth_token')
-        dorks.append(f'"{domain}" client_secret')
-        dorks.append(f'"{domain}" private_key')
+        dorks.append(dork_url(f'"{domain}" password'))
+        dorks.append(dork_url(f'"{domain}" secret'))
+        dorks.append(dork_url(f'"{domain}" api_key'))
+        dorks.append(dork_url(f'"{domain}" apikey'))
+        dorks.append(dork_url(f'"{domain}" access_token'))
+        dorks.append(dork_url(f'"{domain}" auth_token'))
+        dorks.append(dork_url(f'"{domain}" client_secret'))
+        dorks.append(dork_url(f'"{domain}" private_key'))
         
         # ── Category 2: Database connections ──
         dorks.append(f"# ═══ DATABASE CONNECTIONS ═══")
-        dorks.append(f'"{domain}" mongodb+srv')
-        dorks.append(f'"{domain}" postgres://')
-        dorks.append(f'"{domain}" mysql://')
-        dorks.append(f'"{domain}" redis://')
-        dorks.append(f'"{domain}" jdbc:')
-        dorks.append(f'"{domain}" DATABASE_URL')
+        dorks.append(dork_url(f'"{domain}" mongodb+srv'))
+        dorks.append(dork_url(f'"{domain}" postgres://'))
+        dorks.append(dork_url(f'"{domain}" mysql://'))
+        dorks.append(dork_url(f'"{domain}" redis://'))
+        dorks.append(dork_url(f'"{domain}" jdbc:'))
+        dorks.append(dork_url(f'"{domain}" DATABASE_URL'))
         
         # ── Category 3: Cloud credentials ──
         dorks.append(f"# ═══ CLOUD CREDENTIALS ═══")
-        dorks.append(f'"{domain}" AWS_SECRET_ACCESS_KEY')
-        dorks.append(f'"{domain}" AWS_ACCESS_KEY_ID')
-        dorks.append(f'"{domain}" AKIA')
-        dorks.append(f'"{domain}" s3.amazonaws.com')
-        dorks.append(f'"{company}" GOOGLE_API_KEY')
-        dorks.append(f'"{company}" firebase')
-        dorks.append(f'"{domain}" AZURE_STORAGE')
+        dorks.append(dork_url(f'"{domain}" AWS_SECRET_ACCESS_KEY'))
+        dorks.append(dork_url(f'"{domain}" AWS_ACCESS_KEY_ID'))
+        dorks.append(dork_url(f'"{domain}" AKIA'))
+        dorks.append(dork_url(f'"{domain}" s3.amazonaws.com'))
+        dorks.append(dork_url(f'"{company}" GOOGLE_API_KEY'))
+        dorks.append(dork_url(f'"{company}" firebase'))
+        dorks.append(dork_url(f'"{domain}" AZURE_STORAGE'))
         
         # ── Category 4: .env and config files ──
         dorks.append(f"# ═══ CONFIGURATION FILES ═══")
-        dorks.append(f'"{domain}" filename:.env')
-        dorks.append(f'"{domain}" filename:.env.local')
-        dorks.append(f'"{domain}" filename:.env.production')
-        dorks.append(f'"{domain}" filename:config.json')
-        dorks.append(f'"{domain}" filename:config.yml')
-        dorks.append(f'"{domain}" filename:docker-compose.yml')
-        dorks.append(f'"{domain}" filename:settings.py')
-        dorks.append(f'"{domain}" filename:application.properties')
-        dorks.append(f'"{domain}" filename:wp-config.php')
-        dorks.append(f'"{company}" filename:.npmrc _authToken')
-        dorks.append(f'"{company}" filename:.dockercfg')
-        dorks.append(f'"{company}" filename:id_rsa')
-        dorks.append(f'"{company}" filename:credentials')
+        dorks.append(dork_url(f'"{domain}" filename:.env'))
+        dorks.append(dork_url(f'"{domain}" filename:.env.local'))
+        dorks.append(dork_url(f'"{domain}" filename:.env.production'))
+        dorks.append(dork_url(f'"{domain}" filename:config.json'))
+        dorks.append(dork_url(f'"{domain}" filename:config.yml'))
+        dorks.append(dork_url(f'"{domain}" filename:docker-compose.yml'))
+        dorks.append(dork_url(f'"{domain}" filename:settings.py'))
+        dorks.append(dork_url(f'"{domain}" filename:application.properties'))
+        dorks.append(dork_url(f'"{domain}" filename:wp-config.php'))
+        dorks.append(dork_url(f'"{company}" filename:.npmrc _authToken'))
+        dorks.append(dork_url(f'"{company}" filename:.dockercfg'))
+        dorks.append(dork_url(f'"{company}" filename:id_rsa'))
+        dorks.append(dork_url(f'"{company}" filename:credentials'))
         
         # ── Category 5: Internal / staging endpoints ──
         dorks.append(f"# ═══ INTERNAL ENDPOINTS ═══")
-        dorks.append(f'"{domain}" staging')
-        dorks.append(f'"{domain}" internal')
-        dorks.append(f'"{domain}" dev.{company}')
-        dorks.append(f'"{domain}" admin')
-        dorks.append(f'"{domain}" swagger')
-        dorks.append(f'"{domain}" graphql')
-        dorks.append(f'"{domain}" /api/v1')
+        dorks.append(dork_url(f'"{domain}" staging'))
+        dorks.append(dork_url(f'"{domain}" internal'))
+        dorks.append(dork_url(f'"{domain}" dev.{company}'))
+        dorks.append(dork_url(f'"{domain}" admin'))
+        dorks.append(dork_url(f'"{domain}" swagger'))
+        dorks.append(dork_url(f'"{domain}" graphql'))
+        dorks.append(dork_url(f'"{domain}" /api/v1'))
         
         # ── Category 6: Payment / tokens ──
         dorks.append(f"# ═══ PAYMENT & TOKENS ═══")
-        dorks.append(f'"{domain}" sk_live')
-        dorks.append(f'"{domain}" pk_live')
-        dorks.append(f'"{company}" twilio')
-        dorks.append(f'"{company}" sendgrid')
-        dorks.append(f'"{company}" mailgun')
-        dorks.append(f'"{domain}" slack webhook')
-        dorks.append(f'"{domain}" discord webhook')
+        dorks.append(dork_url(f'"{domain}" sk_live'))
+        dorks.append(dork_url(f'"{domain}" pk_live'))
+        dorks.append(dork_url(f'"{company}" twilio'))
+        dorks.append(dork_url(f'"{company}" sendgrid'))
+        dorks.append(dork_url(f'"{company}" mailgun'))
+        dorks.append(dork_url(f'"{domain}" slack webhook'))
+        dorks.append(dork_url(f'"{domain}" discord webhook'))
         
         # ── Category 7: Organization-specific ──
         dorks.append(f"# ═══ ORGANIZATION SEARCH ═══")
-        dorks.append(f'org:{company} password')
-        dorks.append(f'org:{company} secret')
-        dorks.append(f'org:{company} filename:.env')
-        dorks.append(f'org:{company} filename:config')
-        dorks.append(f'org:{company} PRIVATE KEY')
-        dorks.append(f'org:{company} TODO fix security')
+        dorks.append(dork_url(f'org:{company} password'))
+        dorks.append(dork_url(f'org:{company} secret'))
+        dorks.append(dork_url(f'org:{company} filename:.env'))
+        dorks.append(dork_url(f'org:{company} filename:config'))
+        dorks.append(dork_url(f'org:{company} PRIVATE KEY'))
+        dorks.append(dork_url(f'org:{company} TODO fix security'))
         
         # ── Category 8: Trufflehog style ──
         dorks.append(f"# ═══ HIGH-ENTROPY SECRETS ═══")
-        dorks.append(f'"{domain}" BEGIN RSA PRIVATE KEY')
-        dorks.append(f'"{domain}" BEGIN OPENSSH PRIVATE KEY')
-        dorks.append(f'"{company}" ssh-rsa AAAA')
-        dorks.append(f'"{company}" BEGIN CERTIFICATE')
+        dorks.append(dork_url(f'"{domain}" BEGIN RSA PRIVATE KEY'))
+        dorks.append(dork_url(f'"{domain}" BEGIN OPENSSH PRIVATE KEY'))
+        dorks.append(dork_url(f'"{company}" ssh-rsa AAAA'))
+        dorks.append(dork_url(f'"{company}" BEGIN CERTIFICATE'))
         
         return dorks
 
@@ -355,8 +360,8 @@ class CredentialHunter:
         
         # Count actual queries (not category headers)
         query_count = len([d for d in self.github_dorks if not d.startswith("#")])
-        log_success(f"Generated {query_count} GitHub dork queries across 8 categories.")
-        log_info("Open these in your browser: https://github.com/search?type=code")
+        log_success(f"Generated {query_count} clickable GitHub dork URLs across 8 categories.")
+        log_info("Each link opens directly in GitHub code search — just click!")
         
         # Print a few examples
         examples = [d for d in self.github_dorks if not d.startswith("#")][:5]
