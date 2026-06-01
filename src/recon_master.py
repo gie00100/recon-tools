@@ -579,23 +579,23 @@ class ReconMaster:
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(saas_findings, f, indent=2)
                 
-        # 2. Semantic Fuzzer
-        log_info("Generating Semantic API Wordlist...")
-        fuzzer = SemanticFuzzer(self.domain)
-        wordlist = await fuzzer.generate()
-        if wordlist:
-            output_file = self.output_dir / "semantic_api_wordlist.txt"
-            write_lines(str(output_file), wordlist)
-            
-            # Actively Fuzz top 50 hosts
-            base_urls = [h["url"] for h in self.live_hosts][:50]
-            if not base_urls:
-                base_urls = [f"https://{self.domain}"]
-            
-            active_endpoints = await fuzzer.active_fuzz(base_urls, wordlist)
-            if active_endpoints:
-                fuzz_output = self.output_dir / "semantic_active_findings.txt"
-                write_lines(str(fuzz_output), active_endpoints)
+        # 2. Semantic Fuzzer (Disabled due to long execution time)
+        # log_info("Generating Semantic API Wordlist...")
+        # fuzzer = SemanticFuzzer(self.domain)
+        # wordlist = await fuzzer.generate()
+        # if wordlist:
+        #     output_file = self.output_dir / "semantic_api_wordlist.txt"
+        #     write_lines(str(output_file), wordlist)
+        #     
+        #     # Actively Fuzz top 50 hosts
+        #     base_urls = [h["url"] for h in self.live_hosts][:50]
+        #     if not base_urls:
+        #         base_urls = [f"https://{self.domain}"]
+        #     
+        #     active_endpoints = await fuzzer.active_fuzz(base_urls, wordlist)
+        #     if active_endpoints:
+        #         fuzz_output = self.output_dir / "semantic_active_findings.txt"
+        #         write_lines(str(fuzz_output), active_endpoints)
 
         # 3. Mobile APK API Extraction
         log_info("Running Mobile APK Extractor...")
