@@ -93,37 +93,130 @@ async def cmd_recon(domain):
 
 
 async def cmd_status():
-    """Show running screen sessions asynchronously."""
+    """Show full pipeline status: completed, running, pending domains."""
+    targets_file = RECON_DIR / "targets" / "wix_ebay_targets.txt"
+
+    # 1. Read target list
+    targets = []
+    if targets_file.exists():
+        for line in targets_file.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                targets.append(line)
+
+    # 2. Get completed scans from output directory
+    completed = set()
+    if OUTPUT_DIR.exists():
+        for item in OUTPUT_DIR.iterdir():
+            if item.is_dir():
+                # Strip timestamp suffix: ebay.com_20260601_155104 → ebay.com
+                name = item.name
+                # Find the pattern _YYYYMMDD_ and strip from there
+                import re
+                m = re.match(r'^(.+?)_\d{8}_\d{6}$', name)
+                if m:
+                    completed.add(m.group(1))
+                else:
+                    completed.add(name)
+
+    # 3. Get currently running domain
+    running_domain = None
     try:
         process = await asyncio.create_subprocess_exec(
-            "screen", "-ls",
+            "pgrep", "-af", "recon_master",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE
         )
-        stdout, stderr = await process.communicate()
+        stdout, _ = await process.communicate()
         output = stdout.decode(errors="ignore").strip()
-    except Exception as e:
-        await send_embed("❌ Error", f"Failed to query system status: {e}", 0xFF0000)
-        return
+        if output:
+            import re as _re
+            match = _re.search(r'-d\s+(\S+)', output)
+            if match:
+                running_domain = match.group(1)
+    except Exception:
+        pass
 
-    if "No Sockets" in output or not output:
-        await send_embed("📊 Status", "No active recon sessions running.", 0x808080)
-        return
+    # 4. Classify each target
+    done_list = []
+    running_list = []
+    pending_list = []
 
-    # Parse screen sessions
-    lines = []
-    for line in output.split("\n"):
-        line = line.strip()
-        if "recon_" in line or "recon_main" in line:
-            parts = line.split("\t")
-            name = parts[0].split(".")[-1] if "." in parts[0] else parts[0]
-            status = "🟢 Running" if "Detached" in line else "🔴 Attached"
-            lines.append(f"**{name}** — {status}")
+    for domain in targets:
+        if running_domain and domain == running_domain:
+            running_list.append(domain)
+        elif domain in completed:
+            # Check for state file (full completion)
+            state_file = OUTPUT_DIR / f"{domain}_state.json"
+            if state_file.exists():
+                done_list.append(f"✅ `{domain}`")
+            else:
+                done_list.append(f"✅ `{domain}` *(partial)*")
+        else:
+            pending_list.append(f"⏳ `{domain}`")
 
-    if not lines:
-        await send_embed("📊 Status", "No active recon sessions.", 0x808080)
-    else:
-        await send_embed("📊 Active Sessions", "\n".join(lines), 0x00BFFF)
+    # 5. Find extra scans not in target list
+    target_set = set(targets)
+    extra_list = [f"➕ `{d}`" for d in sorted(completed) if d not in target_set]
+
+    # 6. Disk usage
+    disk_info = ""
+    try:
+        process = await asyncio.create_subprocess_exec(
+            "df", "-h", "/",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        stdout, _ = await process.communicate()
+        lines = stdout.decode().strip().split("\n")
+        if len(lines) > 1:
+            parts = lines[1].split()
+            disk_info = f"💾 Disk: {parts[2]}/{parts[1]} ({parts[4]})"
+    except Exception:
+        pass
+
+    output_size = ""
+    try:
+        process = await asyncio.create_subprocess_exec(
+            "du", "-sh", str(OUTPUT_DIR),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        stdout, _ = await process.communicate()
+        size = stdout.decode().strip().split("\t")[0]
+        output_size = f"📂 Output: {size}"
+    except Exception:
+        pass
+
+    # 7. Build the embed
+    fields = []
+
+    if done_list:
+        # Split into chunks of 20 to avoid Discord field length limit
+        done_text = "\n".join(done_list)
+        fields.append({"name": f"✅ Completed ({len(done_list)})", "value": done_text[:1024], "inline": False})
+
+    if running_list:
+        fields.append({"name": "🔄 Running", "value": "\n".join(f"🔄 `{d}`" for d in running_list), "inline": False})
+
+    if pending_list:
+        fields.append({"name": f"⏳ Pending ({len(pending_list)})", "value": "\n".join(pending_list)[:1024], "inline": False})
+
+    if extra_list:
+        fields.append({"name": f"➕ Extra Scans ({len(extra_list)})", "value": "\n".join(extra_list)[:1024], "inline": False})
+
+    summary = (
+        f"**Total Targets:** {len(targets)}\n"
+        f"**Completed:** {len(done_list)}\n"
+        f"**Running:** {len(running_list)}\n"
+        f"**Pending:** {len(pending_list)}\n"
+    )
+    if disk_info:
+        summary += f"\n{disk_info}"
+    if output_size:
+        summary += f"\n{output_size}"
+
+    await send_embed("📊 Recon Pipeline Status", summary, 0x00BFFF, fields)
 
 
 async def cmd_results(domain=None):
