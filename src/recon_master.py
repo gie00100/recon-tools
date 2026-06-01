@@ -307,28 +307,18 @@ class ReconMaster:
         start = time.time()
         log_phase(6, len(self.modules), "Credential & Secret Hunting")
         
-        # Pull Github Token from environment if available
-        import os
-        github_token = os.environ.get("GITHUB_TOKEN", "")
-        
-        # Use live backups found in Phase 5
-        # The BackupGenerator returns live URLs if active=True, otherwise full list
-        # If it returned a massive list (not active), we don't want to scan 50,000 files!
-        # Only scan if active was true (urls start with http)
+        # Use live backups found in Phase 5 as config URLs to scan
         live_configs = [u for u in self.backup_wordlist if u.startswith("http")]
         
-        if not live_configs and not github_token:
-            log_warning("No live config URLs and no GITHUB_TOKEN. Skipping credential hunt.")
-            if not github_token:
-                log_info("To enable GitHub Secret Hunting:")
-                log_info("  1. Go to https://github.com/settings/tokens")
-                log_info("  2. Generate new token (classic) with 'repo' and 'read:org' scopes")
-                log_info("  3. Set it via: set GITHUB_TOKEN=ghp_... (Windows) or export GITHUB_TOKEN=ghp_... (Linux)")
-            return
-            
-        hunter = CredentialHunter(self.domain, live_configs, github_token)
+        hunter = CredentialHunter(self.domain, live_configs)
         results = await hunter.hunt()
         self.cred_findings = results
+        
+        # Save GitHub dork queries for manual OSINT
+        dorks = hunter.get_github_dorks()
+        if dorks:
+            dork_file = self.output_dir / "github_dorks.txt"
+            write_lines(str(dork_file), dorks, deduplicate=False)
         
         if results:
             output_file = self.output_dir / "credentials_found.json"
