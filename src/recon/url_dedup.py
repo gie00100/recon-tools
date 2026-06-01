@@ -51,7 +51,13 @@ class URLDeduplicator:
         # Ensure scheme
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
-        return url
+            
+        try:
+            # Test parsing to weed out malformed IPv6 brackets that crash urlparse
+            urlparse(url)
+            return url
+        except ValueError:
+            return ""
 
     def _get_path_signature(self, url: str) -> str:
         """
@@ -111,7 +117,7 @@ class URLDeduplicator:
             log_info(f"Sampled down to {len(urls)} URLs")
 
         # Normalize all URLs
-        normalized = [self._normalize_url(u) for u in urls if u.strip()]
+        normalized = [u for u in (self._normalize_url(u) for u in urls if u.strip()) if u]
 
         # Remove exact duplicates first
         unique_exact = list(dict.fromkeys(normalized))
