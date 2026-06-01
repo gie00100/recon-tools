@@ -97,6 +97,8 @@ class APKExtractor:
             
             for app in results:
                 app_id = app.get("appId", "") or ""
+                if not app_id:
+                    continue  # Skip results with no package ID
                 developer = (app.get("developer") or "").lower()
                 title = (app.get("title") or "").lower()
                 
@@ -106,11 +108,12 @@ class APKExtractor:
                     log_success(f"Found app: {app.get('title')} ({app_id}) by {app.get('developer')}")
                     return app_id
             
-            if results:
-                first = results[0]
-                app_id = first.get("appId", "") or ""
-                log_info(f"Best candidate: {first.get('title')} ({app_id}) by {first.get('developer')}")
-                return app_id
+            # If no exact match, return the first result with a valid appId
+            for app in results:
+                app_id = app.get("appId", "") or ""
+                if app_id:
+                    log_info(f"Best candidate: {app.get('title')} ({app_id}) by {app.get('developer')}")
+                    return app_id
                 
         except Exception as e:
             log_warning(f"Google Play search failed: {e}")
@@ -136,7 +139,7 @@ class APKExtractor:
 
     async def _try_apkpure(self, package_id: str) -> bool:
         """Source 1: APKPure CDN direct download."""
-        log_info(f"[1/4] Trying APKPure CDN...")
+        log_info(f"[3/4] Trying APKPure CDN (may be slow)...")
         
         download_urls = [
             f"https://d.apkpure.com/b/APK/{package_id}?version=latest",
@@ -169,7 +172,7 @@ class APKExtractor:
 
     async def _try_apkcombo(self, package_id: str) -> bool:
         """Source 2: APKCombo AJAX download API."""
-        log_info(f"[2/4] Trying APKCombo...")
+        log_info(f"[4/4] Trying APKCombo...")
         
         try:
             timeout = aiohttp.ClientTimeout(total=60)
@@ -204,7 +207,7 @@ class APKExtractor:
 
     async def _try_aptoide(self, package_id: str) -> bool:
         """Source 3: Aptoide search + download API."""
-        log_info(f"[3/4] Trying Aptoide API...")
+        log_info(f"[1/4] Trying Aptoide API...")
         
         try:
             timeout = aiohttp.ClientTimeout(total=60)
@@ -214,65 +217,158 @@ class APKExtractor:
                 connector=aiohttp.TCPConnector(ssl=self._get_ssl_ctx()),
                 timeout=timeout
             ) as session:
-                # Search the Aptoide API
-                search_url = f"https://ws75.aptoide.com/api/7/apps/search?query={package_id}&limit=1"
-                async with session.get(search_url, headers=headers) as resp:
-                    if resp.status == 200:
-                        data = await resp.json(content_type=None)
-                        apps = data.get("datalist", {}).get("list", [])
-                        
-                        if apps:
-                            app = apps[0]
-                            apk_url = app.get("file", {}).get("path", "")
-                            app_name = app.get("name", package_id)
+                # Try searching by package ID first, then by company name
+                queries = [package_id, self.company_name]
+                for query in queries:
+                    search_url = f"https://ws75.aptoide.com/api/7/apps/search?query={query}&limit=10"
+                    async with session.get(search_url, headers=headers) as resp:
+                        if resp.status == 200:
+                            data = await resp.json(content_type=None)
+                            apps = data.get("datalist", {}).get("list", [])
                             
-                            if apk_url:
-                                log_info(f"Found on Aptoide: {app_name}")
-                                async with session.get(apk_url, headers=headers, allow_redirects=True) as dl_resp:
-                                    if dl_resp.status == 200:
-                                        apk_data = await dl_resp.read()
-                                        if await self._save_apk(apk_data, "Aptoide"):
-                                            return True
+                            # Priority 1: Exact package ID match
+                            for app in apps:
+                                app_pkg = app.get("package_name", "") or ""
+                                apk_url = app.get("file", {}).get("path", "")
+                                if apk_url and app_pkg == package_id:
+                                    app_name = app.get("name", "")
+                                    log_info(f"Found on Aptoide (exact match): {app_name} ({app_pkg})")
+                                    async with session.get(apk_url, headers=headers, allow_redirects=True) as dl_resp:
+                                        if dl_resp.status == 200:
+                                            apk_data = await dl_resp.read()
+                                            if await self._save_apk(apk_data, "Aptoide"):
+                                                return True
+                            
+                            # Priority 2: Package name contains company (e.g. com.wix.*)
+                            for app in apps:
+                                app_pkg = app.get("package_name", "") or ""
+                                apk_url = app.get("file", {}).get("path", "")
+                                # Must match on package name (com.wix.*), NOT just display name
+                                if apk_url and self.company_name.lower() in app_pkg.lower():
+                                    app_name = app.get("name", "")
+                                    log_info(f"Found on Aptoide: {app_name} ({app_pkg})")
+                                    async with session.get(apk_url, headers=headers, allow_redirects=True) as dl_resp:
+                                        if dl_resp.status == 200:
+                                            apk_data = await dl_resp.read()
+                                            if await self._save_apk(apk_data, "Aptoide"):
+                                                return True
         except Exception as e:
             log_warning(f"Aptoide failed: {e}")
         
         return False
 
-    async def _try_evozi(self, package_id: str) -> bool:
-        """Source 4: Evozi APK Downloader API."""
-        log_info(f"[4/4] Trying Evozi APK Downloader...")
+    async def _try_apkmirror(self, package_id: str) -> bool:
+        """Source 2: APKMirror via curl (bypasses Cloudflare 403 that blocks aiohttp)."""
+        log_info(f"[2/4] Trying APKMirror...")
+        
+        ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+        
+        def curl_get(url, referer=None):
+            """Fetch a URL via curl subprocess (bypasses anti-bot)."""
+            cmd = ["curl.exe", "-sS", "-L", "-m", "30", url, "-H", f"User-Agent: {ua}"]
+            if referer:
+                cmd += ["-H", f"Referer: {referer}"]
+            result = subprocess.run(cmd, capture_output=True)
+            return result.stdout.decode("utf-8", errors="ignore")
         
         try:
-            timeout = aiohttp.ClientTimeout(total=90)
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Origin": "https://apps.evozi.com",
-                "Referer": "https://apps.evozi.com/apk-downloader/",
-            }
+            # Step 1: Search by company name
+            search_url = f"https://www.apkmirror.com/?post_type=app_release&searchtype=apk&s={self.company_name}"
+            html = await asyncio.get_event_loop().run_in_executor(None, curl_get, search_url)
             
-            async with aiohttp.ClientSession(
-                connector=aiohttp.TCPConnector(ssl=self._get_ssl_ctx()),
-                timeout=timeout
-            ) as session:
-                # Evozi's API endpoint
-                api_url = "https://api-apk.evozi.com/download"
-                payload = f"packagename={package_id}"
+            release_matches = re.findall(
+                r'class="fontBlack"\s+href="(/apk/[^"]*-release/)"',
+                html
+            )
+            
+            if not release_matches:
+                log_warning("APKMirror: No releases found.")
+                return False
+            
+            # Filter to releases with company name in URL
+            company_releases = [r for r in release_matches if f"/apk/{self.company_name.lower()}/" in r.lower()]
+            if not company_releases:
+                company_releases = release_matches
+            
+            release_path = company_releases[0]
+            release_url = f"https://www.apkmirror.com{release_path}"
+            log_info(f"APKMirror: Found release page, looking for APK variant...")
+            
+            # Step 2: Get release page → find variant link
+            rel_html = await asyncio.get_event_loop().run_in_executor(None, curl_get, release_url, search_url)
+            
+            apk_link = re.search(r'href="(/apk/[^"]*android-apk-download/)"', rel_html)
+            if not apk_link:
+                log_warning("APKMirror: Could not find APK variant link.")
+                return False
+            
+            dl_page_url = f"https://www.apkmirror.com{apk_link.group(1)}"
+            log_info(f"APKMirror: Found APK variant, getting download link...")
+            
+            # Step 3: Get variant page → find interstitial download link
+            dl_html = await asyncio.get_event_loop().run_in_executor(None, curl_get, dl_page_url, release_url)
+            
+            # The variant page has a "download/?key=" link to an interstitial page
+            interstitial_link = re.search(r'href="(/apk/[^"]*download/\?key=[^"]+)"', dl_html)
+            if not interstitial_link:
+                # Sometimes the download.php link is directly on this page
+                direct_link = re.search(r'href="(/wp-content/themes/APKMirror/download\.php\?id=[^"]+)"', dl_html)
+                if direct_link:
+                    interstitial_link = direct_link
+            
+            if not interstitial_link:
+                log_warning("APKMirror: Could not find download link on variant page.")
+                return False
+            
+            interstitial_url = f"https://www.apkmirror.com{interstitial_link.group(1)}"
+            
+            # Check if this is already the final download.php link
+            if "download.php" in interstitial_url:
+                final_url = interstitial_url
+            else:
+                # Step 4: Navigate interstitial page → find actual download.php link
+                log_info(f"APKMirror: Navigating download page...")
+                inter_html = await asyncio.get_event_loop().run_in_executor(
+                    None, curl_get, interstitial_url, dl_page_url
+                )
                 
-                async with session.post(api_url, data=payload, headers=headers) as resp:
-                    if resp.status == 200:
-                        result = await resp.json(content_type=None)
-                        dl_url = result.get("url", "")
-                        
-                        if dl_url and dl_url.startswith("http"):
-                            log_info(f"Evozi found download link, downloading...")
-                            async with session.get(dl_url, allow_redirects=True) as dl_resp:
-                                if dl_resp.status == 200:
-                                    data = await dl_resp.read()
-                                    if await self._save_apk(data, "Evozi"):
-                                        return True
+                php_link = re.search(
+                    r'href="(/wp-content/themes/APKMirror/download\.php\?id=[^"]+)"',
+                    inter_html
+                )
+                if not php_link:
+                    log_warning("APKMirror: Could not find final download.php link.")
+                    return False
+                
+                final_url = f"https://www.apkmirror.com{php_link.group(1)}"
+            
+            log_info(f"APKMirror: Downloading APK (this may take a minute)...")
+            
+            # Step 5: Download the actual APK file via curl
+            apk_path = self.targets_dir / f"{self.company_name}.apk"
+            dl_cmd = [
+                "curl.exe", "-sS", "-L", "-m", "300",
+                final_url,
+                "-H", f"User-Agent: {ua}",
+                "-H", f"Referer: {interstitial_url}",
+                "-o", str(apk_path)
+            ]
+            dl_result = await asyncio.create_subprocess_exec(
+                *dl_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            await dl_result.communicate()
+            
+            if dl_result.returncode == 0 and apk_path.exists():
+                data = apk_path.read_bytes()
+                if await self._save_apk(data, "APKMirror"):
+                    return True
+                else:
+                    apk_path.unlink(missing_ok=True)  # Clean up invalid file
+            else:
+                log_warning(f"APKMirror: curl download failed (exit code {dl_result.returncode})")
+                
         except Exception as e:
-            log_warning(f"Evozi failed: {e}")
+            log_warning(f"APKMirror failed: {e}")
         
         return False
 
@@ -285,10 +381,10 @@ class APKExtractor:
         
         # Try each source in order of reliability
         sources = [
+            self._try_aptoide,
+            self._try_apkmirror,
             self._try_apkpure,
             self._try_apkcombo,
-            self._try_aptoide,
-            self._try_evozi,
         ]
         
         for source_fn in sources:
