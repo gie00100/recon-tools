@@ -42,17 +42,50 @@ HIGH_VALUE_KEYWORDS = [
     'webhook', 'callback', 'redirect', 'token',
 ]
 
-# Subdomains that are never interesting (CDN, static, marketing)
+# Subdomains that never have credential/token leaks in URLs
 SKIP_KEYWORDS = [
-    'cdn', 'static', 'assets', 'img', 'images', 'media', 'video',
-    'fonts', 'cache', 'edge', 'waf',
-    'blog', 'news', 'press', 'careers', 'jobs', 'about',
-    'marketing', 'promo', 'ads', 'tracking', 'analytics',
+    # CDN / Static Assets
+    'cdn', 'static', 'assets', 'img', 'images', 'media', 'video', 'photos',
+    'fonts', 'cache', 'edge', 'waf', 'download', 'downloads', 'dl',
+    'content', 'res', 'resources', 'files', 'upload', 'uploads',
+    # Marketing / SEO / Public
+    'blog', 'news', 'press', 'careers', 'jobs', 'about', 'info',
+    'marketing', 'promo', 'promos', 'ads', 'tracking', 'analytics',
+    'seo', 'campaign', 'campaigns', 'events', 'event', 'landing',
+    'brand', 'branding', 'affiliate', 'affiliates', 'partners',
+    # Email / Notifications
+    'mail', 'smtp', 'pop', 'imap', 'mx', 'email', 'emails',
     'mta-sts', 'autodiscover', 'autoconfig', '_dmarc',
-    'mail', 'smtp', 'pop', 'imap', 'mx',
-    'ns1', 'ns2', 'ns3', 'ns4', 'dns',
-    'status', 'docs', 'help', 'support', 'faq',
-    'www',  # main site usually has too many garbage URLs
+    'notification', 'notifications', 'push', 'push-notification',
+    'newsletter', 'newsletters', 'subscribe', 'unsubscribe',
+    'mailer', 'postmaster', 'bounce', 'noreply', 'no-reply',
+    # DNS / Infra
+    'ns1', 'ns2', 'ns3', 'ns4', 'dns', 'dns1', 'dns2',
+    'vpn', 'proxy', 'relay', 'nat', 'firewall',
+    'monitor', 'monitoring', 'nagios', 'zabbix', 'grafana',
+    # Status / Docs / Support
+    'status', 'statuspage', 'uptime', 'healthcheck', 'health',
+    'docs', 'doc', 'documentation', 'wiki', 'kb', 'knowledge',
+    'help', 'support', 'faq', 'helpdesk', 'zendesk', 'freshdesk',
+    'community', 'forum', 'forums', 'discuss', 'feedback',
+    # Developer / Testing (usually sandboxed, no real creds)
+    'sandbox', 'test', 'testing', 'demo', 'demos', 'preview',
+    'playground', 'lab', 'labs', 'beta-docs',
+    # Legal / Compliance
+    'legal', 'privacy', 'terms', 'compliance', 'gdpr', 'cookie',
+    # Localization / Internationalization
+    'translate', 'translations', 'i18n', 'l10n', 'locale',
+    # Telemetry / Logging
+    'telemetry', 'metrics', 'logs', 'logging', 'sentry', 'bugsnag',
+    'newrelic', 'datadog', 'splunk', 'elastic', 'kibana',
+    # Social / Sharing
+    'share', 'social', 'connect', 'like', 'follow',
+    # Main site (too many garbage URLs from crawlers)
+    'www', 'ww2', 'ww3', 'm', 'mobile',
+    # Git / CI
+    'git', 'gitlab', 'jenkins', 'ci', 'cd', 'build', 'deploy',
+    # Chat / Messaging
+    'chat', 'slack', 'irc', 'xmpp',
 ]
 
 # URL parameters that indicate leaked credentials/tokens
