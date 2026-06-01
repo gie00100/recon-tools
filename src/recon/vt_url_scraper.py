@@ -44,14 +44,16 @@ HIGH_VALUE_KEYWORDS = [
     'email', 'emails', 'mail', 'notification', 'notifications',
     'newsletter', 'newsletters', 'unsubscribe', 'subscribe',
     'push', 'push-notification', 'mailer', 'noreply', 'no-reply',
+    # Dev/Staging — weaker security, more leaks
+    'dev', 'staging', 'stg', 'uat', 'preview', 'preprod', 'pre-prod',
 ]
 
 # Subdomains that never have credential/token leaks in URLs
 SKIP_KEYWORDS = [
-    # CDN / Static Assets
-    'cdn', 'static', 'assets', 'img', 'images', 'media', 'video', 'photos',
-    'fonts', 'cache', 'edge', 'waf', 'download', 'downloads', 'dl',
-    'content', 'res', 'resources', 'files', 'upload', 'uploads',
+    # CDN / Static Assets (protocol-level only, not app-serving media hosts)
+    'cdn', 'static', 'assets', 'img', 'images', 'video', 'photos',
+    'fonts', 'cache', 'edge', 'waf', 'downloads', 'dl',
+    'res', 'resources',
     # Marketing / SEO / Public
     'blog', 'news', 'press', 'careers', 'jobs', 'about', 'info',
     'marketing', 'promo', 'promos', 'ads', 'tracking', 'analytics',
@@ -70,9 +72,8 @@ SKIP_KEYWORDS = [
     'docs', 'doc', 'documentation', 'wiki', 'kb', 'knowledge',
     'help', 'support', 'faq', 'helpdesk', 'zendesk', 'freshdesk',
     'community', 'forum', 'forums', 'discuss', 'feedback',
-    # Developer / Testing (usually sandboxed, no real creds)
-    'sandbox', 'test', 'testing', 'demo', 'demos', 'preview',
-    'playground', 'lab', 'labs', 'beta-docs',
+    # Sandboxed environments (fully isolated, no real creds)
+    'sandbox', 'playground',
     # Legal / Compliance
     'legal', 'privacy', 'terms', 'compliance', 'gdpr', 'cookie',
     # Localization / Internationalization
