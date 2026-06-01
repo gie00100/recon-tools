@@ -179,18 +179,33 @@ class ReconMaster:
         )
         self.live_hosts = await prober.probe()
         
-        # Check for takeovers
+        # Check for takeovers — only alert on high-confidence findings
         for host in self.live_hosts:
             if host.get("takeover"):
                 tk = host["takeover"]
                 url = host["url"]
                 if url not in self.state["takeovers"]:
-                    await self._send_alert(
-                        "Subdomain Takeover Detected! 🚨",
-                        f"**URL:** {url}\n**Service:** {tk}\n\n*Verify immediately via CNAME lookups or registration portals to claim this bounty!*",
-                        16711680,
-                        is_finding=True
-                    )
+                    # Determine confidence level from the tag
+                    is_confirmed = "[CONFIRMED" in tk
+                    is_dangling = "[DANGLING" in tk
+                    is_candidate = "[CANDIDATE" in tk
+                    
+                    if is_confirmed or is_dangling:
+                        # High confidence — send alert
+                        await self._send_alert(
+                            "🚨 Subdomain Takeover Detected!",
+                            f"**URL:** {url}\n**Service:** {tk}\n\n*High confidence — verify and claim immediately!*",
+                            16711680,  # Red
+                            is_finding=True
+                        )
+                    elif is_candidate:
+                        # Low confidence — send info alert
+                        await self._send_alert(
+                            "⚠️ Subdomain Takeover Candidate",
+                            f"**URL:** {url}\n**Service:** {tk}\n\n*CNAME points to a known service but no takeover signature matched. Requires manual verification.*",
+                            16776960,  # Yellow
+                            is_finding=True
+                        )
                     self.state["takeovers"].append(url)
 
         # Save results
