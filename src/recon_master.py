@@ -38,6 +38,10 @@ from recon.cred_hunter import CredentialHunter
 from recon.report_gen import ReportGenerator
 from recon.semantic_fuzzer import SemanticFuzzer
 from recon.saas_hunter import SaasHunter
+from recon.apk_extractor import APKExtractor
+from recon.cache_deception import CacheDeceptionScanner
+from recon.headless_hooker import HeadlessHooker
+from recon.historical_js import HistoricalJS
 
 
 ALL_MODULES = ["subdomain", "asn", "probe", "portscan", "backup", "credhunt", "jsextract", "waymore", "dedup", "bountyscan", "deep", "report"]
@@ -578,8 +582,49 @@ class ReconMaster:
             output_file = self.output_dir / "semantic_api_wordlist.txt"
             write_lines(str(output_file), wordlist)
 
+        # 3. Mobile APK API Extraction
+        log_info("Running Mobile APK Extractor...")
+        apk = APKExtractor(self.domain)
+        apk_results = await apk.extract()
+        if apk_results["endpoints"] or apk_results["secrets"]:
+            output_file = self.output_dir / "apk_findings.json"
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(apk_results, f, indent=2)
+
+        # 4. Cache Deception
+        log_info("Running Edge Node Cache Deception Scanner...")
+        cd_scanner = CacheDeceptionScanner(self.unique_urls)
+        cd_findings = await cd_scanner.scan()
+        if cd_findings:
+            output_file = self.output_dir / "cache_deception.json"
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(cd_findings, f, indent=2)
+
+        # 5. Headless Hooker
+        log_info("Running Headless JS Hooker...")
+        headless_targets = [h["url"] for h in self.live_hosts][:50]
+        hooker = HeadlessHooker(headless_targets)
+        hooker_endpoints = await hooker.run()
+        if hooker_endpoints:
+            output_file = self.output_dir / "headless_endpoints.txt"
+            write_lines(str(output_file), hooker_endpoints)
+
+        # 6. Historical JS
+        log_info("Running Historical JS Archeology...")
+        js_urls = []
+        for host in self.live_hosts:
+            js_urls.extend(host.get("js_files", []))
+        js_urls = list(set(js_urls))
+        
+        archeology = HistoricalJS(js_urls)
+        historical_endpoints = await archeology.run()
+        if historical_endpoints:
+            output_file = self.output_dir / "historical_endpoints.txt"
+            write_lines(str(output_file), historical_endpoints)
+
+        total_deep = len(saas_findings) + len(wordlist) + len(apk_results["endpoints"]) + len(cd_findings) + len(hooker_endpoints) + len(historical_endpoints)
         duration = elapsed_str(start)
-        self.phase_times.append(("Deep Elite Recon", duration, len(saas_findings) + len(wordlist)))
+        self.phase_times.append(("Deep Elite Recon", duration, total_deep))
 
     async def _phase_report(self):
         """Phase 11: Report Generation."""
