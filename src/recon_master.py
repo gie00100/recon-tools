@@ -304,6 +304,11 @@ class ReconMaster:
         
         if not live_configs and not github_token:
             log_warning("No live config URLs and no GITHUB_TOKEN. Skipping credential hunt.")
+            if not github_token:
+                log_info("To enable GitHub Secret Hunting:")
+                log_info("  1. Go to https://github.com/settings/tokens")
+                log_info("  2. Generate new token (classic) with 'repo' and 'read:org' scopes")
+                log_info("  3. Set it via: set GITHUB_TOKEN=ghp_... (Windows) or export GITHUB_TOKEN=ghp_... (Linux)")
             return
             
         hunter = CredentialHunter(self.domain, live_configs, github_token)
@@ -581,6 +586,16 @@ class ReconMaster:
         if wordlist:
             output_file = self.output_dir / "semantic_api_wordlist.txt"
             write_lines(str(output_file), wordlist)
+            
+            # Actively Fuzz top 50 hosts
+            base_urls = [h["url"] for h in self.live_hosts][:50]
+            if not base_urls:
+                base_urls = [f"https://{self.domain}"]
+            
+            active_endpoints = await fuzzer.active_fuzz(base_urls, wordlist)
+            if active_endpoints:
+                fuzz_output = self.output_dir / "semantic_active_findings.txt"
+                write_lines(str(fuzz_output), active_endpoints)
 
         # 3. Mobile APK API Extraction
         log_info("Running Mobile APK Extractor...")

@@ -130,6 +130,56 @@ class SemanticFuzzer:
         log_success(f"Generated semantic wordlist with {len(final_list)} entries.")
         return final_list
 
+    async def _fuzz_endpoint(self, session, url):
+        try:
+            async with session.get(url, allow_redirects=False) as resp:
+                # 200 OK, 401 Unauthorized, 403 Forbidden, 500 Server Error
+                if resp.status in (200, 401, 403, 500):
+                    return f"[{resp.status}] {url}"
+        except Exception:
+            pass
+        return None
+
+    async def active_fuzz(self, base_urls: List[str], wordlist: List[str], concurrency=50) -> List[str]:
+        log_info(f"Actively fuzzing {len(base_urls)} base URLs with {len(wordlist)} semantic payloads...")
+        from recon.utils import RateLimiter
+        rate_limiter = RateLimiter(concurrency)
+        
+        ssl_ctx = ssl.create_default_context()
+        ssl_ctx.check_hostname = False
+        ssl_ctx.verify_mode = ssl.CERT_NONE
+
+        findings = []
+        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_ctx, limit=concurrency)) as session:
+            semaphore = asyncio.Semaphore(concurrency)
+            
+            async def bounded_fuzz(url):
+                async with semaphore:
+                    await rate_limiter.acquire()
+                    return await self._fuzz_endpoint(session, url)
+
+            tasks = []
+            for host in base_urls:
+                host = host.rstrip('/')
+                for path in wordlist:
+                    tasks.append(bounded_fuzz(f"{host}{path}"))
+            
+            log_info(f"Total fuzzing requests queued: {len(tasks)}")
+            
+            # Process in chunks to prevent memory bloat
+            chunk_size = 10000
+            for i in range(0, len(tasks), chunk_size):
+                chunk = tasks[i:i+chunk_size]
+                results = await asyncio.gather(*chunk)
+                for res in results:
+                    if res:
+                        findings.append(res)
+                        from recon.utils import log_finding
+                        log_finding(f"[Active Fuzz] {res}")
+                        
+        log_success(f"Semantic Fuzzing complete. Discovered {len(findings)} active endpoints.")
+        return findings
+
 def main():
     parser = argparse.ArgumentParser(description="Semantic API Fuzzer Wordlist Generator")
     parser.add_argument("-d", "--domain", required=True, help="Target domain")

@@ -45,7 +45,18 @@ class APKExtractor:
         
         if not self.apk_path.exists():
             log_warning(f"No APK found at {self.apk_path}")
-            log_info("To use Mobile API extraction, download the target's APK from APKPure/PlayStore and place it in the targets/ directory.")
+            
+            # Auto-guessing package names and providing mirrors
+            pkg1 = f"com.{self.company_name}.android"
+            pkg2 = f"com.{self.company_name}"
+            
+            log_info("Automated APK downloads are currently blocked by mirror captchas.")
+            log_info("Please manually download the APK using one of these mirrors:")
+            log_info(f"  - https://apkpure.com/search?q={self.company_name}")
+            log_info(f"  - https://apps.evozi.com/apk-downloader/?id={pkg1}")
+            log_info(f"  - https://apps.evozi.com/apk-downloader/?id={pkg2}")
+            log_info("Once downloaded, place it in the targets/ directory and run again.")
+            
             return {"endpoints": list(), "secrets": list()}
             
         if not self._check_dependencies():

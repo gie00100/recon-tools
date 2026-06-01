@@ -121,6 +121,27 @@ class CacheDeceptionScanner:
                 pass
         return None
 
+    async def _check_cdn_presence(self) -> bool:
+        """Heuristic check to see if the target uses a CDN."""
+        if not self.urls:
+            return False
+            
+        parsed = urlparse(self.urls[0])
+        base_url = f"{parsed.scheme}://{parsed.netloc}"
+        try:
+            session = await self._get_session()
+            async with session.get(base_url, allow_redirects=False) as resp:
+                headers = {k.lower(): v.lower() for k, v in resp.headers.items()}
+                server = headers.get("server", "")
+                if any(cdn in server for cdn in ["cloudflare", "akamai", "cloudfront", "fastly"]):
+                    return True
+                for h in headers.keys():
+                    if any(cdn in h for cdn in ["cf-", "akamai", "x-fastly", "x-cache", "x-edge"]):
+                        return True
+        except Exception:
+            pass
+        return False
+
     async def scan(self) -> List[Dict]:
         import time
         start = time.time()
@@ -128,6 +149,12 @@ class CacheDeceptionScanner:
         
         log_info(f"Testing {len(self.urls)} endpoints for Web Cache Deception...")
         
+        if self.urls:
+            has_cdn = await self._check_cdn_presence()
+            if not has_cdn:
+                log_warning("No major CDN (Cloudflare/Akamai/Fastly) detected on target.")
+                log_warning("Cache Deception typically fails on Origin servers. Proceeding anyway with forced proxy headers...")
+                
         tasks = [self._test_url(url) for url in self.urls]
         results = await asyncio.gather(*tasks)
         
