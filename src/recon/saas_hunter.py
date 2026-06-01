@@ -158,11 +158,12 @@ class SaasHunter:
             await self._session.close()
 
     async def _check_endpoint(self, service: str, url: str, not_found_indicators: List[str]) -> Dict:
-        """Check a single SaaS endpoint with per-platform validation."""
+        """Check a single SaaS endpoint with strict false-positive reduction."""
         await self.rate_limiter.acquire()
         session = await self._get_session()
         try:
             async with session.get(url, allow_redirects=True) as resp:
+                final_url = str(resp.url)
                 text = await resp.text(errors="ignore")
                 text_lower = text.lower()
                 
@@ -170,20 +171,32 @@ class SaasHunter:
                 title_match = re.search(r"<title>(.*?)</title>", text, re.IGNORECASE | re.DOTALL)
                 title = title_match.group(1).strip()[:100] if title_match else ""
                 
-                # Per-platform not-found check
+                # ── CHECK 1: Redirect to a different domain = generic catch-all ──
+                # e.g., statuspage redirects to atlassian.com marketing page
+                from urllib.parse import urlparse
+                original_host = urlparse(url).netloc.lower()
+                final_host = urlparse(final_url).netloc.lower()
+                
+                # If we got redirected to a completely different domain, it's a generic page
+                original_base = tldextract.extract(original_host).registered_domain
+                final_base = tldextract.extract(final_host).registered_domain
+                if original_base and final_base and original_base != final_base:
+                    return None  # Redirected away — not a real tenant
+                
+                # ── CHECK 2: Per-platform not-found indicators ──
                 is_not_found = False
                 for indicator in not_found_indicators:
                     if indicator.lower() in text_lower:
                         is_not_found = True
                         break
                 
-                # Also check HTTP status
+                # ── CHECK 3: HTTP error status ──
                 if resp.status >= 400:
                     # Special case: S3 returns 403 for AccessDenied which IS interesting
                     if service == "s3_bucket" and resp.status == 403 and "AccessDenied" in text:
                         return {
                             "service": service,
-                            "url": str(resp.url),
+                            "url": final_url,
                             "status": resp.status,
                             "title": "S3 Bucket (Access Denied — exists but private)",
                             "severity": "INFO",
@@ -192,7 +205,7 @@ class SaasHunter:
                     if service == "firebase" and resp.status == 200 and text.strip() not in ("null", ""):
                         return {
                             "service": service,
-                            "url": str(resp.url),
+                            "url": final_url,
                             "status": resp.status,
                             "title": f"Firebase DB OPEN — {len(text)} bytes exposed!",
                             "severity": "CRITICAL",
@@ -202,10 +215,41 @@ class SaasHunter:
                 if is_not_found:
                     return None
                 
-                # If we got a 200 and it's not a known "not found" page, it's a finding
+                # ── CHECK 4: Catch-all platform detection ──
+                # These platforms return 200 for ANY path. We need to verify the
+                # page actually belongs to the target company.
+                catch_all_platforms = {
+                    "trello": "trello",
+                    "postman": "postman", 
+                    "canny": "canny",
+                    "gitlab": "gitlab",
+                    "bitbucket": "bitbucket",
+                    "ghost": "ghost",
+                    "readthedocs": "readthedocs",
+                }
+                
+                if service in catch_all_platforms:
+                    # The page must contain the company name somewhere in the body
+                    # to prove it actually belongs to them (not just a generic 200)
+                    if self.company_name.lower() not in text_lower:
+                        return None  # Generic catch-all page, not company-owned
+                
+                # ── CHECK 5: Login page without branding = not confirmed ──
+                # Okta/Jira showing a generic login page doesn't confirm ownership
+                login_platforms = {"okta", "jira", "confluence", "salesforce", "servicenow"}
+                if service in login_platforms:
+                    # Must have company name in the page (branding, custom domain, etc.)
+                    if self.company_name.lower() not in text_lower:
+                        # It's a login page but no branding — could be anyone's
+                        return None
+                
+                # ── CHECK 6: Empty/tiny response body = placeholder ──
+                if len(text.strip()) < 100:
+                    return None  # Too small to be a real service page
+                
+                # ── Passed all checks — it's a real finding ──
                 if resp.status < 400:
                     severity = "LOW"
-                    # Escalate severity for sensitive services
                     if service in ("firebase", "s3_bucket"):
                         severity = "HIGH"
                     elif service in ("jira", "confluence", "servicenow", "okta"):
@@ -213,7 +257,7 @@ class SaasHunter:
                     
                     return {
                         "service": service,
-                        "url": str(resp.url),
+                        "url": final_url,
                         "status": resp.status,
                         "title": title,
                         "severity": severity,
