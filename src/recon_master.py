@@ -569,6 +569,17 @@ class ReconMaster:
 
         start = time.time()
         log_phase(len(self.modules), len(self.modules), "Deep Elite Recon")
+
+        # ── Fix Data Starvation ──
+        # When running deep-only mode, earlier phases are skipped so
+        # live_hosts / unique_urls / js_findings are empty.
+        # Generate fallback targets so every sub-module has data.
+        fallback_urls = [f"https://www.{self.domain}", f"https://{self.domain}"]
+        deep_live_hosts = [h["url"] for h in self.live_hosts][:50] if self.live_hosts else fallback_urls
+        deep_test_urls = list(self.unique_urls) if self.unique_urls else fallback_urls
+
+        if not self.live_hosts:
+            log_warning("No live hosts from prior phases — using domain-based fallback targets for deep modules.")
         
         # 1. SaaS Hunter
         log_info("Running SaaS Hunter...")
@@ -579,24 +590,8 @@ class ReconMaster:
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(saas_findings, f, indent=2)
                 
-        # 2. Semantic Fuzzer (Disabled due to long execution time)
+        # 2. Semantic Fuzzer (Disabled — enable for thorough runs)
         wordlist = []
-        # log_info("Generating Semantic API Wordlist...")
-        # fuzzer = SemanticFuzzer(self.domain)
-        # wordlist = await fuzzer.generate()
-        # if wordlist:
-        #     output_file = self.output_dir / "semantic_api_wordlist.txt"
-        #     write_lines(str(output_file), wordlist)
-        #     
-        #     # Actively Fuzz top 50 hosts
-        #     base_urls = [h["url"] for h in self.live_hosts][:50]
-        #     if not base_urls:
-        #         base_urls = [f"https://{self.domain}"]
-        #     
-        #     active_endpoints = await fuzzer.active_fuzz(base_urls, wordlist)
-        #     if active_endpoints:
-        #         fuzz_output = self.output_dir / "semantic_active_findings.txt"
-        #         write_lines(str(fuzz_output), active_endpoints)
 
         # 3. Mobile APK API Extraction
         log_info("Running Mobile APK Extractor...")
@@ -607,38 +602,39 @@ class ReconMaster:
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(apk_results, f, indent=2)
 
-        # 4. Cache Deception
+        # 4. Cache Deception (now self-generates URLs if list is empty)
         log_info("Running Edge Node Cache Deception Scanner...")
-        cd_scanner = CacheDeceptionScanner(self.unique_urls)
+        cd_scanner = CacheDeceptionScanner(deep_test_urls, domain=self.domain)
         cd_findings = await cd_scanner.scan()
         if cd_findings:
             output_file = self.output_dir / "cache_deception.json"
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(cd_findings, f, indent=2)
 
-        # 5. Headless Hooker
+        # 5. Headless Hooker (now self-generates targets if list is empty)
         log_info("Running Headless JS Hooker...")
-        headless_targets = [h["url"] for h in self.live_hosts][:50]
-        hooker = HeadlessHooker(headless_targets)
-        hooker_endpoints = await hooker.run()
-        if hooker_endpoints:
-            output_file = self.output_dir / "headless_endpoints.txt"
-            write_lines(str(output_file), hooker_endpoints)
+        hooker = HeadlessHooker(deep_live_hosts, domain=self.domain)
+        hooker_results = await hooker.run()
+        hooker_endpoint_count = len(hooker_results.get("dynamic_endpoints", [])) if isinstance(hooker_results, dict) else 0
+        if hooker_results:
+            output_file = self.output_dir / "headless_endpoints.json"
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(hooker_results, f, indent=2, default=str)
 
-        # 6. Historical JS
+        # 6. Historical JS (now queries Wayback directly if no JS URLs)
         log_info("Running Historical JS Archeology...")
         js_urls = []
         for host in self.live_hosts:
             js_urls.extend(host.get("js_files", []))
         js_urls = list(set(js_urls))
         
-        archeology = HistoricalJS(js_urls)
+        archeology = HistoricalJS(js_urls, domain=self.domain)
         historical_endpoints = await archeology.run()
         if historical_endpoints:
             output_file = self.output_dir / "historical_endpoints.txt"
             write_lines(str(output_file), historical_endpoints)
 
-        total_deep = len(saas_findings) + len(wordlist) + len(apk_results["endpoints"]) + len(cd_findings) + len(hooker_endpoints) + len(historical_endpoints)
+        total_deep = len(saas_findings) + len(apk_results["endpoints"]) + len(cd_findings) + hooker_endpoint_count + len(historical_endpoints)
         duration = elapsed_str(start)
         self.phase_times.append(("Deep Elite Recon", duration, total_deep))
 
