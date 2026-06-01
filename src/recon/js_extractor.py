@@ -350,22 +350,9 @@ class JSExtractor:
                                         source_content = map_text
                                     
                                     if source_content:
-                                        # Log as HIGH finding — exposed source maps reveal original code
-                                        self.secrets.append({
-                                            "type": "Source Map Exposed",
-                                            "severity": "HIGH",
-                                            "match": map_url,
-                                            "source": url,
-                                            "context": f"Unminified source code exposed ({len(source_content)//1024}KB)",
-                                        })
-                                        result["secrets"].append({
-                                            "type": "Source Map Exposed",
-                                            "severity": "HIGH",
-                                            "match": map_url,
-                                            "source": url,
-                                            "context": f"Unminified source code exposed ({len(source_content)//1024}KB)",
-                                        })
-                                        log_finding(f"[SOURCEMAP] Exposed source map: {map_url} ({len(source_content)//1024}KB)")
+                                        # Source maps alone are not a security finding.
+                                        # The value is in scanning the unminified code for real secrets.
+                                        log_info(f"[SOURCEMAP] Scanning unminified source: {map_url} ({len(source_content)//1024}KB)")
                                         
                                         # Scan the unminified source for secrets (dev comments, hardcoded keys)
                                         map_secrets = self._scan_secrets_in_content(source_content, map_url)
