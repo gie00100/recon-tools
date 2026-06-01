@@ -11,6 +11,7 @@ import asyncio
 import re
 import sys
 import ssl
+import time
 from pathlib import Path
 from typing import List, Set
 
@@ -130,7 +131,6 @@ class SemanticFuzzer:
         return final_list
 
 def main():
-    import time
     parser = argparse.ArgumentParser(description="Semantic API Fuzzer Wordlist Generator")
     parser.add_argument("-d", "--domain", required=True, help="Target domain")
     parser.add_argument("-u", "--url", action="append", help="Extra URLs to scrape for context")
