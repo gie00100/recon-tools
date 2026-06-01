@@ -36,9 +36,11 @@ from recon.bounty_scanner import BountyScanner
 from recon.port_scanner import PortScanner, resolve_hostnames
 from recon.cred_hunter import CredentialHunter
 from recon.report_gen import ReportGenerator
+from recon.semantic_fuzzer import SemanticFuzzer
+from recon.saas_hunter import SaasHunter
 
 
-ALL_MODULES = ["subdomain", "asn", "probe", "portscan", "backup", "credhunt", "jsextract", "waymore", "dedup", "bountyscan", "report"]
+ALL_MODULES = ["subdomain", "asn", "probe", "portscan", "backup", "credhunt", "jsextract", "waymore", "dedup", "bountyscan", "deep", "report"]
 
 
 class ReconMaster:
@@ -53,6 +55,7 @@ class ReconMaster:
         brute: bool = False,
         permutations: bool = False,
         active: bool = False,
+        deep: bool = False,
         output_dir: str = None,
         concurrency: int = 50,
     ):
@@ -63,6 +66,7 @@ class ReconMaster:
         self.brute = brute
         self.permutations = permutations
         self.active = active
+        self.deep = deep
         self.concurrency = concurrency
 
         # Create timestamped output directory
@@ -549,6 +553,34 @@ class ReconMaster:
         duration = elapsed_str(start)
         self.phase_times.append(("Bounty Scanning", duration, self.bounty_flags))
 
+    async def _phase_deep_recon(self):
+        """Phase X: Deep Elite Recon (SaaS, Semantic, Cache Deception)."""
+        if not self._should_run("deep") and not self.deep:
+            return
+
+        start = time.time()
+        log_phase(len(self.modules), len(self.modules), "Deep Elite Recon")
+        
+        # 1. SaaS Hunter
+        log_info("Running SaaS Hunter...")
+        hunter = SaasHunter(self.domain)
+        saas_findings = await hunter.hunt()
+        if saas_findings:
+            output_file = self.output_dir / "saas_findings.json"
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(saas_findings, f, indent=2)
+                
+        # 2. Semantic Fuzzer
+        log_info("Generating Semantic API Wordlist...")
+        fuzzer = SemanticFuzzer(self.domain)
+        wordlist = await fuzzer.generate()
+        if wordlist:
+            output_file = self.output_dir / "semantic_api_wordlist.txt"
+            write_lines(str(output_file), wordlist)
+
+        duration = elapsed_str(start)
+        self.phase_times.append(("Deep Elite Recon", duration, len(saas_findings) + len(wordlist)))
+
     async def _phase_report(self):
         """Phase 11: Report Generation."""
         if not self._should_run("report"):
@@ -600,6 +632,7 @@ class ReconMaster:
         await self._phase_waymore_url_collection()
         await self._phase_url_dedup()
         await self._phase_bounty_scan()
+        await self._phase_deep_recon()
         report_paths = await self._phase_report()
         
         # Save state
@@ -696,6 +729,7 @@ Examples:
     parser.add_argument("--brute", action="store_true", help="Enable DNS brute-force in subdomain enum")
     parser.add_argument("--permutations", action="store_true", help="Enable subdomain permutations in enum phase")
     parser.add_argument("--active", action="store_true", help="Actively probe generated backup URLs")
+    parser.add_argument("--deep", action="store_true", help="Enable elite deep recon modules (SaaS hunter, Semantic fuzzing, etc.)")
     parser.add_argument("-o", "--output", help="Output directory (default: ./output/)")
     parser.add_argument("--concurrency", type=int, default=50, help="Max concurrent requests (default: 50)")
 
@@ -728,6 +762,7 @@ Examples:
         brute=args.brute,
         permutations=args.permutations,
         active=args.active,
+        deep=args.deep,
         output_dir=args.output,
         concurrency=args.concurrency,
     )
