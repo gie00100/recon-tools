@@ -206,37 +206,90 @@ class LiveProber:
         return ""
 
     def _detect_takeover(self, body: str, cname: str = "") -> str:
-        """Detect subdomain takeovers from response body signatures and CNAME mapping."""
-        # Check CNAME targets first for high confidence takeover candidates
-        if cname:
-            cname_map = {
-                "github.io": "GitHub Pages",
-                "herokuapp.com": "Heroku",
-                "s3.amazonaws.com": "AWS S3",
-                "s3-website": "AWS S3",
-                "cloudfront.net": "AWS S3 (Alternative)",
-                "fastly.net": "Fastly",
-                "zendesk.com": "Zendesk",
-                "azurewebsites.net": "Azure",
-                "myshopify.com": "Shopify",
-                "tumblr.com": "Tumblr",
-                "pantheonsite.io": "Pantheon",
-                "bitbucket.org": "Bitbucket",
-                "webflow.io": "Webflow",
-                "unbouncepages.com": "Unbounce"
-            }
-            for pattern, service in cname_map.items():
-                if pattern in cname:
-                    # If we got a signature in body OR the body returned connection errors/timeouts, flag it!
-                    if not body or any(sig in body for sig in TAKEOVER_SIGNATURES.values()):
-                        return f"{service} (CNAME: {cname})"
-
-        if not body:
+        """
+        Detect subdomain takeovers from response body signatures and CNAME mapping.
+        
+        CRITICAL FALSE POSITIVE PREVENTION:
+        A subdomain takeover requires a DANGLING CNAME pointing to an unclaimed
+        third-party resource. A stale A record pointing to a server the company
+        owns (that returns 404) is NOT a takeover — it's just an unconfigured
+        vhost. Body-only signature matches without a CNAME are ignored.
+        """
+        if not cname:
+            # No CNAME = the domain resolves to A records (direct IPs).
+            # The company controls the infrastructure. A 404 here just means
+            # the vhost is unconfigured, NOT that it's takeover-able.
+            # This prevents false positives like emails.wix.com.
             return ""
-            
-        for service, signature in TAKEOVER_SIGNATURES.items():
-            if signature in body:
-                return service
+        
+        # We have a CNAME — check if it points to a known takeover-vulnerable service
+        cname_map = {
+            "github.io": "GitHub Pages",
+            "herokuapp.com": "Heroku",
+            "s3.amazonaws.com": "AWS S3",
+            "s3-website": "AWS S3",
+            "cloudfront.net": "AWS CloudFront",
+            "fastly.net": "Fastly",
+            "zendesk.com": "Zendesk",
+            "azurewebsites.net": "Azure",
+            "azure-api.net": "Azure",
+            "trafficmanager.net": "Azure Traffic Manager",
+            "myshopify.com": "Shopify",
+            "tumblr.com": "Tumblr",
+            "pantheonsite.io": "Pantheon",
+            "bitbucket.org": "Bitbucket",
+            "webflow.io": "Webflow",
+            "unbouncepages.com": "Unbounce",
+            "ghost.io": "Ghost",
+            "netlify.app": "Netlify",
+            "surge.sh": "Surge",
+            "readme.io": "Readme",
+            "cargocollective.com": "Cargo",
+            "helpjuice.com": "HelpJuice",
+            "feedpress.me": "Feedpress",
+        }
+        
+        for pattern, service in cname_map.items():
+            if pattern in cname:
+                # CNAME points to a known vulnerable service.
+                # Now verify the service is actually unclaimed:
+                # 1. Body is empty (connection failed / NXDOMAIN) = strong signal
+                # 2. Body contains the specific takeover signature for this service
+                if not body:
+                    return f"{service} (CNAME: {cname}) [DANGLING — no response]"
+                
+                # Check for the service-specific signature in the body
+                service_sigs = {
+                    "GitHub Pages": ["There isn't a GitHub Pages site here"],
+                    "Heroku": ["No such app", "There is no app"],
+                    "AWS S3": ["The specified bucket does not exist", "NoSuchBucket"],
+                    "AWS CloudFront": ["The request could not be satisfied", "Bad request"],
+                    "Fastly": ["Fastly error: unknown domain"],
+                    "Zendesk": ["Help Center Closed"],
+                    "Azure": ["404 Web Site not found", "Web App - Unavailable"],
+                    "Azure Traffic Manager": ["invalid host"],
+                    "Shopify": ["Sorry, this shop is currently unavailable"],
+                    "Tumblr": ["Whatever you were looking for doesn't currently exist"],
+                    "Pantheon": ["The magic starts here"],
+                    "Bitbucket": ["Repository not found"],
+                    "Webflow": ["The page you are looking for doesn't exist"],
+                    "Unbounce": ["The requested URL /  was not found on this server"],
+                    "Ghost": ["The thing you were looking for is no longer here"],
+                    "Netlify": ["Not Found - Request ID"],
+                    "Surge": ["project not found"],
+                    "Readme": ["Project not found"],
+                }
+                
+                sigs = service_sigs.get(service, [])
+                for sig in sigs:
+                    if sig.lower() in body.lower():
+                        return f"{service} (CNAME: {cname}) [CONFIRMED — signature matched]"
+                
+                # CNAME to a known service but no matching signature — still flag as candidate
+                # but with lower confidence
+                return f"{service} (CNAME: {cname}) [CANDIDATE — needs manual verification]"
+        
+        # CNAME exists but doesn't match any known vulnerable service
         return ""
 
     async def _fetch_extra(self, base_url: str, path: str, session: aiohttp.ClientSession) -> str:
