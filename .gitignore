@@ -1,0 +1,42 @@
+# ── Virtual Environment ──
+venv/
+.venv/
+env/
+
+# ── Python Cache ──
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# ── Secrets & Credentials ──
+src/.env
+.env
+*.pem
+*.key
+vps_config.ini
+
+# ── Scan Output (large files, domain-specific) ──
+output/
+results/
+
+# ── IDE / Editor ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS Generated ──
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ── Logs ──
+*.log
+
+# ── Gemini AI / Agent metadata ──
+.gemini/
+.antigravityignore
