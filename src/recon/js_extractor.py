@@ -327,26 +327,55 @@ class JSExtractor:
                     result["secrets"] = secrets
                     self.secrets.extend(secrets)
                     
-                    # Try fetching the sourcemap
+                    # Try fetching the sourcemap (.js.map → unminified source code)
                     if not url.endswith(".map"):
                         map_url = url + ".map"
                         try:
-                            async with session.get(map_url, timeout=5) as map_resp:
+                            async with session.get(map_url, timeout=aiohttp.ClientTimeout(total=10)) as map_resp:
                                 if map_resp.status == 200:
-                                    map_content = await map_resp.text(encoding="utf-8", errors="ignore")
-                                    map_content = map_content[:2_000_000]
+                                    map_text = await map_resp.text(encoding="utf-8", errors="ignore")
+                                    map_text = map_text[:5_000_000]  # Allow up to 5MB for maps
                                     
-                                    # Scan for secrets in map
-                                    map_secrets = self._scan_secrets_in_content(map_content, map_url)
-                                    result["secrets"].extend(map_secrets)
-                                    self.secrets.extend(map_secrets)
+                                    # Try to parse as JSON and extract sourcesContent
+                                    source_content = ""
+                                    try:
+                                        import json as _json
+                                        map_data = _json.loads(map_text)
+                                        # sourcesContent has the full unminified source code
+                                        sources = map_data.get("sourcesContent", [])
+                                        if sources:
+                                            source_content = "\n".join([str(s) for s in sources if s])
+                                    except Exception:
+                                        # Not valid JSON, scan raw text
+                                        source_content = map_text
                                     
-                                    # Also endpoints
-                                    map_endpoints = self._extract_endpoints_from_content(map_content, map_url)
-                                    result["endpoints"].extend(list(map_endpoints))
-                                    self.endpoints.update(map_endpoints)
-                                    
-                                    log_finding(f"[SOURCEMAP] Found and analyzed: {map_url}")
+                                    if source_content:
+                                        # Log as HIGH finding — exposed source maps reveal original code
+                                        self.secrets.append({
+                                            "type": "Source Map Exposed",
+                                            "severity": "HIGH",
+                                            "match": map_url,
+                                            "source": url,
+                                            "context": f"Unminified source code exposed ({len(source_content)//1024}KB)",
+                                        })
+                                        result["secrets"].append({
+                                            "type": "Source Map Exposed",
+                                            "severity": "HIGH",
+                                            "match": map_url,
+                                            "source": url,
+                                            "context": f"Unminified source code exposed ({len(source_content)//1024}KB)",
+                                        })
+                                        log_finding(f"[SOURCEMAP] Exposed source map: {map_url} ({len(source_content)//1024}KB)")
+                                        
+                                        # Scan the unminified source for secrets (dev comments, hardcoded keys)
+                                        map_secrets = self._scan_secrets_in_content(source_content, map_url)
+                                        result["secrets"].extend(map_secrets)
+                                        self.secrets.extend(map_secrets)
+                                        
+                                        # Also extract endpoints from unminified source
+                                        map_endpoints = self._extract_endpoints_from_content(source_content, map_url)
+                                        result["endpoints"].extend(list(map_endpoints))
+                                        self.endpoints.update(map_endpoints)
                         except Exception:
                             pass
                 else:

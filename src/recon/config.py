@@ -21,6 +21,8 @@ class Config:
     SECURITYTRAILS_API_KEY = os.getenv("SECURITYTRAILS_API_KEY", "")
     SHODAN_API_KEY = os.getenv("SHODAN_API_KEY", "")
     VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY", "")
+    # Support multiple VT keys for rotation (comma-separated in .env)
+    VIRUSTOTAL_API_KEYS = [k.strip() for k in os.getenv("VIRUSTOTAL_API_KEYS", "").split(",") if k.strip()]
     URLSCAN_API_KEY = os.getenv("URLSCAN_API_KEY", "")
     CERTSPOTTER_API_KEY = os.getenv("CERTSPOTTER_API_KEY", "")
     CENSYS_API_ID = os.getenv("CENSYS_API_ID", "")
@@ -84,6 +86,14 @@ class Config:
             "certspotter": cls.CERTSPOTTER_API_KEY,
         }
         return bool(key_map.get(provider.lower(), ""))
+
+    @classmethod
+    def get_vt_keys(cls) -> list:
+        """Get all VirusTotal API keys (multi-key rotation support)."""
+        keys = list(cls.VIRUSTOTAL_API_KEYS)  # From VIRUSTOTAL_API_KEYS env
+        if cls.VIRUSTOTAL_API_KEY and cls.VIRUSTOTAL_API_KEY not in keys:
+            keys.insert(0, cls.VIRUSTOTAL_API_KEY)  # Add single key if not already in list
+        return keys
 
     @classmethod
     def ensure_output_dir(cls, subdir: str = "") -> Path:

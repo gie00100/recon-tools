@@ -16,6 +16,36 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from recon.utils import banner, log_info, log_success, log_error
 
 
+def _render_secret_row(s: dict) -> str:
+    """Render a single secret finding as an HTML table row."""
+    sev = s.get('severity', 'INFO')
+    stype = s.get('type', '')
+    match_val = s.get('match', '')[:60]
+    source_name = s.get('source', '').split('/')[-1][:30]
+    return (
+        f'<tr>'
+        f'<td><span class="badge {sev.lower()}">{sev}</span></td>'
+        f'<td>{stype}</td>'
+        f'<td>{match_val}</td>'
+        f'<td>{source_name}</td>'
+        f'</tr>'
+    )
+
+
+def _render_phase_row(p: dict) -> str:
+    """Render a single pipeline phase as an HTML timeline item."""
+    name = p.get('name', '')
+    duration = p.get('duration', '')
+    count = p.get('result_count', 0)
+    return (
+        f'<li>'
+        f'<span class="dot"></span>'
+        f'<span class="phase-name">{name}</span>'
+        f'<span class="phase-duration">{duration}</span>'
+        f'<span class="phase-count">{count} results</span>'
+        f'</li>'
+    )
+
 class ReportGenerator:
     """Generate HTML and JSON reports from recon data."""
 
@@ -383,13 +413,7 @@ class ReportGenerator:
                     </tr>
                 </thead>
                 <tbody>
-                    {"".join(f'''
-                    <tr>
-                        <td><span class="badge {s['severity'].lower()}">{s['severity']}</span></td>
-                        <td>{s['type']}</td>
-                        <td>{s['match'][:60]}</td>
-                        <td>{s['source'].split('/')[-1][:30]}</td>
-                    </tr>''' for s in sorted(secrets, key=lambda x: ['CRITICAL','HIGH','MEDIUM','INFO'].index(x.get('severity','INFO'))))}
+                    {"".join(_render_secret_row(s) for s in sorted(secrets, key=lambda x: ['CRITICAL','HIGH','MEDIUM','INFO'].index(x.get('severity','INFO'))))}
                 </tbody>
             </table>
         </div>
@@ -473,13 +497,7 @@ class ReportGenerator:
         </div>
         <div class="section-body">
             <ul class="timeline">
-                {"".join(f"""
-                <li>
-                    <span class="dot"></span>
-                    <span class="phase-name">{p['name']}</span>
-                    <span class="phase-duration">{p['duration']}</span>
-                    <span class="phase-count">{p['result_count']} results</span>
-                </li>""" for p in phases)}
+                {"".join(_render_phase_row(p) for p in phases)}
             </ul>
         </div>
     </div>

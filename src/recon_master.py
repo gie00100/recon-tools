@@ -16,6 +16,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 sys.path.insert(0, str(Path(__file__).parent))
 from recon.config import Config
@@ -36,9 +37,12 @@ from recon.bounty_scanner import BountyScanner
 from recon.port_scanner import PortScanner, resolve_hostnames
 from recon.cred_hunter import CredentialHunter
 from recon.report_gen import ReportGenerator
+from recon.schema_discovery import SchemaDiscovery
+from recon.vt_url_scraper import VTUrlScraper
+from recon.web_crawler import WebCrawler
 
 
-ALL_MODULES = ["subdomain", "asn", "probe", "portscan", "backup", "credhunt", "jsextract", "waymore", "dedup", "bountyscan", "report"]
+ALL_MODULES = ["subdomain", "asn", "probe", "portscan", "backup", "credhunt", "jsextract", "schema", "vtscrape", "crawl", "waymore", "dedup", "bountyscan", "report"]
 
 
 class ReconMaster:
@@ -91,6 +95,9 @@ class ReconMaster:
         self.cred_findings = []
         self.backup_wordlist = []
         self.unique_urls = []
+        self.schema_findings = {}
+        self.crawled_endpoints = set()
+        self.vt_scraped_urls = set()
         self.bounty_flags = 0
         self.bounty_stats = {}
         self.report = None
@@ -389,6 +396,102 @@ class ReconMaster:
         duration = elapsed_str(start)
         self.phase_times.append(("JavaScript Analysis", duration, total_findings))
 
+    async def _phase_schema_discovery(self):
+        """Phase 7.5: API & Schema Discovery (Swagger, GraphQL, Feature Flags)."""
+        if not self._should_run("schema"):
+            return
+        if not self.live_hosts:
+            log_warning("No live hosts for schema discovery")
+            return
+
+        start = time.time()
+        log_phase("7.5", len(self.modules), "API & Schema Discovery")
+
+        live_domains = [h.get("hostname", "") for h in self.live_hosts if h.get("hostname")]
+        if not live_domains:
+            live_domains = [urlparse(h["url"]).hostname for h in self.live_hosts if h.get("url")]
+            live_domains = [d for d in live_domains if d]
+
+        scanner = SchemaDiscovery(
+            live_domains=live_domains,
+            output_dir=self.output_dir,
+            concurrency=min(self.concurrency, 20),
+        )
+        self.schema_findings = await scanner.discover()
+
+        # Alert on critical findings
+        for finding in self.schema_findings.get("findings", []):
+            sev = finding.get("severity", "INFO")
+            if sev in ("CRITICAL", "HIGH"):
+                emoji = "🚨" if sev == "CRITICAL" else "🔥"
+                await self._send_alert(
+                    f"{emoji} {finding['type']} Found — {self.domain}",
+                    (f"**Severity:** {sev}\n"
+                     f"**Type:** {finding['type']}\n"
+                     f"**URL:** {finding['url']}\n"
+                     f"**Domain:** {finding['domain']}"),
+                    16711680 if sev == "CRITICAL" else 16744448
+                )
+
+        duration = elapsed_str(start)
+        ep_count = len(self.schema_findings.get("api_endpoints", []))
+        self.phase_times.append(("Schema Discovery", duration, ep_count))
+
+    async def _phase_vt_url_scrape(self):
+        """Phase 7.6: VirusTotal Per-Subdomain URL Scraping."""
+        if not self._should_run("vtscrape"):
+            return
+        if not self.live_hosts:
+            log_warning("No live hosts for VT URL scraping")
+            return
+
+        start = time.time()
+        log_phase("7.6", len(self.modules), "VirusTotal URL Scraping")
+
+        live_domains = [h.get("hostname", "") for h in self.live_hosts if h.get("hostname")]
+        if not live_domains:
+            from urllib.parse import urlparse
+            live_domains = [urlparse(h["url"]).hostname for h in self.live_hosts if h.get("url")]
+            live_domains = [d for d in live_domains if d]
+
+        scraper = VTUrlScraper(
+            subdomains=live_domains,
+            output_dir=self.output_dir,
+        )
+        result = await scraper.scrape()
+        self.vt_scraped_urls = set(result.get("urls", []))
+
+        duration = elapsed_str(start)
+        self.phase_times.append(("VT URL Scraping", duration, len(self.vt_scraped_urls)))
+
+    async def _phase_web_crawl(self):
+        """Phase 7.7: Active Web Crawling."""
+        if not self._should_run("crawl"):
+            return
+        if not self.live_hosts:
+            log_warning("No live hosts for web crawling")
+            return
+
+        start = time.time()
+        log_phase("7.7", len(self.modules), "Active Web Crawling")
+
+        live_domains = [h.get("hostname", "") for h in self.live_hosts if h.get("hostname")]
+        if not live_domains:
+            from urllib.parse import urlparse
+            live_domains = [urlparse(h["url"]).hostname for h in self.live_hosts if h.get("url")]
+            live_domains = [d for d in live_domains if d]
+
+        crawler = WebCrawler(
+            live_domains=live_domains,
+            output_dir=self.output_dir,
+            concurrency=min(self.concurrency, 15),
+        )
+        result = await crawler.crawl()
+        self.crawled_endpoints = set(result.get("endpoints", []))
+
+        duration = elapsed_str(start)
+        self.phase_times.append(("Web Crawling", duration, len(self.crawled_endpoints)))
+
     async def _phase_waymore_url_collection(self):
         """Phase 8: Passive URL Collection via Waymore."""
         if not self._should_run("waymore"):
@@ -453,11 +556,14 @@ class ReconMaster:
         start = time.time()
         log_phase(9, len(self.modules), "Smart URL Deduplication")
 
-        # Collect all URLs from live hosts + JS endpoints + VirusTotal + Waymore
+        # Collect all URLs from ALL sources
         all_urls = [h["url"] for h in self.live_hosts]
         all_urls.extend(self.js_findings.get("endpoints", []))
         all_urls.extend(self.vt_urls)
         all_urls.extend(self.waymore_urls)
+        all_urls.extend(self.vt_scraped_urls)  # VT per-subdomain URLs
+        all_urls.extend(self.crawled_endpoints)  # Web crawler endpoints
+        all_urls.extend(self.schema_findings.get("api_endpoints", []))  # Schema-extracted APIs
 
         if not all_urls:
             log_warning("No URLs to deduplicate")
@@ -612,6 +718,9 @@ class ReconMaster:
         await self._phase_backup_gen()
         await self._phase_cred_hunt()
         await self._phase_js_extract()
+        await self._phase_schema_discovery()
+        await self._phase_vt_url_scrape()
+        await self._phase_web_crawl()
         await self._phase_waymore_url_collection()
         await self._phase_url_dedup()
         await self._phase_bounty_scan()
@@ -633,6 +742,9 @@ class ReconMaster:
              f"**Credentials:** {len(self.cred_findings)}\n"
              f"**JS Endpoints:** {len(self.js_findings.get('endpoints', []))}\n"
              f"**Waymore URLs:** {len(self.waymore_urls)}\n"
+             f"**VT Scraped URLs:** {len(self.vt_scraped_urls)}\n"
+             f"**Crawled Endpoints:** {len(self.crawled_endpoints)}\n"
+             f"**Schema APIs:** {len(self.schema_findings.get('api_endpoints', []))}\n"
              f"**Unique URLs:** {len(self.unique_urls)}\n"
              f"**Secrets Found:** {len(self.js_findings.get('secrets', []))}\n"
              f"**Bounty Flags:** {self.bounty_flags}"),
@@ -653,6 +765,9 @@ class ReconMaster:
                 f"[bold green]Live Hosts:[/bold green] {len(self.live_hosts)}",
                 f"[bold green]JS Endpoints:[/bold green] {len(self.js_findings.get('endpoints', []))}",
                 f"[bold green]VT URLs:[/bold green] {len(self.vt_urls)}",
+                f"[bold green]VT Scraped:[/bold green] {len(self.vt_scraped_urls)}",
+                f"[bold green]Crawled:[/bold green] {len(self.crawled_endpoints)}",
+                f"[bold green]Schema APIs:[/bold green] {len(self.schema_findings.get('api_endpoints', []))}",
                 f"[bold green]Waymore URLs:[/bold green] {len(self.waymore_urls)}",
                 f"[bold green]Secrets:[/bold green] {len(self.js_findings.get('secrets', []))}",
                 f"[bold green]Backup Paths:[/bold green] {len(self.backup_wordlist)}",
@@ -691,14 +806,17 @@ Pipeline Phases:
   3. probe      — Live host probing & tech fingerprinting
   4. backup     — Backup file wordlist generation
   5. jsextract  — JavaScript endpoint & secret extraction
-  6. waymore    — Passive URL collection via Wayback/CommonCrawl
-  7. dedup      — Smart URL deduplication
-  8. bountyscan — High-value bounty heuristic filtering
-  9. report     — HTML/JSON report generation
+  6. schema     — API & Schema Discovery (Swagger/GraphQL/FeatureFlags)
+  7. vtscrape   — VirusTotal per-subdomain URL extraction
+  8. crawl      — Active web crawling (BFS link extraction)
+  9. waymore    — Passive URL collection via Wayback/CommonCrawl
+ 10. dedup      — Smart URL deduplication
+ 11. bountyscan — High-value bounty heuristic filtering
+ 12. report     — HTML/JSON report generation
 
 Examples:
   python recon_master.py -d example.com --full
-  python recon_master.py -d example.com --modules subdomain,probe,backup
+  python recon_master.py -d example.com --modules subdomain,probe,schema,crawl
   python recon_master.py -d example.com -a AS15169 --full
   python recon_master.py -d example.com --brute --full
         """
