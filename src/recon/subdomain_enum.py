@@ -410,16 +410,14 @@ class SubdomainEnumerator:
         passive_tasks = [
             self._enum_crtsh(),
             self._enum_hackertarget(),
-            self._enum_alienvault(),
             self._enum_urlscan(),
             self._enum_rapiddns(),
             self._enum_certspotter(),
         ]
 
-        # Add API sources
+        # Add API sources (AlienVault & Shodan dropped — always return 403)
         api_tasks = [
             self._enum_securitytrails(),
-            self._enum_shodan(),
             self._enum_virustotal(),
         ]
 

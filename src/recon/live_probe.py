@@ -285,8 +285,27 @@ class LiveProber:
                     if sig.lower() in body.lower():
                         return f"{service} (CNAME: {cname}) [CONFIRMED — signature matched]"
                 
-                # CNAME to a known service but no matching signature — still flag as candidate
-                # but with lower confidence
+                # CNAME to a known service but no matching signature.
+                # CRITICAL: If the response comes from a real backend server
+                # (e.g., 403 from openresty/nginx behind CloudFront), the 
+                # distribution IS active and owned — NOT a takeover.
+                # Only flag as CANDIDATE if the body is a generic CDN error
+                # or very small (indicating an unconfigured distribution).
+                
+                # Signs the service is ACTIVE (not takeover-able):
+                # - Response from a real backend (openresty, nginx, apache, etc.)
+                # - Body is large (>500 bytes) — real app pages
+                # - Contains HTML with real content (not just a CDN error)
+                active_backend_indicators = [
+                    "openresty", "nginx", "apache", "gunicorn", "express",
+                    "cloudflare", "varnish", "akamai", "envoy",
+                ]
+                body_lower = body.lower()
+                if any(indicator in body_lower for indicator in active_backend_indicators):
+                    return ""  # Active backend = owned = not takeover-able
+                if len(body) > 2000:
+                    return ""  # Large response body = real app, not a dangling service
+                
                 return f"{service} (CNAME: {cname}) [CANDIDATE — needs manual verification]"
         
         # CNAME exists but doesn't match any known vulnerable service
