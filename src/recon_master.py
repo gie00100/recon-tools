@@ -580,6 +580,7 @@ class ReconMaster:
                 json.dump(saas_findings, f, indent=2)
                 
         # 2. Semantic Fuzzer (Disabled due to long execution time)
+        wordlist = []
         # log_info("Generating Semantic API Wordlist...")
         # fuzzer = SemanticFuzzer(self.domain)
         # wordlist = await fuzzer.generate()
