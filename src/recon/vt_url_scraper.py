@@ -40,6 +40,10 @@ HIGH_VALUE_KEYWORDS = [
     'app', 'my', 'user', 'profile', 'member', 'customer',
     'cart', 'wallet', 'transfer', 'transaction',
     'webhook', 'callback', 'redirect', 'token',
+    # Email/Notification — URLs leak PII (email, user_id, unsub tokens)
+    'email', 'emails', 'mail', 'notification', 'notifications',
+    'newsletter', 'newsletters', 'unsubscribe', 'subscribe',
+    'push', 'push-notification', 'mailer', 'noreply', 'no-reply',
 ]
 
 # Subdomains that never have credential/token leaks in URLs
@@ -53,12 +57,10 @@ SKIP_KEYWORDS = [
     'marketing', 'promo', 'promos', 'ads', 'tracking', 'analytics',
     'seo', 'campaign', 'campaigns', 'events', 'event', 'landing',
     'brand', 'branding', 'affiliate', 'affiliates', 'partners',
-    # Email / Notifications
-    'mail', 'smtp', 'pop', 'imap', 'mx', 'email', 'emails',
+    # Email Infra (protocol-level only — app-level email subs moved to HIGH_VALUE)
+    'smtp', 'pop', 'imap', 'mx',
     'mta-sts', 'autodiscover', 'autoconfig', '_dmarc',
-    'notification', 'notifications', 'push', 'push-notification',
-    'newsletter', 'newsletters', 'subscribe', 'unsubscribe',
-    'mailer', 'postmaster', 'bounce', 'noreply', 'no-reply',
+    'postmaster', 'bounce',
     # DNS / Infra
     'ns1', 'ns2', 'ns3', 'ns4', 'dns', 'dns1', 'dns2',
     'vpn', 'proxy', 'relay', 'nat', 'firewall',
