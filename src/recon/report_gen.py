@@ -89,6 +89,67 @@ class ReportGenerator:
             if waf:
                 waf_counts[waf] = waf_counts.get(waf, 0) + 1
 
+        # Generate Secrets HTML
+        secrets_html = ""
+        for s in sorted(secrets, key=lambda x: ['CRITICAL','HIGH','MEDIUM','INFO'].index(x.get('severity','INFO'))):
+            sev = s.get('severity', 'INFO')
+            stype = s.get('type', '')
+            smatch = s.get('match', '')[:60]
+            ssource = s.get('source', '').split('/')[-1][:30]
+            secrets_html += f"""
+                    <tr>
+                        <td><span class="badge {sev.lower()}">{sev}</span></td>
+                        <td>{stype}</td>
+                        <td>{smatch}</td>
+                        <td>{ssource}</td>
+                    </tr>"""
+
+        # Generate Hosts HTML
+        hosts_html = ""
+        for h in sorted(hosts, key=lambda x: x.get('status', 999)):
+            hurl = h.get('url', '')
+            hurl_short = hurl[:55]
+            hstatus = str(h.get('status', 0))
+            hstatus_class = f"s{hstatus[0]}xx" if hstatus and len(hstatus) > 0 else "s0xx"
+            htitle = (h.get('title', '') or '-')[:40]
+            htech = ', '.join(h.get('technologies', [])[:3]) or '-'
+            hwaf = h.get('waf', '') or '-'
+            htime = h.get('response_time_ms', '')
+            hosts_html += f"""
+                    <tr>
+                        <td><a href="{hurl}" target="_blank" style="color:var(--accent-blue);text-decoration:none">{hurl_short}</a></td>
+                        <td><span class="status {hstatus_class}">{hstatus}</span></td>
+                        <td>{htitle}</td>
+                        <td>{htech}</td>
+                        <td>{hwaf}</td>
+                        <td>{htime}ms</td>
+                    </tr>"""
+
+        # Generate Subdomains HTML
+        subs_html = ""
+        for s in subs[:500]:
+            subs_html += f"<tr><td>{s}</td></tr>"
+        if len(subs) > 500:
+            subs_html += f"<tr><td><em>... and {len(subs)-500} more</em></td></tr>"
+
+        # Generate Endpoints HTML
+        endpoints_html = ""
+        for ep in endpoints[:300]:
+            endpoints_html += f"<tr><td>{ep}</td></tr>"
+        if len(endpoints) > 300:
+            endpoints_html += f"<tr><td><em>... and {len(endpoints)-300} more</em></td></tr>"
+
+        # Generate Phases HTML
+        phases_html = ""
+        for p in phases:
+            phases_html += f"""
+                <li>
+                    <span class="dot"></span>
+                    <span class="phase-name">{p.get('name', '')}</span>
+                    <span class="phase-duration">{p.get('duration', '')}</span>
+                    <span class="phase-count">{p.get('result_count', 0)} results</span>
+                </li>"""
+
         html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -383,13 +444,7 @@ class ReportGenerator:
                     </tr>
                 </thead>
                 <tbody>
-                    {"".join(f'''
-                    <tr>
-                        <td><span class="badge {s['severity'].lower()}">{s['severity']}</span></td>
-                        <td>{s['type']}</td>
-                        <td>{s['match'][:60]}</td>
-                        <td>{s['source'].split('/')[-1][:30]}</td>
-                    </tr>''' for s in sorted(secrets, key=lambda x: ['CRITICAL','HIGH','MEDIUM','INFO'].index(x.get('severity','INFO'))))}
+                    {secrets_html}
                 </tbody>
             </table>
         </div>
@@ -415,15 +470,7 @@ class ReportGenerator:
                     </tr>
                 </thead>
                 <tbody>
-                    {"".join(f'''
-                    <tr>
-                        <td><a href="{h.get('url','')}" target="_blank" style="color:var(--accent-blue);text-decoration:none">{h.get('url','')[:55]}</a></td>
-                        <td><span class="status s{str(h.get('status',0))[0]}xx">{h.get('status','')}</span></td>
-                        <td>{(h.get('title','') or '-')[:40]}</td>
-                        <td>{', '.join(h.get('technologies',[])[:3]) or '-'}</td>
-                        <td>{h.get('waf','') or '-'}</td>
-                        <td>{h.get('response_time_ms','')}ms</td>
-                    </tr>''' for h in sorted(hosts, key=lambda x: x.get('status', 999)))}
+                    {hosts_html}
                 </tbody>
             </table>
         </div>
@@ -439,8 +486,7 @@ class ReportGenerator:
             <table id="subs-table">
                 <thead><tr><th>Subdomain</th></tr></thead>
                 <tbody>
-                    {"".join(f'<tr><td>{s}</td></tr>' for s in subs[:500])}
-                    {"<tr><td><em>... and " + str(len(subs)-500) + " more</em></td></tr>" if len(subs) > 500 else ""}
+                    {subs_html}
                 </tbody>
             </table>
         </div>
@@ -457,8 +503,7 @@ class ReportGenerator:
             <table id="ep-table">
                 <thead><tr><th>Endpoint</th></tr></thead>
                 <tbody>
-                    {"".join(f'<tr><td>{ep}</td></tr>' for ep in endpoints[:300])}
-                    {"<tr><td><em>... and " + str(len(endpoints)-300) + " more</em></td></tr>" if len(endpoints) > 300 else ""}
+                    {endpoints_html}
                 </tbody>
             </table>
         </div>
@@ -473,13 +518,7 @@ class ReportGenerator:
         </div>
         <div class="section-body">
             <ul class="timeline">
-                {"".join(f"""
-                <li>
-                    <span class="dot"></span>
-                    <span class="phase-name">{p['name']}</span>
-                    <span class="phase-duration">{p['duration']}</span>
-                    <span class="phase-count">{p['result_count']} results</span>
-                </li>""" for p in phases)}
+                {phases_html}
             </ul>
         </div>
     </div>
