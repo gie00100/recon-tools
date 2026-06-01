@@ -12,11 +12,13 @@ dist/
 build/
 
 # ── Secrets & Credentials ──
-src/.env
-.env
+# Repo is PRIVATE — credentials are committed for easy multi-machine sync
+# If you ever make this repo PUBLIC, uncomment the lines below:
+# src/.env
+# .env
+# vps_config.ini
 *.pem
 *.key
-vps_config.ini
 
 # ── Scan Output (large files, domain-specific) ──
 output/
