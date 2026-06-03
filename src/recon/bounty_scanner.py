@@ -144,20 +144,6 @@ HEURISTICS = {
         ) or '',
     },
 
-    # ── Exposed Dashboards (path-only, no param check needed) ──
-    "Exposed_Dashboards": {
-        "severity": "CRITICAL",
-        "description": "Exposed admin or dev dashboards.",
-        "regex": re.compile(r'(?i)/(?:admin/?$|grafana|kibana|phpmyadmin|wp-admin|jenkins|swagger-ui|actuator/env)'),
-    },
-
-    # ── Juicy Files (path-only) ──
-    "Juicy_Files": {
-        "severity": "HIGH",
-        "description": "Highly sensitive file extensions exposed.",
-        "regex": re.compile(r'(?i)\.(?:env|sql|bak|log|git/config|svn/entries|sqlite|db)$'),
-    },
-
     # ── IDOR with real numeric IDs ──
     "IDOR_Endpoints": {
         "severity": "MEDIUM",
@@ -169,12 +155,9 @@ HEURISTICS = {
         ) or '',
     },
 
-    # ── Open Redirects (must have actual external URL as value) ──
-    "Open_Redirect": {
-        "severity": "MEDIUM",
-        "description": "Redirect parameter with external URL value.",
-        "check": lambda url, params: _check_open_redirect(params),
-    },
+    # NOTE: Removed Open_Redirect — not accepted by most programs anymore
+    # NOTE: Removed Juicy_Files (.env etc) — passive scanner can't verify 200 vs 404
+    # NOTE: Removed Exposed_Dashboards — community/public dashboards are not bugs
 
     # ── Verification/Reset links with tokens ──
     "Verification_Link": {
