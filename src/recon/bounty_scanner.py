@@ -26,7 +26,7 @@ from recon.utils import log_info, log_success, log_warning, banner, elapsed_str,
 
 EMAIL_REGEX = re.compile(r'[\w.+-]+@[\w-]+\.[\w.]+')
 UUID_REGEX = re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.I)
-TOKEN_REGEX = re.compile(r'^[A-Za-z0-9_-]{20,}$')  # JWT-like, API keys, session tokens
+TOKEN_REGEX = re.compile(r'^[A-Za-z0-9_/+=.-]{20,}$')  # JWT, API keys, session tokens, base64 blobs
 NUMERIC_ID_REGEX = re.compile(r'^\d{4,}$')  # Sequential IDs (IDOR candidates)
 
 # Junk values that are NOT real data
@@ -40,7 +40,8 @@ JUNK_VALUES = {
 def _has_real_email(params: dict) -> str:
     """Check if any param contains a real email address."""
     email_params = {'email', 'mail', 'e-mail', 'user_email', 'useremail',
-                    'login', 'username', 'recipient', 'to', 'from', 'sender'}
+                    'login', 'username', 'recipient', 'to', 'from', 'sender',
+                    'login_hint', 'user', 'account', 'upn', 'preferred_username'}
     for key, values in params.items():
         val = unquote(values[0]) if values else ''
         if val.lower() in JUNK_VALUES:
@@ -63,7 +64,11 @@ def _has_real_token(params: dict) -> str:
                     'password', 'passwd', 'pwd', 'pass', 'auth', 'jwt',
                     'bearer', 'authorization', 'code', 'grant', 'oauth_token',
                     'csrf', 'csrf_token', 'xsrf', 'nonce', 'hash',
-                    'signature', 'sig', 'hmac', 'ticket'}
+                    'signature', 'sig', 'hmac', 'ticket',
+                    # SSO / WS-Federation / SAML
+                    'wctx', 'wresult', 'samlresponse', 'samlrequest',
+                    'assertion', 'id_token_hint', 'client-request-id',
+                    'stoken', 'sso_token', 'auth_code'}
     for key, values in params.items():
         val = values[0] if values else ''
         if val.lower() in JUNK_VALUES or len(val) < 8:
@@ -108,6 +113,16 @@ HEURISTICS = {
         "severity": "CRITICAL",
         "description": "Authentication token/secret/password leaked in URL.",
         "check": lambda url, params: _has_real_token(params),
+    },
+
+    # ── Corporate SSO Leak (CRITICAL) ──
+    "SSO_Corp_Leak": {
+        "severity": "CRITICAL",
+        "description": "Corporate SSO/ADFS endpoint leaking employee email and auth context.",
+        "check": lambda url, params: (
+            bool(re.search(r'(?i)(?:sso|adfs|idp|saml|federation|auth\.corp|login\.corp)', url))
+            and (_has_real_email(params) or _has_real_token(params))
+        ) or '',
     },
 
     # ── Unsubscribe with real email (ATO risk) ──
