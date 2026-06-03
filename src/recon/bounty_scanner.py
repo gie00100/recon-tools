@@ -155,10 +155,6 @@ HEURISTICS = {
         ) or '',
     },
 
-    # NOTE: Removed Open_Redirect — not accepted by most programs anymore
-    # NOTE: Removed Juicy_Files (.env etc) — passive scanner can't verify 200 vs 404
-    # NOTE: Removed Exposed_Dashboards — community/public dashboards are not bugs
-
     # ── Verification/Reset links with tokens ──
     "Verification_Link": {
         "severity": "HIGH",
@@ -168,19 +164,96 @@ HEURISTICS = {
             and (_has_real_token(params) or _has_real_email(params))
         ) or '',
     },
+
+    # ── Password Reset UUID in path (ATO) ──
+    "Password_Reset_UUID": {
+        "severity": "CRITICAL",
+        "description": "Password reset link with UUID — allows account takeover if valid.",
+        "check": lambda url, params: (
+            bool(re.search(r'(?i)/(?:reset-password|password-reset|forgot-password)/[a-f0-9-]{30,}', url))
+        ) or '',
+    },
+
+    # ── Internal IP Leaked in URL ──
+    "Internal_IP_Leak": {
+        "severity": "MEDIUM",
+        "description": "Internal/private IP address exposed in URL — info disclosure / SSRF target.",
+        "check": lambda url, params: _check_internal_ip(url),
+    },
+
+    # ── GraphQL Endpoint ──
+    "GraphQL_Endpoint": {
+        "severity": "MEDIUM",
+        "description": "GraphQL endpoint found — test for introspection and query injection.",
+        "check": lambda url, params: (
+            bool(re.search(r'(?i)/graphql\b', url))
+        ) or '',
+    },
+
+    # ── Exposed Source Code / node_modules ──
+    "Exposed_Source_Code": {
+        "severity": "HIGH",
+        "description": "Application source code or dependency tree exposed in URL path.",
+        "check": lambda url, params: _check_exposed_source(url),
+    },
+
+    # ── Auth API Endpoints with sensitive paths ──
+    "Auth_API_Endpoint": {
+        "severity": "HIGH",
+        "description": "Authentication API endpoint — verify-creds, authCallback, check-email.",
+        "check": lambda url, params: (
+            bool(re.search(r'(?i)/(?:api|signin)/v?\d*/(?:verify-creds|auth.*callback|check-email|start-auth|resend)', url))
+        ) or '',
+    },
 }
 
 
-def _check_open_redirect(params: dict) -> str:
-    """Check for open redirect with actual external URL."""
-    redirect_params = {'url', 'return', 'next', 'redirect', 'redirect_uri',
-                       'redirect_url', 'go', 'uri', 'path', 'dest',
-                       'destination', 'returnto', 'continue', 'callback'}
-    for key, values in params.items():
-        val = values[0] if values else ''
-        if key.lower() in redirect_params and val.startswith(('http://', 'https://')):
-            # Must point to a DIFFERENT domain to be an open redirect
-            return f"{key}={val[:60]}"
+def _check_internal_ip(url: str) -> str:
+    """Check for internal/private IP addresses in URL."""
+    decoded = unquote(url)
+
+    # Skip eBay CDN/fdbk metadata URLs — IPs are backend cache server tags, not exploitable
+    if '/fdbk/' in decoded or 'clientId=urn' in decoded or 'ebaystatic.com' in decoded:
+        return ''
+
+    ip_match = re.search(
+        r'(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})',
+        decoded
+    )
+    if ip_match:
+        ip = ip_match.group(0)
+        # Only flag if IP appears in an actual URL/connection context
+        if re.search(r'https?://[^/]*' + re.escape(ip), decoded) or \
+           re.search(r'(?:host|url|addr|ip|server|device|inform).*' + re.escape(ip), decoded, re.I):
+            return ip
+    return ''
+
+
+def _check_exposed_source(url: str) -> str:
+    """Check for exposed source code paths — skip known FP patterns."""
+    lower = url.lower()
+
+    # Skip known false positives
+    # eBay shipping apps where /private/src/ is a legitimate app route
+    if any(x in lower for x in [
+        'ebay-versand.', 'delivery.ebay.', 'envios.ebay.',
+        'expeditions.ebay.', 'community.ui.com/questions/',
+        'ebaystatic.com', 'webpack:',
+    ]):
+        return ''
+
+    # Skip source map references (node_modules in source maps, not actual exposure)
+    if '/node_modules/' in url and any(x in lower for x in [
+        'uisp.com', '.pnpm/', 'react-aria', 'react-stately',
+    ]):
+        return ''
+
+    # Check for actual source code exposure
+    if re.search(r'(?i)/node_modules/', url):
+        return 'node_modules exposed'
+    if re.search(r'(?i)/(?:private/)?src/.*\.(?:tsx?|jsx?|py|rb|go|java|php)\b', url):
+        return 'source code path'
+
     return ''
 
 
