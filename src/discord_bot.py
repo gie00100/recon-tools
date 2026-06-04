@@ -392,25 +392,37 @@ async def run_gateway_bot():
 
     intents = Intents.default()
     intents.message_content = True
+    intents.guilds = True
     client = discord.Client(intents=intents)
 
     @client.event
     async def on_ready():
         print(f"[+] Bot logged in as {client.user}")
+        print(f"[+] Guilds: {[g.name for g in client.guilds]}")
+        for guild in client.guilds:
+            for ch in guild.text_channels:
+                perms = ch.permissions_for(guild.me)
+                can_read = perms.read_messages
+                can_send = perms.send_messages
+                print(f"    #{ch.name}: read={can_read} send={can_send}")
         await send_embed("🤖 Recon Bot Online", "Ready to accept commands! Type `!help` to get started.", 0x00FF00)
 
     @client.event
     async def on_message(message):
-        if message.author == client.user:
+        if message.author == client.user or message.author.bot:
             return
 
         content = message.content.strip()
+        print(f"[MSG] #{message.channel.name} @{message.author}: {content}")
+
         if not content.startswith("!"):
             return
 
         parts = content.split(maxsplit=1)
         command = parts[0].lower()
         arg = parts[1].strip() if len(parts) > 1 else None
+
+        print(f"[CMD] {command} (arg={arg})")
 
         if command in COMMAND_MAP:
             handler = COMMAND_MAP[command]
@@ -422,6 +434,8 @@ async def run_gateway_bot():
                 await handler()
             else:
                 await send_embed("❌ Usage Error", f"Usage: `{command} <argument>`", 0xFF0000)
+        else:
+            print(f"[CMD] Unknown command: {command}")
 
     await client.start(DISCORD_BOT_TOKEN)
 
