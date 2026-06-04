@@ -8,8 +8,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # Load .env from project root
-_PROJECT_ROOT = Path(__file__).parent.parent
+_PROJECT_ROOT = Path(__file__).parent.parent.parent  # src/recon/config.py → src/recon → src → project root
 _ENV_FILE = _PROJECT_ROOT / ".env"
+if not _ENV_FILE.exists():
+    # Fallback: try one level up from src/
+    _ENV_FILE = Path(__file__).parent.parent / ".env"
 if _ENV_FILE.exists():
     load_dotenv(_ENV_FILE)
 
