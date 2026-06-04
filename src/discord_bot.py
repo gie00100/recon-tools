@@ -122,7 +122,7 @@ async def cmd_recon(domain):
 
 async def cmd_status():
     """Show full pipeline status: completed, running, pending domains."""
-    targets_file = RECON_DIR / "targets" / "wix_ebay_targets.txt"
+    targets_file = RECON_DIR / "targets" / "targets.txt"
 
     # 1. Read target list
     targets = []
@@ -137,9 +137,7 @@ async def cmd_status():
     if OUTPUT_DIR.exists():
         for item in OUTPUT_DIR.iterdir():
             if item.is_dir():
-                # Strip timestamp suffix: ebay.com_20260601_155104 → ebay.com
                 name = item.name
-                # Find the pattern _YYYYMMDD_ and strip from there
                 import re
                 m = re.match(r'^(.+?)_\d{8}_\d{6}$', name)
                 if m:
@@ -147,8 +145,8 @@ async def cmd_status():
                 else:
                     completed.add(name)
 
-    # 3. Get currently running domain
-    running_domain = None
+    # 3. Get ALL currently running domains from recon_master processes
+    running_domains = set()
     try:
         process = await asyncio.create_subprocess_exec(
             "pgrep", "-af", "recon_master",
@@ -159,9 +157,28 @@ async def cmd_status():
         output = stdout.decode(errors="ignore").strip()
         if output:
             import re as _re
-            match = _re.search(r'-d\s+(\S+)', output)
-            if match:
-                running_domain = match.group(1)
+            for line in output.splitlines():
+                match = _re.search(r'-d\s+(\S+)', line)
+                if match:
+                    running_domains.add(match.group(1))
+    except Exception:
+        pass
+
+    # Also check screen sessions for running scans
+    try:
+        process = await asyncio.create_subprocess_exec(
+            "screen", "-ls",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        stdout, _ = await process.communicate()
+        output = stdout.decode(errors="ignore").strip()
+        import re as _re2
+        for match in _re2.finditer(r'recon_(\S+)', output):
+            screen_domain = match.group(1).replace('_', '.')
+            # Only add if it looks like a domain
+            if '.' in screen_domain or screen_domain in [t.replace('.', '') for t in targets]:
+                running_domains.add(screen_domain)
     except Exception:
         pass
 
@@ -171,10 +188,9 @@ async def cmd_status():
     pending_list = []
 
     for domain in targets:
-        if running_domain and domain == running_domain:
+        if domain in running_domains:
             running_list.append(domain)
         elif domain in completed:
-            # Check for state file (full completion)
             state_file = OUTPUT_DIR / f"{domain}_state.json"
             if state_file.exists():
                 done_list.append(f"✅ `{domain}`")
@@ -183,9 +199,10 @@ async def cmd_status():
         else:
             pending_list.append(f"⏳ `{domain}`")
 
-    # 5. Find extra scans not in target list
+    # 5. Find extra scans not in target list (running or completed)
     target_set = set(targets)
-    extra_list = [f"➕ `{d}`" for d in sorted(completed) if d not in target_set]
+    extra_running = [d for d in sorted(running_domains) if d not in target_set]
+    extra_completed = [d for d in sorted(completed) if d not in target_set and d not in running_domains]
 
     # 6. Disk usage
     disk_info = ""
@@ -220,23 +237,25 @@ async def cmd_status():
     fields = []
 
     if done_list:
-        # Split into chunks of 20 to avoid Discord field length limit
         done_text = "\n".join(done_list)
         fields.append({"name": f"✅ Completed ({len(done_list)})", "value": done_text[:1024], "inline": False})
 
-    if running_list:
-        fields.append({"name": "🔄 Running", "value": "\n".join(f"🔄 `{d}`" for d in running_list), "inline": False})
+    if running_list or extra_running:
+        all_running = [f"🔄 `{d}`" for d in running_list] + [f"🔄 `{d}` *(extra)*" for d in extra_running]
+        fields.append({"name": f"🔄 Running ({len(all_running)})", "value": "\n".join(all_running)[:1024], "inline": False})
 
     if pending_list:
         fields.append({"name": f"⏳ Pending ({len(pending_list)})", "value": "\n".join(pending_list)[:1024], "inline": False})
 
-    if extra_list:
-        fields.append({"name": f"➕ Extra Scans ({len(extra_list)})", "value": "\n".join(extra_list)[:1024], "inline": False})
+    if extra_completed:
+        extra_text = "\n".join(f"➕ `{d}`" for d in extra_completed)
+        fields.append({"name": f"➕ Extra Completed ({len(extra_completed)})", "value": extra_text[:1024], "inline": False})
 
+    total_running = len(running_list) + len(extra_running)
     summary = (
         f"**Total Targets:** {len(targets)}\n"
         f"**Completed:** {len(done_list)}\n"
-        f"**Running:** {len(running_list)}\n"
+        f"**Running:** {total_running}\n"
         f"**Pending:** {len(pending_list)}\n"
     )
     if disk_info:
