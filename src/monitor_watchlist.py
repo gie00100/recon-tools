@@ -14,7 +14,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from recon.config import Config
-from recon.waymore_extractor import WaymoreExtractor
 from recon.vt_url_scraper import VTUrlScraper
 from recon.bounty_scanner import BountyScanner
 from recon.utils import log_info, log_success, log_warning, send_discord_alert
@@ -86,14 +85,31 @@ async def process_domain(domain):
     """Fetch new URLs for a domain and run bounty scan."""
     log_info(f"Monitoring: {domain}")
     
-    # 1. Fetch URLs from Waymore and VT
-    vt_scraper = VTUrlScraper(domain)
-    vt_urls = await vt_scraper.scrape()
-    
-    waymore = WaymoreExtractor(domain)
-    waymore_urls = await waymore.extract()
-    
-    all_fetched = set(vt_urls) | set(waymore_urls)
+        # 1. Fetch URLs from VT and Waymore
+        vt_scraper = VTUrlScraper(domain)
+        vt_urls = await vt_scraper.scrape()
+        
+        waymore_urls = set()
+        waymore_linux = Config.PROJECT_ROOT.parent / "venv" / "bin" / "waymore"
+        waymore_windows = Config.PROJECT_ROOT.parent / "venv" / "Scripts" / "waymore.exe"
+        waymore_bin = waymore_linux if waymore_linux.exists() else waymore_windows
+        
+        if waymore_bin.exists():
+            log_info(f"[{domain}] Running Waymore...")
+            import subprocess
+            out_file = OUTPUT_DIR / f"{domain}_waymore.txt"
+            cmd = [str(waymore_bin), "-i", domain, "-mode", "U", "-oU", str(out_file)]
+            try:
+                # Run waymore synchronously but in a thread to not block asyncio
+                await asyncio.to_thread(subprocess.run, cmd, timeout=3600, capture_output=True)
+                if out_file.exists():
+                    with open(out_file, 'r', encoding='utf-8') as f:
+                        waymore_urls = set(line.strip() for line in f if line.strip())
+                    out_file.unlink()  # Clean up
+            except Exception as e:
+                log_warning(f"Waymore error for {domain}: {e}")
+        
+        all_fetched = set(vt_urls) | waymore_urls
     
     # 2. Filter out already seen URLs
     seen_urls = load_seen_urls(domain)
