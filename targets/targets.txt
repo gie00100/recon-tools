@@ -5,3 +5,29 @@ whatnot.com
 api.whatnot.com
 auction-service.whatnot.com
 www.whatnot.com
+
+# === Twilio (HackerOne) ===
+# Program: https://hackerone.com/twilio
+# Scope: Twilio + SendGrid + Segment + Authy
+twilio.com
+api.twilio.com
+www.twilio.com
+console.twilio.com
+help.twilio.com
+sendgrid.com
+app.sendgrid.com
+api.sendgrid.com
+signup.sendgrid.com
+mc.sendgrid.com
+segment.com
+app.segment.com
+
+# === Anduril Industries (HackerOne) ===
+# Program: https://hackerone.com/anduril_industries
+# Scope: *.anduril.com, *.anduril.dev, *.andurildev.com, *.anduril.au
+anduril.com
+anduril.dev
+andurildev.com
+anduril.com.au
+anduril.au
+andurildev.au
