@@ -409,7 +409,7 @@ async def run_gateway_bot():
 
     @client.event
     async def on_message(message):
-        if message.author == client.user or message.author.bot:
+        if message.author == client.user or message.author.bot or message.webhook_id:
             return
 
         content = message.content.strip()
