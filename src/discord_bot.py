@@ -435,13 +435,26 @@ async def run_gateway_bot():
                 print(f"    #{ch.name}: read={can_read} send={can_send}")
         await send_embed("🤖 Recon Bot Online", "Ready to accept commands! Type `!help` to get started.", 0x00FF00)
 
+    # Track processed message IDs to prevent duplicate responses
+    _processed_msgs = set()
+
     @client.event
     async def on_message(message):
+        # Skip bots, self, webhooks
         if message.author == client.user or message.author.bot or message.webhook_id:
             return
 
+        # Deduplicate — skip if already processed this message
+        if message.id in _processed_msgs:
+            print(f"[DUP] Skipping duplicate message {message.id}")
+            return
+        _processed_msgs.add(message.id)
+        # Keep set small — only track last 100
+        if len(_processed_msgs) > 100:
+            _processed_msgs.clear()
+
         content = message.content.strip()
-        print(f"[MSG] #{message.channel.name} @{message.author}: {content}")
+        print(f"[MSG] #{message.channel.name} @{message.author}: {content} (id={message.id})")
 
         if not content.startswith("!"):
             return
@@ -453,6 +466,7 @@ async def run_gateway_bot():
         print(f"[CMD] {command} (arg={arg})")
 
         if command in COMMAND_MAP:
+            global _reply_channel
             _reply_channel = message.channel
             handler = COMMAND_MAP[command]
             try:
