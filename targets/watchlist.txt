@@ -1,0 +1,7 @@
+# === Watchlist ===
+# Domains with confirmed juicy findings get added here automatically.
+# These domains run 24/7 continuous recon for new URLs.
+# Format: domain | finding_type | date_added | reason
+#
+# Example:
+# sso.corp.ebay.com | SSO_Corp_Leak | 2026-06-03 | Employee emails in login_hint

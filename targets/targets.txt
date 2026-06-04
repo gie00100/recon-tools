@@ -1,18 +1,7 @@
-account.ui.com
-apigw.prod.quintoandar.com.br
-careers.ui.com
-community.ui.com
-design.ui.com
-finance.quintoandar.com.br
-fw-update.ubnt.com
-ispdesign.ui.com
-marketplace.atlassian.com
-quizlet.com
-rma.ui.com
-store.ui.com
-trato-feito-api.quintoandar.com.br
-uisp.com
-unifi.ui.com
-www.financeiro.quintoandar.com.br
-www.quintoandar.com.br
-www.user.quintoandar.com.br
+# === Whatnot (HackerOne) ===
+# Program: https://hackerone.com/whatnot
+# Scope: *.whatnot.com
+whatnot.com
+api.whatnot.com
+auction-service.whatnot.com
+www.whatnot.com
