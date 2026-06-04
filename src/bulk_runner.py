@@ -115,32 +115,48 @@ def run_recon(domain):
 
 
 async def main():
-    targets = get_targets()
-    if not targets:
+    import argparse
+    parser = argparse.ArgumentParser(description="Bulk Recon Runner")
+    parser.add_argument("--filter", type=str, default=None,
+                        help="Only process targets containing this string (e.g. 'whatnot', 'twilio', 'anduril')")
+    parser.add_argument("--worker", type=str, default="",
+                        help="Worker name for Discord notifications")
+    args = parser.parse_args()
+
+    all_targets = get_targets()
+    if not all_targets:
         print("[!] No targets found in targets.txt")
         return
+
+    # Filter targets if --filter is specified
+    if args.filter:
+        targets = [t for t in all_targets if args.filter.lower() in t.lower()]
+        worker_name = args.worker or args.filter
+    else:
+        targets = all_targets
+        worker_name = args.worker or "all"
 
     completed = get_completed()
     pending = [t for t in targets if t not in completed]
 
-    print(f"\n📋 Bulk Recon Runner")
+    print(f"\n📋 Bulk Recon Runner [{worker_name}]")
     print(f"   Total targets: {len(targets)}")
-    print(f"   Already done:  {len(completed)}")
+    print(f"   Already done:  {len(completed & set(targets))}")
     print(f"   Pending:       {len(pending)}")
     print()
 
     if not pending:
         print("[✅] All targets already completed!")
         await send_discord(
-            "✅ All Targets Completed",
+            f"✅ Worker [{worker_name}] — All Done",
             f"All {len(targets)} targets have been scanned.",
             0x00FF00
         )
         return
 
     await send_discord(
-        "🚀 Bulk Recon Started",
-        f"Processing {len(pending)} targets sequentially.\n"
+        f"🚀 Worker [{worker_name}] Started",
+        f"Processing {len(pending)} targets.\n"
         f"Targets: {', '.join(pending[:10])}{'...' if len(pending) > 10 else ''}",
         0x3498DB
     )
@@ -152,9 +168,9 @@ async def main():
         print(f"\n[{i}/{len(pending)}] Processing: {domain}")
 
         await send_discord(
-            f"🔄 Scanning [{i}/{len(pending)}]",
+            f"🔄 [{worker_name}] Scanning [{i}/{len(pending)}]",
             f"**Target:** `{domain}`\n"
-            f"**Progress:** {i}/{len(pending)} ({len(results['success'])} done, {len(results['failed'])} failed)",
+            f"**Progress:** {len(results['success'])} done, {len(results['failed'])} failed",
             0xF39C12
         )
 
@@ -164,7 +180,7 @@ async def main():
             results["success"].append(domain)
             cleanup_large_files(domain)
             await send_discord(
-                f"✅ Completed [{i}/{len(pending)}]",
+                f"✅ [{worker_name}] Completed [{i}/{len(pending)}]",
                 f"**Target:** `{domain}`\n"
                 f"**Progress:** {len(results['success'])}/{len(pending)} completed",
                 0x2ECC71
@@ -172,7 +188,7 @@ async def main():
         else:
             results["failed"].append(domain)
             await send_discord(
-                f"❌ Failed [{i}/{len(pending)}]",
+                f"❌ [{worker_name}] Failed [{i}/{len(pending)}]",
                 f"**Target:** `{domain}`\n"
                 f"Moving to next target...",
                 0xE74C3C
@@ -180,8 +196,8 @@ async def main():
 
     total_elapsed = int((time.time() - total_start) / 60)
 
-    # Final summary
     summary = (
+        f"**Worker:** {worker_name}\n"
         f"**Total Time:** {total_elapsed}m\n"
         f"**Successful:** {len(results['success'])}\n"
         f"**Failed:** {len(results['failed'])}\n\n"
@@ -191,7 +207,7 @@ async def main():
     if results['failed']:
         summary += f"❌ {', '.join(results['failed'][:20])}\n"
 
-    await send_discord("🏁 Bulk Recon Complete", summary, 0x9B59B6)
+    await send_discord(f"🏁 Worker [{worker_name}] Complete", summary, 0x9B59B6)
     print(f"\n🏁 All done! {len(results['success'])} succeeded, {len(results['failed'])} failed in {total_elapsed}m")
 
 
