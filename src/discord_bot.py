@@ -32,24 +32,52 @@ RECON_DIR = Path(__file__).parent.parent
 OUTPUT_DIR = RECON_DIR / "output"
 POLL_INTERVAL = 2  # seconds
 
+# When set, send_embed replies directly in this Discord channel
+_reply_channel = None
+
 
 # ── Webhook Helpers ──────────────────────────────────────────
 
 async def send_embed(title, description, color=0x00FF00, fields=None):
-    """Send a rich embed to the Discord webhook."""
+    """Send a rich embed — replies in channel if Gateway mode, else webhook."""
+    global _reply_channel
+    import discord as _discord
+
+    embed_obj = _discord.Embed(
+        title=title,
+        description=description[:4000],
+        color=color,
+        timestamp=datetime.now(timezone.utc),
+    )
+    if fields:
+        for f in fields[:25]:
+            embed_obj.add_field(
+                name=f.get("name", ""),
+                value=f.get("value", ""),
+                inline=f.get("inline", False),
+            )
+
+    # Gateway mode: reply directly in the channel
+    if _reply_channel is not None:
+        try:
+            await _reply_channel.send(embed=embed_obj)
+            return
+        except Exception as e:
+            print(f"[!] Channel send failed: {e}, falling back to webhook")
+
+    # Fallback: send via webhook
     if not WEBHOOK_URL:
         return
-    embed = {
+    embed_dict = {
         "title": title,
         "description": description[:4000],
         "color": color,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
     if fields:
-        embed["fields"] = fields[:25]  # Discord max 25 fields
-    payload = {"embeds": [embed]}
+        embed_dict["fields"] = fields[:25]
     async with aiohttp.ClientSession() as session:
-        await session.post(WEBHOOK_URL, json=payload)
+        await session.post(WEBHOOK_URL, json={"embeds": [embed_dict]})
 
 
 async def send_message(content):
@@ -425,15 +453,19 @@ async def run_gateway_bot():
         print(f"[CMD] {command} (arg={arg})")
 
         if command in COMMAND_MAP:
+            _reply_channel = message.channel
             handler = COMMAND_MAP[command]
-            if arg and command in ("!recon", "!results"):
-                await handler(arg)
-            elif command in ("!status", "!stop", "!help"):
-                await handler()
-            elif command == "!results" and not arg:
-                await handler()
-            else:
-                await send_embed("❌ Usage Error", f"Usage: `{command} <argument>`", 0xFF0000)
+            try:
+                if arg and command in ("!recon", "!results"):
+                    await handler(arg)
+                elif command in ("!status", "!stop", "!help"):
+                    await handler()
+                elif command == "!results" and not arg:
+                    await handler()
+                else:
+                    await send_embed("❌ Usage Error", f"Usage: `{command} <argument>`", 0xFF0000)
+            finally:
+                _reply_channel = None
         else:
             print(f"[CMD] Unknown command: {command}")
 
