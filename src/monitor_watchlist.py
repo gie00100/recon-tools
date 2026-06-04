@@ -85,31 +85,31 @@ async def process_domain(domain):
     """Fetch new URLs for a domain and run bounty scan."""
     log_info(f"Monitoring: {domain}")
     
-        # 1. Fetch URLs from VT and Waymore
-        vt_scraper = VTUrlScraper(domain)
-        vt_urls = await vt_scraper.scrape()
-        
-        waymore_urls = set()
-        waymore_linux = Config.PROJECT_ROOT.parent / "venv" / "bin" / "waymore"
-        waymore_windows = Config.PROJECT_ROOT.parent / "venv" / "Scripts" / "waymore.exe"
-        waymore_bin = waymore_linux if waymore_linux.exists() else waymore_windows
-        
-        if waymore_bin.exists():
-            log_info(f"[{domain}] Running Waymore...")
-            import subprocess
-            out_file = OUTPUT_DIR / f"{domain}_waymore.txt"
-            cmd = [str(waymore_bin), "-i", domain, "-mode", "U", "-oU", str(out_file)]
-            try:
-                # Run waymore synchronously but in a thread to not block asyncio
-                await asyncio.to_thread(subprocess.run, cmd, timeout=3600, capture_output=True)
-                if out_file.exists():
-                    with open(out_file, 'r', encoding='utf-8') as f:
-                        waymore_urls = set(line.strip() for line in f if line.strip())
-                    out_file.unlink()  # Clean up
-            except Exception as e:
-                log_warning(f"Waymore error for {domain}: {e}")
-        
-        all_fetched = set(vt_urls) | waymore_urls
+    # 1. Fetch URLs from VT and Waymore
+    vt_scraper = VTUrlScraper(domain)
+    vt_urls = await vt_scraper.scrape()
+    
+    waymore_urls = set()
+    waymore_linux = Config.PROJECT_ROOT.parent / "venv" / "bin" / "waymore"
+    waymore_windows = Config.PROJECT_ROOT.parent / "venv" / "Scripts" / "waymore.exe"
+    waymore_bin = waymore_linux if waymore_linux.exists() else waymore_windows
+    
+    if waymore_bin.exists():
+        log_info(f"[{domain}] Running Waymore...")
+        import subprocess
+        out_file = OUTPUT_DIR / f"{domain}_waymore.txt"
+        cmd = [str(waymore_bin), "-i", domain, "-mode", "U", "-oU", str(out_file)]
+        try:
+            # Run waymore synchronously but in a thread to not block asyncio
+            await asyncio.to_thread(subprocess.run, cmd, timeout=3600, capture_output=True)
+            if out_file.exists():
+                with open(out_file, 'r', encoding='utf-8') as f:
+                    waymore_urls = set(line.strip() for line in f if line.strip())
+                out_file.unlink()  # Clean up
+        except Exception as e:
+            log_warning(f"Waymore error for {domain}: {e}")
+    
+    all_fetched = set(vt_urls) | waymore_urls
     
     # 2. Filter out already seen URLs
     seen_urls = load_seen_urls(domain)
