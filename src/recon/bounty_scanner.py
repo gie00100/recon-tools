@@ -233,6 +233,10 @@ def _check_exposed_source(url: str) -> str:
     """Check for exposed source code paths — skip known FP patterns."""
     lower = url.lower()
 
+    # Skip source maps (user requested to ignore these as low impact)
+    if lower.endswith('.map') or '.map?' in lower or '.js.map' in lower:
+        return ''
+
     # Skip known false positives
     # eBay shipping apps where /private/src/ is a legitimate app route
     if any(x in lower for x in [

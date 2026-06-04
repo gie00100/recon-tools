@@ -115,6 +115,39 @@ class ReconMaster:
         if webhook:
             await send_discord_alert(webhook, title, desc, color)
 
+    def _add_to_watchlist(self, url: str, finding_type: str, reason: str):
+        """Add a domain to the continuous monitoring watchlist."""
+        try:
+            from urllib.parse import urlparse
+            import datetime
+            
+            parsed = urlparse(url)
+            domain = parsed.hostname
+            if not domain:
+                domain = url.split('/')[0]
+                
+            watchlist_path = Path(__file__).parent.parent / "targets" / "watchlist.txt"
+            
+            # Read existing to avoid duplicates
+            existing_domains = set()
+            if watchlist_path.exists():
+                with open(watchlist_path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        if not line.strip() or line.strip().startswith('#'):
+                            continue
+                        parts = [p.strip() for p in line.split('|')]
+                        if parts:
+                            existing_domains.add(parts[0])
+            
+            if domain not in existing_domains:
+                date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+                entry = f"{domain} | {finding_type} | {date_str} | {reason}\n"
+                with open(watchlist_path, 'a', encoding='utf-8') as f:
+                    f.write(entry)
+                log_success(f"Added {domain} to 24/7 Watchlist (Reason: {finding_type})")
+        except Exception as e:
+            log_warning(f"Failed to add to watchlist: {e}")
+
     async def _phase_subdomain_enum(self):
         """Phase 1: Subdomain Enumeration."""
         if not self._should_run("subdomain"):
@@ -290,6 +323,15 @@ class ReconMaster:
 
         generator = BackupGenerator(urls=urls, active=self.active)
         self.backup_wordlist = await generator.generate()
+
+        if self.active and self.backup_wordlist:
+            for url in self.backup_wordlist:
+                self._add_to_watchlist(url, "Live_Backup", "Found live backup file")
+                await self._send_alert(
+                    f"🚨 LIVE BACKUP FOUND — {self.domain}",
+                    f"**Backup File:**\n```\n{url}\n```\nAdded to 24/7 Watchlist.",
+                    16744448  # Orange
+                )
 
         # Save results
         output_file = self.output_dir / "backup_wordlist.txt"
@@ -645,6 +687,7 @@ class ReconMaster:
             verified_findings.append(finding)
             
             if sev in severity_colors:
+                self._add_to_watchlist(url, finding['type'], f"Bounty Scan: {sev} finding")
                 emoji = "🚨" if sev == "CRITICAL" else "🎯"
                 await self._send_alert(
                     f"{emoji} {sev}: {finding['type']} — {self.domain}",
