@@ -151,31 +151,6 @@ class SubdomainEnumerator:
         except Exception as e:
             log_error(f"[{source}] Error: {e}")
 
-    async def _enum_urlscan(self):
-        """Query URLScan.io search API."""
-        source = "URLScan"
-        try:
-            await self.rate_limiter.acquire()
-            session = await self._get_session()
-            url = Config.URLSCAN_URL.format(domain=self.domain)
-            async with session.get(url) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    subs = set()
-                    for result in data.get("results", []):
-                        task = result.get("task", {})
-                        dom = task.get("domain", "")
-                        if dom:
-                            subs.add(dom)
-                        page = result.get("page", {})
-                        dom2 = page.get("domain", "")
-                        if dom2:
-                            subs.add(dom2)
-                    self._add_subdomains(subs, source)
-                else:
-                    log_warning(f"[{source}] HTTP {resp.status}")
-        except Exception as e:
-            log_error(f"[{source}] Error: {e}")
 
     async def _enum_rapiddns(self):
         """Scrape RapidDNS for subdomains."""
@@ -410,7 +385,6 @@ class SubdomainEnumerator:
         passive_tasks = [
             self._enum_crtsh(),
             self._enum_hackertarget(),
-            self._enum_urlscan(),
             self._enum_rapiddns(),
             self._enum_certspotter(),
         ]
