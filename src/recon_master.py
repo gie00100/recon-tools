@@ -673,14 +673,14 @@ class ReconMaster:
             sev = finding["severity"]
             url = finding["url"]
             
-            # Check if this is a file or endpoint where false positives commonly occur
-            is_juicy_file = finding["type"] in ("Juicy_Files", "Exposed_Dashboards")
+            # Active verification for file/config findings to eliminate SPA routing FPs
+            needs_active_verify = finding["type"] in ("Exposed_Config_File", "Debug_Admin_Panel")
             
-            if is_juicy_file:
+            if needs_active_verify:
                 async with semaphore:
                     is_real = await self._verify_juicy_file(url)
                 if not is_real:
-                    log_warning(f"Discarded false positive juicy target: {url}")
+                    log_warning(f"Discarded false positive: {url}")
                     return
             
             # Record verified findings

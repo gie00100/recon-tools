@@ -1,11 +1,25 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics)
+Module: Bounty Scanner (URL Heuristics) — v2.0
 Passively analyzes massive URL collections for high-value bug bounty endpoints.
 
-STRATEGY: Only flag URLs that contain ACTUAL leaked data in parameters,
-not just parameter names. A URL with `email=` (empty) is worthless.
-A URL with `email=john%40example.com` is a real PII leak.
+PHILOSOPHY (from a decade of bounty hunting):
+  - Only flag things that have REAL security impact and are ACCEPTED by programs
+  - A URL with node_modules on a CDN/SPA is NOT a finding — it's noise
+  - Open redirects are dead — programs don't accept them anymore
+  - Source maps are informational at best — not worth reporting
+  - Focus on: leaked tokens, leaked PII, exposed admin panels, IDOR patterns,
+    password reset takeover, and real credential exposure
+  - Every finding should be something you'd ACTUALLY submit as a bounty report
+
+NOISE KILLED IN v2.0:
+  - node_modules on CDNs (CloudFront, S3, Akamai, etc.) — that's how JS is served
+  - node_modules on SPA domains — React/Vue/Angular serve index.html for all paths
+  - GraphQL endpoints without introspection evidence — every modern app has /graphql
+  - Source maps (.map files) — low/no security impact
+  - Auth API endpoints without actual leaked data — just endpoint discovery, not a vuln
+  - 8080/8443 ports behind Cloudflare — standard CF behavior, returns 403
+  - Internal IPs in tracking pixels / analytics params — not exploitable
 """
 
 import argparse
@@ -27,6 +41,7 @@ from recon.utils import log_info, log_success, log_warning, banner, elapsed_str,
 EMAIL_REGEX = re.compile(r'[\w.+-]+@[\w-]+\.[\w.]+')
 UUID_REGEX = re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.I)
 TOKEN_REGEX = re.compile(r'^[A-Za-z0-9_/+=.-]{20,}$')  # JWT, API keys, session tokens, base64 blobs
+JWT_REGEX = re.compile(r'^eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$')  # Actual JWT
 NUMERIC_ID_REGEX = re.compile(r'^\d{4,}$')  # Sequential IDs (IDOR candidates)
 
 # Junk values that are NOT real data
@@ -34,7 +49,36 @@ JUNK_VALUES = {
     '', 'true', 'false', 'null', 'none', 'undefined', 'test', 'example',
     '{token}', '{{token}}', '{email}', '{{email}}', '{id}', '{{id}}',
     'placeholder', 'default', '0', '1', 'en', 'us', 'gb',
+    'asc', 'desc', 'all', 'active', 'inactive', 'pending',
 }
+
+# ── CDN / Static Asset Domains (always noise) ────────────────
+CDN_PATTERNS = [
+    'cloudfront.net', 'cdn.', 'static.', 'assets.', 'media.',
+    'akamaized.net', 'fastly.net', 'azureedge.net', 'cloudflare.com',
+    's3.amazonaws.com', 'googleapis.com/storage', 'gstatic.com',
+    'unpkg.com', 'jsdelivr.net', 'cdnjs.cloudflare.com',
+    'ebaystatic.com', 'ebayimg.com',
+]
+
+# ── Third-party domains (not in scope, always noise) ─────────
+THIRD_PARTY_DOMAINS = [
+    'google.com', 'googletagmanager.com', 'googleapis.com', 'gstatic.com',
+    'facebook.com', 'fbcdn.net', 'twitter.com', 'linkedin.com',
+    'doubleclick.net', 'googlesyndication.com', 'googleadservices.com',
+    'trustarc.com', 'onetrust.com', 'cookielaw.org',
+    'newrelic.com', 'nr-data.net', 'sentry.io', 'bugsnag.com',
+    'segment.io', 'mixpanel.com', 'amplitude.com', 'heap.io',
+    'intercom.io', 'zendesk.com', 'freshdesk.com',
+    'stripe.com', 'braintreegateway.com', 'paypal.com',
+    'recaptcha.net', 'hcaptcha.com',
+    'bigmarker.com', 'corp.google.com',
+]
+
+def _is_noise_domain(url: str) -> bool:
+    """Check if URL belongs to a CDN, third-party, or otherwise noisy domain."""
+    lower = url.lower()
+    return any(p in lower for p in CDN_PATTERNS + THIRD_PARTY_DOMAINS)
 
 
 def _has_real_email(params: dict) -> str:
@@ -46,12 +90,17 @@ def _has_real_email(params: dict) -> str:
         val = unquote(values[0]) if values else ''
         if val.lower() in JUNK_VALUES:
             continue
-        # Check param name is email-related AND value looks like an email
         if key.lower() in email_params and EMAIL_REGEX.search(val):
             return val
-        # Or any param value containing an email
         if '@' in val and EMAIL_REGEX.search(val):
-            return val
+            # Skip tracking emails (noreply, notifications, etc.)
+            email_match = EMAIL_REGEX.search(val)
+            if email_match:
+                email = email_match.group(0).lower()
+                if any(x in email for x in ['noreply', 'no-reply', 'notifications', 'mailer-daemon',
+                                             'postmaster', 'donotreply', 'bounce', 'unsubscribe']):
+                    continue
+                return val
     return ''
 
 
@@ -59,21 +108,35 @@ def _has_real_token(params: dict) -> str:
     """Check if any param contains a real token/secret/password value."""
     token_params = {'token', 'access_token', 'refresh_token', 'id_token',
                     'auth_token', 'reset_token', 'verification_token',
-                    'api_key', 'apikey', 'key', 'secret', 'client_secret',
-                    'session', 'session_id', 'sessionid', 'sid', 'jsessionid',
-                    'password', 'passwd', 'pwd', 'pass', 'auth', 'jwt',
-                    'bearer', 'authorization', 'code', 'grant', 'oauth_token',
-                    'csrf', 'csrf_token', 'xsrf', 'nonce', 'hash',
-                    'signature', 'sig', 'hmac', 'ticket',
-                    # SSO / WS-Federation / SAML
-                    'wctx', 'wresult', 'samlresponse', 'samlrequest',
-                    'assertion', 'id_token_hint', 'client-request-id',
-                    'stoken', 'sso_token', 'auth_code'}
+                    'api_key', 'apikey', 'secret', 'client_secret',
+                    'session_id', 'sessionid', 'jsessionid',
+                    'password', 'passwd', 'pwd', 'jwt',
+                    'bearer', 'authorization', 'oauth_token',
+                    'csrf_token', 'xsrf',
+                    'samlresponse', 'samlrequest',
+                    'assertion', 'stoken', 'sso_token', 'auth_code'}
+    
+    # Params that look like tokens but are actually analytics junk
+    analytics_junk_params = {
+        '_gl', '_ga', '_gid', 'utm_source', 'utm_medium', 'utm_campaign',
+        'utm_content', 'utm_term', 'utm_referrer', 'fbclid', 'gclid',
+        'mc_cid', 'mc_eid', 'ext-anonymousid', 'ext-gaclientid',
+        'ext-gasessionid', '_gcl_au', '_gcl_aw', 'site',
+    }
+    
     for key, values in params.items():
         val = values[0] if values else ''
+        key_lower = key.lower()
+        
         if val.lower() in JUNK_VALUES or len(val) < 8:
             continue
-        if key.lower() in token_params and TOKEN_REGEX.match(val):
+        if key_lower in analytics_junk_params:
+            continue
+            
+        if key_lower in token_params and TOKEN_REGEX.match(val):
+            # Bonus: check for actual JWT
+            if JWT_REGEX.match(val):
+                return f"JWT: {key}={val[:40]}..."
             return f"{key}={val[:30]}..."
     return ''
 
@@ -81,15 +144,14 @@ def _has_real_token(params: dict) -> str:
 def _has_real_pii(params: dict) -> str:
     """Check if any param contains real PII (SSN, phone, etc.)."""
     pii_params = {'ssn', 'dob', 'date_of_birth', 'passport', 'phone',
-                  'mobile', 'address', 'credit_card', 'card_number',
-                  'account_number', 'routing_number', 'cvv', 'zip',
+                  'mobile', 'credit_card', 'card_number',
+                  'account_number', 'routing_number', 'cvv',
                   'social_security'}
     for key, values in params.items():
         val = values[0] if values else ''
         if val.lower() in JUNK_VALUES or len(val) < 3:
             continue
         if key.lower() in pii_params:
-            # Must have a meaningful value (not just a param name)
             if len(val) >= 5 and not val.isalpha():
                 return f"{key}={val[:20]}"
     return ''
@@ -101,17 +163,17 @@ HEURISTICS = {
     # ── PII Leaks — ONLY flag if actual email/PII data present ──
     "PII_Email_Leak": {
         "severity": "HIGH",
-        "description": "Real email address leaked in URL parameters.",
+        "description": "Real email address leaked in URL parameters — privacy violation, potential ATO vector.",
         "check": lambda url, params: _has_real_email(params),
     },
     "PII_Data_Leak": {
         "severity": "HIGH",
-        "description": "Sensitive PII (SSN, phone, DOB) leaked in URL.",
+        "description": "Sensitive PII (SSN, phone, DOB, card number) leaked in URL.",
         "check": lambda url, params: _has_real_pii(params),
     },
     "Token_Leak": {
         "severity": "CRITICAL",
-        "description": "Authentication token/secret/password leaked in URL.",
+        "description": "Authentication token/secret/password leaked in URL — session hijack risk.",
         "check": lambda url, params: _has_real_token(params),
     },
 
@@ -128,7 +190,7 @@ HEURISTICS = {
     # ── Unsubscribe with real email (ATO risk) ──
     "Unsubscribe_ATO": {
         "severity": "HIGH",
-        "description": "Unsubscribe endpoint with real email — potential ATO.",
+        "description": "Unsubscribe endpoint with real email — potential account manipulation.",
         "check": lambda url, params: (
             '/unsubscribe' in url.lower() and _has_real_email(params)
         ) or '',
@@ -137,7 +199,7 @@ HEURISTICS = {
     # ── Order/Invoice with email (data leak) ──
     "Order_Data_Leak": {
         "severity": "HIGH",
-        "description": "Order/invoice/receipt endpoint with PII in URL.",
+        "description": "Order/invoice/receipt endpoint with PII in URL — data exposure.",
         "check": lambda url, params: (
             bool(re.search(r'(?i)/(?:order|invoice|receipt|payment|checkout)', url))
             and (_has_real_email(params) or _has_real_token(params))
@@ -147,7 +209,7 @@ HEURISTICS = {
     # ── IDOR with real numeric IDs ──
     "IDOR_Endpoints": {
         "severity": "MEDIUM",
-        "description": "API endpoint with sequential/predictable user IDs.",
+        "description": "API endpoint with sequential/predictable user IDs — test for IDOR.",
         "check": lambda url, params: (
             bool(re.search(r'(?i)/api/v\d+/users/\d{4,}', url))
             or (bool(re.search(r'(?i)/(?:invoice|receipt|order)s?/[a-f0-9-]{20,}', url))
@@ -155,65 +217,59 @@ HEURISTICS = {
         ) or '',
     },
 
+    # ── Password Reset UUID in path (ATO) ──
+    "Password_Reset_UUID": {
+        "severity": "CRITICAL",
+        "description": "Password reset link with UUID — allows account takeover if token is still valid.",
+        "check": lambda url, params: (
+            bool(re.search(r'(?i)/(?:reset-password|password-reset|forgot-password)/[a-f0-9-]{30,}', url))
+        ) or '',
+    },
+
     # ── Verification/Reset links with tokens ──
     "Verification_Link": {
         "severity": "HIGH",
-        "description": "Account verification/reset link with token — session hijack risk.",
+        "description": "Account verification/reset link with token — session hijack / ATO risk.",
         "check": lambda url, params: (
             bool(re.search(r'(?i)/(?:verify|reset|confirm|activate|validation)', url))
             and (_has_real_token(params) or _has_real_email(params))
         ) or '',
     },
 
-    # ── Password Reset UUID in path (ATO) ──
-    "Password_Reset_UUID": {
-        "severity": "CRITICAL",
-        "description": "Password reset link with UUID — allows account takeover if valid.",
-        "check": lambda url, params: (
-            bool(re.search(r'(?i)/(?:reset-password|password-reset|forgot-password)/[a-f0-9-]{30,}', url))
-        ) or '',
-    },
-
-    # ── Internal IP Leaked in URL ──
+    # ── Internal IP Leaked in URL (ONLY in meaningful context) ──
     "Internal_IP_Leak": {
         "severity": "MEDIUM",
-        "description": "Internal/private IP address exposed in URL — info disclosure / SSRF target.",
+        "description": "Internal/private IP address exposed in URL — SSRF / infrastructure mapping.",
         "check": lambda url, params: _check_internal_ip(url),
     },
 
-    # ── GraphQL Endpoint ──
-    "GraphQL_Endpoint": {
-        "severity": "MEDIUM",
-        "description": "GraphQL endpoint found — test for introspection and query injection.",
-        "check": lambda url, params: (
-            bool(re.search(r'(?i)/graphql\b', url))
-        ) or '',
+    # ── Debug / Admin Panels ──
+    "Debug_Admin_Panel": {
+        "severity": "CRITICAL",
+        "description": "Debug or admin panel endpoint accessible — full application compromise risk.",
+        "check": lambda url, params: _check_debug_admin(url),
     },
 
-    # ── Exposed Source Code / node_modules ──
-    "Exposed_Source_Code": {
-        "severity": "HIGH",
-        "description": "Application source code or dependency tree exposed in URL path.",
-        "check": lambda url, params: _check_exposed_source(url),
-    },
-
-    # ── Auth API Endpoints with sensitive paths ──
-    "Auth_API_Endpoint": {
-        "severity": "HIGH",
-        "description": "Authentication API endpoint — verify-creds, authCallback, check-email.",
-        "check": lambda url, params: (
-            bool(re.search(r'(?i)/(?:api|signin)/v?\d*/(?:verify-creds|auth.*callback|check-email|start-auth|resend)', url))
-        ) or '',
+    # ── Exposed Config / Secrets Files ──
+    "Exposed_Config_File": {
+        "severity": "CRITICAL",
+        "description": "Configuration file with potential secrets exposed (NOT behind SPA routing).",
+        "check": lambda url, params: _check_config_files(url),
     },
 }
 
 
 def _check_internal_ip(url: str) -> str:
-    """Check for internal/private IP addresses in URL."""
+    """Check for internal/private IP addresses in URL — skip analytics/tracking noise."""
     decoded = unquote(url)
 
-    # Skip eBay CDN/fdbk metadata URLs — IPs are backend cache server tags, not exploitable
-    if '/fdbk/' in decoded or 'clientId=urn' in decoded or 'ebaystatic.com' in decoded:
+    # Skip tracking/analytics URLs entirely — IPs here are cache/CDN tags, not exploitable
+    tracking_patterns = [
+        '/fdbk/', 'clientId=urn', 'ebaystatic.com',
+        'googletagmanager.com', 'google-analytics.com', 'gtag/',
+        'pixel', 'tracking', 'beacon', 'telemetry',
+    ]
+    if any(p in decoded.lower() for p in tracking_patterns):
         return ''
 
     ip_match = re.search(
@@ -224,40 +280,64 @@ def _check_internal_ip(url: str) -> str:
         ip = ip_match.group(0)
         # Only flag if IP appears in an actual URL/connection context
         if re.search(r'https?://[^/]*' + re.escape(ip), decoded) or \
-           re.search(r'(?:host|url|addr|ip|server|device|inform).*' + re.escape(ip), decoded, re.I):
+           re.search(r'(?:host|url|addr|server|device|inform|redirect|proxy|backend).*' + re.escape(ip), decoded, re.I):
             return ip
     return ''
 
 
-def _check_exposed_source(url: str) -> str:
-    """Check for exposed source code paths — skip known FP patterns."""
+def _check_debug_admin(url: str) -> str:
+    """Check for exposed debug/admin panels — skip CDNs and SPAs."""
     lower = url.lower()
-
-    # Skip source maps (user requested to ignore these as low impact)
-    if lower.endswith('.map') or '.map?' in lower or '.js.map' in lower:
+    
+    # Must be on a real application domain, not CDN
+    if _is_noise_domain(url):
         return ''
+    
+    debug_patterns = [
+        r'/(?:phpinfo|server-info|server-status)(?:\.php)?$',
+        r'/(?:elmah|trace|diagnostics)\.axd',
+        r'/(?:actuator/(?:env|health|info|beans|mappings|configprops))',
+        r'/swagger-ui(?:\.html|/index\.html)',
+        r'/(?:_debug|debug|_profiler|profiler)/',
+        r'/admin/(?:config|settings|database|users)',
+        r'/wp-admin/(?:install|setup-config)\.php',
+        r'/solr/admin',
+        r'/(?:kibana|grafana|prometheus)(?:/|$)',
+        r'/(?:_cat/(?:indices|nodes|health))',  # Elasticsearch
+    ]
+    
+    for pattern in debug_patterns:
+        if re.search(pattern, lower):
+            return re.search(pattern, lower).group(0)
+    return ''
 
-    # Skip known false positives
-    # eBay shipping apps where /private/src/ is a legitimate app route
-    if any(x in lower for x in [
-        'ebay-versand.', 'delivery.ebay.', 'envios.ebay.',
-        'expeditions.ebay.', 'community.ui.com/questions/',
-        'ebaystatic.com', 'webpack:',
-    ]):
+
+def _check_config_files(url: str) -> str:
+    """Check for exposed config files — strict matching to avoid SPA false positives."""
+    lower = url.lower()
+    
+    # Skip CDNs and noise domains
+    if _is_noise_domain(url):
         return ''
-
-    # Skip source map references (node_modules in source maps, not actual exposure)
-    if '/node_modules/' in url and any(x in lower for x in [
-        'uisp.com', '.pnpm/', 'react-aria', 'react-stately',
-    ]):
-        return ''
-
-    # Check for actual source code exposure
-    if re.search(r'(?i)/node_modules/', url):
-        return 'node_modules exposed'
-    if re.search(r'(?i)/(?:private/)?src/.*\.(?:tsx?|jsx?|py|rb|go|java|php)\b', url):
-        return 'source code path'
-
+    
+    # These are ONLY worth reporting if they're on a real server, not a SPA
+    # SPA routing means *.sendgrid.com/anything returns index.html (200 OK)
+    config_patterns = [
+        r'/\.env(?:\.(?:bak|old|local|production|staging|dev|example))?$',
+        r'/\.git/(?:config|HEAD|index|objects|refs)',
+        r'/\.svn/entries',
+        r'/\.htpasswd',
+        r'/wp-config\.php(?:\.bak|\.old|~)?$',
+        r'/web\.config(?:\.bak|\.old)?$',
+        r'/config\.(?:php|yml|yaml|json)(?:\.bak|\.old)?$',
+        r'/database\.yml$',
+        r'/secrets\.yml$',
+        r'/credentials\.json$',
+    ]
+    
+    for pattern in config_patterns:
+        if re.search(pattern, lower):
+            return re.search(pattern, lower).group(0)
     return ''
 
 
@@ -266,15 +346,20 @@ class BountyScanner:
         self.urls = urls
         self.findings = []
         self.stats = {k: 0 for k in HEURISTICS.keys()}
+        self._dedup = set()  # Deduplicate findings by (type, domain)
 
     def scan(self) -> Dict:
         start = time.time()
-        banner("Passive Bounty Scanner")
+        banner("Passive Bounty Scanner v2.0")
         log_info(f"Scanning {len(self.urls)} unique URLs against {len(HEURISTICS)} heuristics...")
 
         for url in self.urls:
             url = url.strip()
-            if not url:
+            if not url or not url.startswith('http'):
+                continue
+
+            # Skip noise domains entirely — saves CPU on large scans
+            if _is_noise_domain(url):
                 continue
 
             # Parse params once for all checks
@@ -289,17 +374,23 @@ class BountyScanner:
                 evidence = ""
 
                 if "regex" in config:
-                    # Path-only regex checks (no param validation needed)
                     if config["regex"].search(url):
                         matched = True
                 elif "check" in config:
-                    # Smart checks that validate actual param VALUES
                     result = config["check"](url, params)
                     if result:
                         matched = True
                         evidence = str(result) if isinstance(result, str) else ""
 
                 if matched:
+                    # Deduplicate: only one finding per (type, domain) to reduce noise
+                    parsed_url = urlparse(url)
+                    dedup_key = (vuln_id, parsed_url.netloc)
+                    if dedup_key in self._dedup:
+                        self.stats[vuln_id] += 1
+                        continue
+                    self._dedup.add(dedup_key)
+
                     finding = {
                         "type": vuln_id,
                         "severity": config["severity"],
@@ -318,9 +409,9 @@ class BountyScanner:
 
         log_success(f"Bounty Scan complete in {elapsed_str(start)}")
         if total:
-            log_success(f"Total flags: {total} ({critical} CRITICAL, {high} HIGH)")
+            log_success(f"Actionable findings: {total} ({critical} CRITICAL, {high} HIGH)")
         else:
-            log_info("No bounty-worthy findings detected.")
+            log_info("No bounty-worthy findings detected — clean scan.")
 
         return {
             "findings": self.findings,
@@ -330,7 +421,7 @@ class BountyScanner:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Passive Bounty URL Scanner")
+    parser = argparse.ArgumentParser(description="Passive Bounty URL Scanner v2.0")
     parser.add_argument("-l", "--list", required=True, help="File containing URLs to scan (e.g., unique_urls.txt)")
     parser.add_argument("-o", "--output", help="Output JSON file for findings")
 
