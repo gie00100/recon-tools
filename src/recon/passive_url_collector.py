@@ -354,8 +354,6 @@ class PassiveURLCollector:
 
         # Run all sources concurrently for maximum speed
         await asyncio.gather(
-            self._fetch_wayback(),
-            self._fetch_commoncrawl(),
             self._fetch_otx(),
         )
 
