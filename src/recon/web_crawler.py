@@ -57,9 +57,9 @@ HREF_REGEX = re.compile(r'''(?:href|src|action)=["']([^"']+)["']''', re.IGNORECA
 LINK_REGEX = re.compile(r'''<(?:a|script|link|form|iframe|img|embed|object|source|video|audio|base)[^>]+(?:href|src|action|data|poster|data-href|data-url|data-src)=["']([^"'#]+)["']''', re.IGNORECASE)
 
 # Additional URL extraction patterns
-META_REFRESH_REGEX = re.compile(r'<meta[^>]+content=["'][^"]*url=([^"\';>]+)', re.IGNORECASE)
+META_REFRESH_REGEX = re.compile(r'<meta[^>]+content=["\'][^"]*url=([^"\';>]+)', re.IGNORECASE)
 JS_URL_REGEX = re.compile(r'''["']((?:https?://|/(?:api|v[0-9]|graphql|auth|admin|internal|webhook|callback)[^"'\s]{3,}))["']''', re.IGNORECASE)
-OG_URL_REGEX = re.compile(r'<meta[^>]+(?:property|name)=["']og:[^"']*["'][^>]+content=["'](https?://[^"']+)["']', re.IGNORECASE)
+OG_URL_REGEX = re.compile(r'<meta[^>]+(?:property|name)=["\']og:[^"\']*["\'][^>]+content=["\'](https?://[^"\']+)["\']', re.IGNORECASE)
 WINDOW_LOCATION_REGEX = re.compile(r'(?:window\.location|location\.href|location\.replace)\s*[=\(]\s*["\']([^"\'>]+)["\']', re.IGNORECASE)
 
 
