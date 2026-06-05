@@ -40,9 +40,10 @@ from recon.report_gen import ReportGenerator
 from recon.schema_discovery import SchemaDiscovery
 from recon.vt_url_scraper import VTUrlScraper
 from recon.web_crawler import WebCrawler
+from recon.passive_url_collector import PassiveURLCollector
 
 
-ALL_MODULES = ["subdomain", "asn", "probe", "portscan", "backup", "credhunt", "jsextract", "schema", "vtscrape", "crawl", "waymore", "dedup", "bountyscan", "report"]
+ALL_MODULES = ["subdomain", "asn", "probe", "portscan", "backup", "credhunt", "jsextract", "schema", "vtscrape", "crawl", "waymore", "urlcollect", "dedup", "bountyscan", "report"]
 
 
 class ReconMaster:
@@ -98,6 +99,7 @@ class ReconMaster:
         self.schema_findings = {}
         self.crawled_endpoints = set()
         self.vt_scraped_urls = set()
+        self.passive_collected_urls = set()  # Multi-source passive URLs
         self.bounty_flags = 0
         self.bounty_stats = {}
         self.report = None
@@ -590,6 +592,33 @@ class ReconMaster:
         duration = elapsed_str(start)
         self.phase_times.append(("Waymore URL Collection", duration, len(self.waymore_urls)))
 
+    async def _phase_passive_url_collect(self):
+        """Phase 9: Multi-Source Passive URL Collection."""
+        if not self._should_run("urlcollect"):
+            return
+
+        start = time.time()
+        log_phase(9, len(self.modules), "Multi-Source Passive URL Collection")
+
+        # Pass discovered subdomains for richer collection
+        subdomain_list = list(self.subdomains)
+
+        collector = PassiveURLCollector(
+            domain=self.domain,
+            subdomains=subdomain_list,
+            concurrency=min(self.concurrency, 15),
+        )
+        result = await collector.collect()
+        self.passive_collected_urls = set(result.get("urls", []))
+
+        # Save raw collected URLs
+        if self.passive_collected_urls:
+            output_file = self.output_dir / "passive_collected_urls.txt"
+            write_lines(str(output_file), sorted(self.passive_collected_urls))
+
+        duration = elapsed_str(start)
+        self.phase_times.append(("Passive URL Collection", duration, len(self.passive_collected_urls)))
+
     async def _phase_url_dedup(self):
         """Phase 9: URL Deduplication."""
         if not self._should_run("dedup"):
@@ -606,6 +635,7 @@ class ReconMaster:
         all_urls.extend(self.vt_scraped_urls)  # VT per-subdomain URLs
         all_urls.extend(self.crawled_endpoints)  # Web crawler endpoints
         all_urls.extend(self.schema_findings.get("api_endpoints", []))  # Schema-extracted APIs
+        all_urls.extend(self.passive_collected_urls)  # Multi-source passive (Wayback CDX, CC, OTX, URLScan, sitemaps)
 
         if not all_urls:
             log_warning("No URLs to deduplicate")
@@ -765,6 +795,7 @@ class ReconMaster:
         await self._phase_vt_url_scrape()
         await self._phase_web_crawl()
         await self._phase_waymore_url_collection()
+        await self._phase_passive_url_collect()
         await self._phase_url_dedup()
         await self._phase_bounty_scan()
         report_paths = await self._phase_report()
@@ -785,6 +816,7 @@ class ReconMaster:
              f"**Credentials:** {len(self.cred_findings)}\n"
              f"**JS Endpoints:** {len(self.js_findings.get('endpoints', []))}\n"
              f"**Waymore URLs:** {len(self.waymore_urls)}\n"
+             f"**Passive Collected:** {len(self.passive_collected_urls)}\n"
              f"**VT Scraped URLs:** {len(self.vt_scraped_urls)}\n"
              f"**Crawled Endpoints:** {len(self.crawled_endpoints)}\n"
              f"**Schema APIs:** {len(self.schema_findings.get('api_endpoints', []))}\n"
@@ -812,6 +844,7 @@ class ReconMaster:
                 f"[bold green]Crawled:[/bold green] {len(self.crawled_endpoints)}",
                 f"[bold green]Schema APIs:[/bold green] {len(self.schema_findings.get('api_endpoints', []))}",
                 f"[bold green]Waymore URLs:[/bold green] {len(self.waymore_urls)}",
+                f"[bold green]Passive Collected:[/bold green] {len(self.passive_collected_urls)}",
                 f"[bold green]Secrets:[/bold green] {len(self.js_findings.get('secrets', []))}",
                 f"[bold green]Backup Paths:[/bold green] {len(self.backup_wordlist)}",
                 f"[bold green]Unique URLs:[/bold green] {len(self.unique_urls)}",
@@ -853,9 +886,10 @@ Pipeline Phases:
   7. vtscrape   — VirusTotal per-subdomain URL extraction
   8. crawl      — Active web crawling (BFS link extraction)
   9. waymore    — Passive URL collection via Wayback/CommonCrawl
- 10. dedup      — Smart URL deduplication
- 11. bountyscan — High-value bounty heuristic filtering
- 12. report     — HTML/JSON report generation
+ 10. urlcollect — Multi-source passive URLs (WB CDX, CC, OTX, URLScan, sitemaps)
+ 11. dedup      — Smart URL deduplication
+ 12. bountyscan — High-value bounty heuristic filtering
+ 13. report     — HTML/JSON report generation
 
 Examples:
   python recon_master.py -d example.com --full

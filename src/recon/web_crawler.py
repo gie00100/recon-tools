@@ -33,8 +33,8 @@ if RICH_AVAILABLE:
     from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
 
 # ── Configuration ────────────────────────────────────────────
-MAX_DEPTH = 1
-MAX_PAGES_PER_DOMAIN = 25
+MAX_DEPTH = 2
+MAX_PAGES_PER_DOMAIN = 75
 
 BORING_KEYWORDS = [
     '/jobs', '/careers', '/career', '/investor', '/investors', '/legal', '/about',
@@ -52,9 +52,15 @@ STATIC_EXTENSIONS = (
     '.zip', '.tar.gz', '.rar', '.7z',
 )
 
-# Regex to extract links from HTML (fast, no BeautifulSoup dependency)
+# Regex patterns to extract links from HTML (fast, no BeautifulSoup dependency)
 HREF_REGEX = re.compile(r'''(?:href|src|action)=["']([^"']+)["']''', re.IGNORECASE)
-LINK_REGEX = re.compile(r'''<(?:a|script|link|form|iframe|img)[^>]+(?:href|src|action)=["']([^"'#]+)["']''', re.IGNORECASE)
+LINK_REGEX = re.compile(r'''<(?:a|script|link|form|iframe|img|embed|object|source|video|audio|base)[^>]+(?:href|src|action|data|poster|data-href|data-url|data-src)=["']([^"'#]+)["']''', re.IGNORECASE)
+
+# Additional URL extraction patterns
+META_REFRESH_REGEX = re.compile(r'<meta[^>]+content=["'][^"]*url=([^"\';>]+)', re.IGNORECASE)
+JS_URL_REGEX = re.compile(r'''["']((?:https?://|/(?:api|v[0-9]|graphql|auth|admin|internal|webhook|callback)[^"'\s]{3,}))["']''', re.IGNORECASE)
+OG_URL_REGEX = re.compile(r'<meta[^>]+(?:property|name)=["']og:[^"']*["'][^>]+content=["'](https?://[^"']+)["']', re.IGNORECASE)
+WINDOW_LOCATION_REGEX = re.compile(r'(?:window\.location|location\.href|location\.replace)\s*[=\(]\s*["\']([^"\'>]+)["\']', re.IGNORECASE)
 
 
 class WebCrawler:
@@ -136,14 +142,18 @@ class WebCrawler:
                     html = await resp.text(encoding="utf-8", errors="ignore")
                     html = html[:500_000]  # Cap at 500KB per page
 
-                    # Extract links using regex (lightweight, no BS4 needed)
-                    raw_links = LINK_REGEX.findall(html)
+                    # Extract links using multiple regex patterns (lightweight, no BS4)
+                    raw_links = set(LINK_REGEX.findall(html))
+                    raw_links.update(META_REFRESH_REGEX.findall(html))
+                    raw_links.update(JS_URL_REGEX.findall(html))
+                    raw_links.update(OG_URL_REGEX.findall(html))
+                    raw_links.update(WINDOW_LOCATION_REGEX.findall(html))
 
                     for raw_link in raw_links:
-                        raw_link = raw_link.split('#')[0]  # Remove fragments
+                        raw_link = raw_link.split('#')[0].strip()  # Remove fragments
                         if not raw_link:
                             continue
-                        if raw_link.startswith(('mailto:', 'javascript:', 'tel:', 'data:')):
+                        if raw_link.startswith(('mailto:', 'javascript:', 'tel:', 'data:', '{', '${')):
                             continue
 
                         # Resolve relative URLs
