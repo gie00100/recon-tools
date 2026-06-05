@@ -122,9 +122,13 @@ class URLDeduplicator:
         # Group by host
         host_groups = defaultdict(list)
         for url in unique_exact:
-            parsed = urlparse(url)
-            host = parsed.netloc
-            host_groups[host].append(url)
+            try:
+                parsed = urlparse(url)
+                host = parsed.netloc
+                host_groups[host].append(url)
+            except ValueError:
+                # Catch malformed IPv6 bracket formats like '@@unscopables'
+                continue
 
         # Deduplicate within each host
         kept = []
