@@ -357,9 +357,6 @@ class PassiveURLCollector:
             self._fetch_wayback(),
             self._fetch_commoncrawl(),
             self._fetch_otx(),
-            self._fetch_urlscan(),
-            self._fetch_robots_sitemap(),
-            self._fetch_wayback_interesting_paths(),
         )
 
         await self.close()
