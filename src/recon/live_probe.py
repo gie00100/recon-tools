@@ -303,11 +303,9 @@ class LiveProber:
                 body_lower = body.lower()
                 if any(indicator in body_lower for indicator in active_backend_indicators):
                     return ""  # Active backend = owned = not takeover-able
-                if len(body) > 2000:
-                    return ""  # Large response body = real app, not a dangling service
-                
-                return f"{service} (CNAME: {cname}) [CANDIDATE — needs manual verification]"
-        
+                # CNAME exists but no known signature matched.
+                # Do not report as candidate, it creates too much noise.
+                return ""
         # CNAME exists but doesn't match any known vulnerable service
         return ""
 

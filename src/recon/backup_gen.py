@@ -196,7 +196,7 @@ class BackupGenerator:
                 session = await self._get_session()
                 # Use HEAD request for speed
                 async with session.head(url, allow_redirects=False) as resp:
-                    if resp.status in (200, 206, 301, 302, 403):
+                    if resp.status in (200, 206):
                         # Filter Soft 404s
                         sig = self._soft_404_signatures.get(host, {})
                         c_len = int(resp.headers.get("Content-Length", -1))
