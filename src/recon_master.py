@@ -542,7 +542,7 @@ class ReconMaster:
             return
 
         start = time.time()
-        log_phase(8, len(self.modules), "Passive URL Collection")
+        log_phase(8, len(self.modules), "Waymore URL Collection")
 
         # Handle both Windows and Linux venv paths
         waymore_windows = Config.PROJECT_ROOT.parent / "venv" / "Scripts" / "waymore.exe"
@@ -554,9 +554,9 @@ class ReconMaster:
             waymore_bin = waymore_windows
         else:
             log_warning("Waymore not found. Skipping URL Collection.")
+            self.phase_times.append(("Waymore URL Collection", "0.0s", 0))
             return
 
-        waymore_config = Config.PROJECT_ROOT / "waymore_config.yml"
         output_file = self.output_dir / "waymore_urls.txt"
         
         cmd = [
@@ -564,27 +564,66 @@ class ReconMaster:
             "-i", self.domain,
             "-mode", "U",
             "-oU", str(output_file),
+            "-v",  # Verbose for debugging
         ]
-        
-        if waymore_config.exists():
-            cmd.extend(["-c", str(waymore_config)])
 
         log_info(f"Running Waymore against {self.domain}...")
+        log_info(f"  Command: {' '.join(cmd)}")
+        log_info(f"  Output: {output_file}")
+
         try:
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
+                stdin=asyncio.subprocess.DEVNULL,
             )
-            await process.communicate()
             
+            # 10-minute timeout to prevent infinite hangs
+            try:
+                stdout_data, stderr_data = await asyncio.wait_for(
+                    process.communicate(), timeout=600
+                )
+            except asyncio.TimeoutError:
+                log_warning("Waymore timed out after 10 minutes. Killing process.")
+                process.kill()
+                await process.wait()
+                stdout_data, stderr_data = b"", b""
+
+            # Log waymore output for debugging
+            stdout_text = stdout_data.decode("utf-8", errors="ignore").strip()
+            stderr_text = stderr_data.decode("utf-8", errors="ignore").strip()
+            
+            if stdout_text:
+                # Extract key lines from waymore output
+                for line in stdout_text.split('\n'):
+                    if any(kw in line.lower() for kw in ['links found', 'total unique', 'error', 'warning', 'appended']):
+                        log_info(f"  [waymore] {line.strip()}")
+            
+            if stderr_text:
+                log_warning(f"  Waymore stderr: {stderr_text[:500]}")
+
+            if process.returncode != 0:
+                log_warning(f"  Waymore exited with code {process.returncode}")
+
+            # Check for output file
             if output_file.exists():
                 urls = read_lines(output_file)
                 self.waymore_urls = set(urls)
                 log_success(f"Waymore found {len(self.waymore_urls)} URLs")
             else:
-                self.waymore_urls = set()
-                log_warning("Waymore returned no URLs.")
+                # Fallback: check waymore's default output directory
+                default_result = Path.home() / ".config" / "waymore" / "results" / self.domain / "waymore.txt"
+                if default_result.exists():
+                    urls = read_lines(str(default_result))
+                    self.waymore_urls = set(urls)
+                    # Copy to our output dir
+                    write_lines(str(output_file), sorted(self.waymore_urls))
+                    log_success(f"Waymore found {len(self.waymore_urls)} URLs (from default dir)")
+                else:
+                    self.waymore_urls = set()
+                    log_warning(f"Waymore returned no URLs. Output file not found at {output_file} or {default_result}")
+
         except Exception as e:
             log_error(f"Waymore error: {e}")
             self.waymore_urls = set()
