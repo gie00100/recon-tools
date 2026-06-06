@@ -492,11 +492,7 @@ class ReconMaster:
         start = time.time()
         log_phase("7.6", len(self.modules), "VirusTotal URL Scraping")
 
-        live_domains = [h.get("hostname", "") for h in self.live_hosts if h.get("hostname")]
-        if not live_domains:
-            from urllib.parse import urlparse
-            live_domains = [urlparse(h["url"]).hostname for h in self.live_hosts if h.get("url")]
-            live_domains = [d for d in live_domains if d]
+        live_domains = list(self.subdomains)
 
         scraper = VTUrlScraper(
             subdomains=live_domains,
@@ -544,14 +540,17 @@ class ReconMaster:
         start = time.time()
         log_phase(8, len(self.modules), "Passive URL Collection")
 
-        # Handle both Windows and Linux venv paths
+        # Handle both Windows and Linux venv paths, plus global fallback
         waymore_windows = Config.PROJECT_ROOT.parent / "venv" / "Scripts" / "waymore.exe"
         waymore_linux = Config.PROJECT_ROOT.parent / "venv" / "bin" / "waymore"
         
+        import shutil
         if waymore_linux.exists():
             waymore_bin = waymore_linux
         elif waymore_windows.exists():
             waymore_bin = waymore_windows
+        elif shutil.which("waymore"):
+            waymore_bin = shutil.which("waymore")
         else:
             log_warning("Waymore not found. Skipping URL Collection.")
             return
