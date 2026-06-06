@@ -326,15 +326,6 @@ class ReconMaster:
         generator = BackupGenerator(urls=urls, active=self.active)
         self.backup_wordlist = await generator.generate()
 
-        if self.active and self.backup_wordlist:
-            for url in self.backup_wordlist:
-                self._add_to_watchlist(url, "Live_Backup", "Found live backup file")
-                await self._send_alert(
-                    f"🚨 LIVE BACKUP FOUND — {self.domain}",
-                    f"**Backup File:**\n```\n{url}\n```\nAdded to 24/7 Watchlist.",
-                    16744448  # Orange
-                )
-
         # Save results
         output_file = self.output_dir / "backup_wordlist.txt"
         write_lines(str(output_file), self.backup_wordlist, deduplicate=False)
