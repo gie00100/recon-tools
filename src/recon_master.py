@@ -492,7 +492,11 @@ class ReconMaster:
         start = time.time()
         log_phase("7.6", len(self.modules), "VirusTotal URL Scraping")
 
-        live_domains = list(self.subdomains)
+        live_domains = [h.get("hostname", "") for h in self.live_hosts if h.get("hostname")]
+        if not live_domains:
+            from urllib.parse import urlparse
+            live_domains = [urlparse(h["url"]).hostname for h in self.live_hosts if h.get("url")]
+            live_domains = [d for d in live_domains if d]
 
         scraper = VTUrlScraper(
             subdomains=live_domains,
@@ -540,17 +544,14 @@ class ReconMaster:
         start = time.time()
         log_phase(8, len(self.modules), "Passive URL Collection")
 
-        # Handle both Windows and Linux venv paths, plus global fallback
+        # Handle both Windows and Linux venv paths
         waymore_windows = Config.PROJECT_ROOT.parent / "venv" / "Scripts" / "waymore.exe"
         waymore_linux = Config.PROJECT_ROOT.parent / "venv" / "bin" / "waymore"
         
-        import shutil
         if waymore_linux.exists():
             waymore_bin = waymore_linux
         elif waymore_windows.exists():
             waymore_bin = waymore_windows
-        elif shutil.which("waymore"):
-            waymore_bin = shutil.which("waymore")
         else:
             log_warning("Waymore not found. Skipping URL Collection.")
             return
@@ -640,10 +641,25 @@ class ReconMaster:
             log_warning("No URLs to deduplicate")
             return
 
+        # Save ALL raw URLs before dedup for manual analysis
+        all_urls_file = self.output_dir / "all_urls.txt"
+        write_lines(str(all_urls_file), sorted(set(all_urls)))
+        log_info(f"Saved {len(set(all_urls))} raw URLs to all_urls.txt")
+
+        # Log source breakdown
+        log_info(f"  Live hosts: {len(self.live_hosts)}")
+        log_info(f"  JS endpoints: {len(self.js_findings.get('endpoints', []))}")
+        log_info(f"  VT URLs: {len(self.vt_urls)}")
+        log_info(f"  Waymore URLs: {len(self.waymore_urls)}")
+        log_info(f"  VT scraped: {len(self.vt_scraped_urls)}")
+        log_info(f"  Crawled: {len(self.crawled_endpoints)}")
+        log_info(f"  Schema APIs: {len(self.schema_findings.get('api_endpoints', []))}")
+        log_info(f"  Passive collected: {len(self.passive_collected_urls)}")
+
         deduplicator = URLDeduplicator()
         self.unique_urls = deduplicator.deduplicate(all_urls)
 
-        # Save results
+        # Save deduped results
         output_file = self.output_dir / "unique_urls.txt"
         write_lines(str(output_file), self.unique_urls, deduplicate=False)
 
