@@ -544,35 +544,49 @@ class ReconMaster:
         start = time.time()
         log_phase(8, len(self.modules), "Waymore URL Collection")
 
-        # Handle both Windows and Linux paths (Linux now using pipx in ~/.local/bin)
-        waymore_windows = Config.PROJECT_ROOT.parent / "venv" / "Scripts" / "waymore.exe"
-        waymore_linux = Path.home() / ".local" / "bin" / "waymore"
-        waymore_venv = Config.PROJECT_ROOT.parent / "venv" / "bin" / "waymore"
+        # Find waymore binary — try multiple locations
+        import shutil
+        waymore_bin = None
+        candidates = [
+            Path.home() / ".local" / "bin" / "waymore",                    # pipx install
+            Config.PROJECT_ROOT.parent / "venv" / "bin" / "waymore",       # venv Linux
+            Config.PROJECT_ROOT.parent / "venv" / "Scripts" / "waymore.exe", # venv Windows
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                waymore_bin = candidate
+                break
         
-        if waymore_linux.exists():
-            waymore_bin = waymore_linux
-        elif waymore_venv.exists():
-            waymore_bin = waymore_venv
-        elif waymore_windows.exists():
-            waymore_bin = waymore_windows
-        else:
-            log_warning("Waymore not found. Skipping URL Collection.")
+        # Last resort: check PATH
+        if not waymore_bin:
+            which_result = shutil.which("waymore")
+            if which_result:
+                waymore_bin = Path(which_result)
+
+        if not waymore_bin:
+            log_warning("Waymore not found at any known path. Skipping URL Collection.")
+            log_warning(f"  Checked: {[str(c) for c in candidates]}")
             self.phase_times.append(("Waymore URL Collection", "0.0s", 0))
             return
 
+        log_info(f"Using waymore binary: {waymore_bin}")
+
+        # Let waymore write to its default output dir (more reliable than -oU)
+        # Then we'll copy the results to our output dir
         output_file = self.output_dir / "waymore_urls.txt"
+        default_result = Path.home() / ".config" / "waymore" / "results" / self.domain / "waymore.txt"
         
         cmd = [
             str(waymore_bin),
             "-i", self.domain,
             "-mode", "U",
             "-oU", str(output_file),
-            "-v",  # Verbose for debugging
+            "-v",
+            "-xcc",  # Exclude CommonCrawl (slow, often redundant with Wayback)
         ]
 
         log_info(f"Running Waymore against {self.domain}...")
         log_info(f"  Command: {' '.join(cmd)}")
-        log_info(f"  Output: {output_file}")
 
         try:
             process = await asyncio.create_subprocess_exec(
@@ -582,13 +596,13 @@ class ReconMaster:
                 stdin=asyncio.subprocess.DEVNULL,
             )
             
-            # 10-minute timeout to prevent infinite hangs
+            # 30-minute timeout — large domains like hackerone.com need this
             try:
                 stdout_data, stderr_data = await asyncio.wait_for(
-                    process.communicate(), timeout=600
+                    process.communicate(), timeout=1800
                 )
             except asyncio.TimeoutError:
-                log_warning("Waymore timed out after 10 minutes. Killing process.")
+                log_warning("Waymore timed out after 30 minutes. Killing process.")
                 process.kill()
                 await process.wait()
                 stdout_data, stderr_data = b"", b""
@@ -598,37 +612,36 @@ class ReconMaster:
             stderr_text = stderr_data.decode("utf-8", errors="ignore").strip()
             
             if stdout_text:
-                # Extract key lines from waymore output
                 for line in stdout_text.split('\n'):
-                    if any(kw in line.lower() for kw in ['links found', 'total unique', 'error', 'warning', 'appended']):
+                    if any(kw in line.lower() for kw in ['links found', 'total unique', 'error', 'warning', 'written', 'appended']):
                         log_info(f"  [waymore] {line.strip()}")
             
             if stderr_text:
                 log_warning(f"  Waymore stderr: {stderr_text[:500]}")
 
-            if process.returncode != 0:
+            if process.returncode is not None and process.returncode != 0:
                 log_warning(f"  Waymore exited with code {process.returncode}")
 
-            # Check for output file
-            if output_file.exists():
+            # Check for output — try -oU path first, then default dir
+            if output_file.exists() and output_file.stat().st_size > 0:
                 urls = read_lines(output_file)
                 self.waymore_urls = set(urls)
                 log_success(f"Waymore found {len(self.waymore_urls)} URLs")
+            elif default_result.exists() and default_result.stat().st_size > 0:
+                urls = read_lines(str(default_result))
+                self.waymore_urls = set(urls)
+                write_lines(str(output_file), sorted(self.waymore_urls))
+                log_success(f"Waymore found {len(self.waymore_urls)} URLs (from default dir)")
             else:
-                # Fallback: check waymore's default output directory
-                default_result = Path.home() / ".config" / "waymore" / "results" / self.domain / "waymore.txt"
-                if default_result.exists():
-                    urls = read_lines(str(default_result))
-                    self.waymore_urls = set(urls)
-                    # Copy to our output dir
-                    write_lines(str(output_file), sorted(self.waymore_urls))
-                    log_success(f"Waymore found {len(self.waymore_urls)} URLs (from default dir)")
-                else:
-                    self.waymore_urls = set()
-                    log_warning(f"Waymore returned no URLs. Output file not found at {output_file} or {default_result}")
+                self.waymore_urls = set()
+                log_warning(f"Waymore returned no URLs.")
+                log_warning(f"  Checked: {output_file}")
+                log_warning(f"  Checked: {default_result}")
 
         except Exception as e:
             log_error(f"Waymore error: {e}")
+            import traceback
+            log_error(traceback.format_exc())
             self.waymore_urls = set()
 
         duration = elapsed_str(start)
