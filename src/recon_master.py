@@ -596,16 +596,8 @@ class ReconMaster:
                 stdin=asyncio.subprocess.DEVNULL,
             )
             
-            # 30-minute timeout — large domains like hackerone.com need this
-            try:
-                stdout_data, stderr_data = await asyncio.wait_for(
-                    process.communicate(), timeout=1800
-                )
-            except asyncio.TimeoutError:
-                log_warning("Waymore timed out after 30 minutes. Killing process.")
-                process.kill()
-                await process.wait()
-                stdout_data, stderr_data = b"", b""
+            # No timeout — let waymore collect all URLs regardless of how long it takes
+            stdout_data, stderr_data = await process.communicate()
 
             # Log waymore output for debugging
             stdout_text = stdout_data.decode("utf-8", errors="ignore").strip()
