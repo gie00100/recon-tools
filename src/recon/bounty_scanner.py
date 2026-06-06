@@ -73,6 +73,7 @@ THIRD_PARTY_DOMAINS = [
     'stripe.com', 'braintreegateway.com', 'paypal.com',
     'recaptcha.net', 'hcaptcha.com',
     'bigmarker.com', 'corp.google.com',
+    'github.com', 'hackerone.com',  # Not in scope for target scanning
 ]
 
 def _is_noise_domain(url: str) -> bool:
@@ -89,6 +90,12 @@ def _has_real_email(params: dict) -> str:
     for key, values in params.items():
         val = unquote(values[0]) if values else ''
         if val.lower() in JUNK_VALUES:
+            continue
+        # Skip retina image filenames (contain @2x, @3x) — NOT emails
+        if re.search(r'@[23]x', val):
+            continue
+        # Skip encoded URLs falsely matching as emails (@2F, @3A patterns)
+        if re.search(r'@[0-9A-F]{2}', val):
             continue
         if key.lower() in email_params and EMAIL_REGEX.search(val):
             return val
@@ -236,25 +243,11 @@ HEURISTICS = {
         ) or '',
     },
 
-    # ── Internal IP Leaked in URL (ONLY in meaningful context) ──
-    "Internal_IP_Leak": {
-        "severity": "MEDIUM",
-        "description": "Internal/private IP address exposed in URL — SSRF / infrastructure mapping.",
-        "check": lambda url, params: _check_internal_ip(url),
-    },
-
     # ── Debug / Admin Panels ──
     "Debug_Admin_Panel": {
         "severity": "CRITICAL",
         "description": "Debug or admin panel endpoint accessible — full application compromise risk.",
         "check": lambda url, params: _check_debug_admin(url),
-    },
-
-    # ── Exposed Config / Secrets Files ──
-    "Exposed_Config_File": {
-        "severity": "CRITICAL",
-        "description": "Configuration file with potential secrets exposed (NOT behind SPA routing).",
-        "check": lambda url, params: _check_config_files(url),
     },
 }
 
@@ -383,13 +376,11 @@ class BountyScanner:
                         evidence = str(result) if isinstance(result, str) else ""
 
                 if matched:
-                    # Deduplicate: only one finding per (type, domain) to reduce noise
-                    parsed_url = urlparse(url)
-                    dedup_key = (vuln_id, parsed_url.netloc)
-                    if dedup_key in self._dedup:
+                    # Deduplicate: only one finding per URL to avoid multiple findings on same URL
+                    if url in self._dedup:
                         self.stats[vuln_id] += 1
                         continue
-                    self._dedup.add(dedup_key)
+                    self._dedup.add(url)
 
                     finding = {
                         "type": vuln_id,
