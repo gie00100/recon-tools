@@ -544,12 +544,15 @@ class ReconMaster:
         start = time.time()
         log_phase(8, len(self.modules), "Waymore URL Collection")
 
-        # Handle both Windows and Linux venv paths
+        # Handle both Windows and Linux paths (Linux now using pipx in ~/.local/bin)
         waymore_windows = Config.PROJECT_ROOT.parent / "venv" / "Scripts" / "waymore.exe"
-        waymore_linux = Config.PROJECT_ROOT.parent / "venv" / "bin" / "waymore"
+        waymore_linux = Path.home() / ".local" / "bin" / "waymore"
+        waymore_venv = Config.PROJECT_ROOT.parent / "venv" / "bin" / "waymore"
         
         if waymore_linux.exists():
             waymore_bin = waymore_linux
+        elif waymore_venv.exists():
+            waymore_bin = waymore_venv
         elif waymore_windows.exists():
             waymore_bin = waymore_windows
         else:
