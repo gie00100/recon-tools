@@ -7,14 +7,16 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load .env from project root
+# Load .env files — src/.env is the primary source, root/.env is fallback
 _PROJECT_ROOT = Path(__file__).parent.parent.parent  # src/recon/config.py → src/recon → src → project root
-_ENV_FILE = _PROJECT_ROOT / ".env"
-if not _ENV_FILE.exists():
-    # Fallback: try one level up from src/
-    _ENV_FILE = Path(__file__).parent.parent / ".env"
-if _ENV_FILE.exists():
-    load_dotenv(_ENV_FILE)
+_SRC_ENV = Path(__file__).parent.parent / ".env"      # src/.env (primary — has all API keys)
+_ROOT_ENV = _PROJECT_ROOT / ".env"                    # project root/.env (legacy fallback)
+
+# Load root .env first (baseline), then src/.env with override (takes priority)
+if _ROOT_ENV.exists():
+    load_dotenv(_ROOT_ENV)
+if _SRC_ENV.exists():
+    load_dotenv(_SRC_ENV, override=True)
 
 
 class Config:
