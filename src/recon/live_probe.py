@@ -17,13 +17,11 @@ from typing import Dict, List, Set
 from urllib.parse import urlparse
 
 import aiohttp
-import dns.resolver
-import dns.exception
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from recon.config import Config
 from recon.utils import (
-    banner, log_info, log_success, log_warning, log_error, log_finding,
+    banner, log_info, log_success, log_warning, log_error,
     RateLimiter, read_lines, write_lines, elapsed_str,
     console, RICH_AVAILABLE
 )
@@ -49,35 +47,7 @@ WAF_SIGNATURES = {
     "Varnish": ["x-varnish", "via: varnish"],
 }
 
-# Subdomain Takeover signatures (response body)
-TAKEOVER_SIGNATURES = {
-    "GitHub Pages": "There isn't a GitHub Pages site here.",
-    "Heroku": "No such app",
-    "AWS S3": "The specified bucket does not exist",
-    "Fastly": "Fastly error: unknown domain",
-    "Zendesk": "Help Center Closed",
-    "Azure": "404 Web Site not found",
-    "Shopify": "Sorry, this shop is currently unavailable.",
-    "Tumblr": "Whatever you were looking for doesn't currently exist at this address",
-    "WordPress": "Do you want to register",
-    "Ghost": "The thing you were looking for is no longer here",
-    "Pantheon": "The magic starts here",
-    "Bitbucket": "Repository not found",
-    "AWS S3 (Alternative)": "NoSuchBucket",
-    "Azure Traffic Manager": "invalid host",
-    "Azure (Alternative)": "Web App - Unavailable",
-    "Elastic Beanstalk": "NoSuchKey",
-    "Campaign Monitor": "Double check the URL",
-    "Cargo Collective": "If you're looking for something that used to be here",
-    "Feedpress": "The feed has not been found",
-    "Help Juice": "We could not find what you're looking for",
-    "Intercom": "This domain is not configured for Cloudfront",
-    "Pingdom": "Public Back-End",
-    "Readme.io": "Project not found",
-    "Surge.sh": "project not found",
-    "Webflow": "The page you are looking for doesn't exist",
-    "Unbounce": "The requested URL was not found on this server"
-}
+
 
 
 class LiveProber:
@@ -190,124 +160,7 @@ class LiveProber:
 
         return ""
 
-    async def _resolve_cname(self, hostname: str) -> str:
-        """Resolve CNAME record asynchronously to find target domains."""
-        try:
-            loop = asyncio.get_event_loop()
-            resolver = dns.resolver.Resolver()
-            resolver.timeout = 3
-            resolver.lifetime = 3
-            # Execute DNS resolution synchronously in executor to avoid blocking the event loop
-            answers = await loop.run_in_executor(None, resolver.resolve, hostname, "CNAME")
-            for rdata in answers:
-                return str(rdata.target).lower().strip().rstrip(".")
-        except Exception:
-            pass
-        return ""
 
-    def _detect_takeover(self, body: str, cname: str = "") -> str:
-        """
-        Detect subdomain takeovers from response body signatures and CNAME mapping.
-        
-        CRITICAL FALSE POSITIVE PREVENTION:
-        A subdomain takeover requires a DANGLING CNAME pointing to an unclaimed
-        third-party resource. A stale A record pointing to a server the company
-        owns (that returns 404) is NOT a takeover — it's just an unconfigured
-        vhost. Body-only signature matches without a CNAME are ignored.
-        """
-        if not cname:
-            # No CNAME = the domain resolves to A records (direct IPs).
-            # The company controls the infrastructure. A 404 here just means
-            # the vhost is unconfigured, NOT that it's takeover-able.
-            # This prevents false positives like emails.wix.com.
-            return ""
-        
-        # We have a CNAME — check if it points to a known takeover-vulnerable service
-        cname_map = {
-            "github.io": "GitHub Pages",
-            "herokuapp.com": "Heroku",
-            "s3.amazonaws.com": "AWS S3",
-            "s3-website": "AWS S3",
-            "cloudfront.net": "AWS CloudFront",
-            "fastly.net": "Fastly",
-            "zendesk.com": "Zendesk",
-            "azurewebsites.net": "Azure",
-            "azure-api.net": "Azure",
-            "trafficmanager.net": "Azure Traffic Manager",
-            "myshopify.com": "Shopify",
-            "tumblr.com": "Tumblr",
-            "pantheonsite.io": "Pantheon",
-            "bitbucket.org": "Bitbucket",
-            "webflow.io": "Webflow",
-            "unbouncepages.com": "Unbounce",
-            "ghost.io": "Ghost",
-            "netlify.app": "Netlify",
-            "surge.sh": "Surge",
-            "readme.io": "Readme",
-            "cargocollective.com": "Cargo",
-            "helpjuice.com": "HelpJuice",
-            "feedpress.me": "Feedpress",
-        }
-        
-        for pattern, service in cname_map.items():
-            if pattern in cname:
-                # CNAME points to a known vulnerable service.
-                # Now verify the service is actually unclaimed:
-                # 1. Body is empty (connection failed / NXDOMAIN) = strong signal
-                # 2. Body contains the specific takeover signature for this service
-                if not body:
-                    return f"{service} (CNAME: {cname}) [DANGLING — no response]"
-                
-                # Check for the service-specific signature in the body
-                service_sigs = {
-                    "GitHub Pages": ["There isn't a GitHub Pages site here"],
-                    "Heroku": ["No such app", "There is no app"],
-                    "AWS S3": ["The specified bucket does not exist", "NoSuchBucket"],
-                    "AWS CloudFront": ["The request could not be satisfied", "Bad request"],
-                    "Fastly": ["Fastly error: unknown domain"],
-                    "Zendesk": ["Help Center Closed"],
-                    "Azure": ["404 Web Site not found", "Web App - Unavailable"],
-                    "Azure Traffic Manager": ["invalid host"],
-                    "Shopify": ["Sorry, this shop is currently unavailable"],
-                    "Tumblr": ["Whatever you were looking for doesn't currently exist"],
-                    "Pantheon": ["The magic starts here"],
-                    "Bitbucket": ["Repository not found"],
-                    "Webflow": ["The page you are looking for doesn't exist"],
-                    "Unbounce": ["The requested URL /  was not found on this server"],
-                    "Ghost": ["The thing you were looking for is no longer here"],
-                    "Netlify": ["Not Found - Request ID"],
-                    "Surge": ["project not found"],
-                    "Readme": ["Project not found"],
-                }
-                
-                sigs = service_sigs.get(service, [])
-                for sig in sigs:
-                    if sig.lower() in body.lower():
-                        return f"{service} (CNAME: {cname}) [CONFIRMED — signature matched]"
-                
-                # CNAME to a known service but no matching signature.
-                # CRITICAL: If the response comes from a real backend server
-                # (e.g., 403 from openresty/nginx behind CloudFront), the 
-                # distribution IS active and owned — NOT a takeover.
-                # Only flag as CANDIDATE if the body is a generic CDN error
-                # or very small (indicating an unconfigured distribution).
-                
-                # Signs the service is ACTIVE (not takeover-able):
-                # - Response from a real backend (openresty, nginx, apache, etc.)
-                # - Body is large (>500 bytes) — real app pages
-                # - Contains HTML with real content (not just a CDN error)
-                active_backend_indicators = [
-                    "openresty", "nginx", "apache", "gunicorn", "express",
-                    "cloudflare", "varnish", "akamai", "envoy",
-                ]
-                body_lower = body.lower()
-                if any(indicator in body_lower for indicator in active_backend_indicators):
-                    return ""  # Active backend = owned = not takeover-able
-                # CNAME exists but no known signature matched.
-                # Do not report as candidate, it creates too much noise.
-                return ""
-        # CNAME exists but doesn't match any known vulnerable service
-        return ""
 
     async def _fetch_extra(self, base_url: str, path: str, session: aiohttp.ClientSession) -> str:
         """Fetch extra files like robots.txt or sitemap.xml."""
@@ -360,10 +213,6 @@ class LiveProber:
                 "alive": False,
             }
 
-            # Extract hostname for CNAME checks
-            parsed_host = urlparse(url).netloc
-            cname_target = await self._resolve_cname(parsed_host)
-
             try:
                 session = await self._get_session()
                 start_time = time.time()
@@ -400,13 +249,7 @@ class LiveProber:
                     result["technologies"] = self._detect_tech(headers, body)
                     result["waf"] = self._detect_waf(headers, body)
                     result["js_files"] = self._extract_js_files(body, url)
-                    
-                    # Detect takeover (using body + CNAME)
-                    result["takeover"] = self._detect_takeover(body, cname_target)
-                    if result["takeover"]:
-                        # Log it immediately to console
-                        log_finding(f"[TAKEOVER] {url} -> {result['takeover']}")
-                        
+
                     # Fetch robots/sitemap
                     if result["status"] == 200:
                         robots = await self._fetch_extra(url, "/robots.txt", session)
@@ -421,20 +264,8 @@ class LiveProber:
 
             except asyncio.TimeoutError:
                 result["title"] = "[Timeout]"
-                # If HTTP timed out but we have a dangling CNAME, classify as takeover candidate!
-                if cname_target:
-                    result["takeover"] = self._detect_takeover("", cname_target)
-                    if result["takeover"]:
-                        result["alive"] = True
-                        log_finding(f"[TAKEOVER-DNS-TIMEOUT] {url} -> {result['takeover']}")
             except aiohttp.ClientConnectorError:
                 result["title"] = "[Connection Error]"
-                # If connection refused/failed but we have a dangling CNAME, classify as takeover candidate!
-                if cname_target:
-                    result["takeover"] = self._detect_takeover("", cname_target)
-                    if result["takeover"]:
-                        result["alive"] = True
-                        log_finding(f"[TAKEOVER-DNS-CONNERR] {url} -> {result['takeover']}")
             except Exception as e:
                 result["title"] = f"[Error: {type(e).__name__}]"
 
@@ -512,16 +343,13 @@ class LiveProber:
             table.add_column("Status", justify="center", style="bold")
             table.add_column("Title", max_width=35)
             table.add_column("Tech", style="yellow", max_width=30)
-            table.add_column("WAF/Takeover", style="red")
+            table.add_column("WAF", style="red")
             table.add_column("Time", justify="right")
 
             for r in sorted(self.results, key=lambda x: x["status"]):
                 status_style = "green" if r["status"] == 200 else "yellow" if r["status"] < 400 else "red"
                 tech_str = ", ".join(r["technologies"][:3]) if r["technologies"] else "-"
-                waf_takeover = []
-                if r["waf"]: waf_takeover.append(r["waf"])
-                if r["takeover"]: waf_takeover.append(f"TK:{r['takeover']}")
-                waf_str = ", ".join(waf_takeover) or "-"
+                waf_str = r["waf"] or "-"
                 
                 table.add_row(
                     r["url"],
