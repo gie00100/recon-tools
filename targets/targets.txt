@@ -1,33 +1,62 @@
 # === Whatnot (HackerOne) ===
 # Program: https://hackerone.com/whatnot
 # Scope: *.whatnot.com
-whatnot.com
-api.whatnot.com
-auction-service.whatnot.com
-www.whatnot.com
+# STATUS: SCANNED ✓
+# whatnot.com
+# api.whatnot.com
+# auction-service.whatnot.com
+# www.whatnot.com
 
 # === Twilio (HackerOne) ===
 # Program: https://hackerone.com/twilio
 # Scope: Twilio + SendGrid + Segment + Authy
-twilio.com
-api.twilio.com
-www.twilio.com
-console.twilio.com
-help.twilio.com
-sendgrid.com
-app.sendgrid.com
-api.sendgrid.com
-signup.sendgrid.com
-mc.sendgrid.com
-segment.com
-app.segment.com
+# STATUS: SCANNED ✓
+# twilio.com
+# api.twilio.com
+# www.twilio.com
+# console.twilio.com
+# help.twilio.com
+# sendgrid.com
+# app.sendgrid.com
+# api.sendgrid.com
+# signup.sendgrid.com
+# mc.sendgrid.com
+# segment.com
+# app.segment.com
 
 # === Anduril Industries (HackerOne) ===
 # Program: https://hackerone.com/anduril_industries
 # Scope: *.anduril.com, *.anduril.dev, *.andurildev.com, *.anduril.au
-anduril.com
-anduril.dev
-andurildev.com
-anduril.com.au
-anduril.au
-andurildev.au
+# STATUS: SCANNED ✓
+# anduril.com
+# anduril.dev
+# andurildev.com
+# anduril.com.au
+# anduril.au
+# andurildev.au
+
+# === Unico IDtech (HackerOne) ===
+# Program: https://hackerone.com/unico_idtech/policy_scopes
+# Scope: unico.io, *.uat.unico.app, *.cadastro.uat.unico.app, acesso.io subdomains
+unico.io
+secure.unico.io
+openfinance.unico.io
+devcenter.unico.io
+idpay-uat.unico.io
+issuer.idpay-uat.unico.io
+idcash-uat.unico.io
+backend-sdk.uat.private.unico.run
+identityhomolog.acesso.io
+accountshomolog.acesso.io
+
+# === Banco Plata (HackerOne) ===
+# Program: https://hackerone.com/banco_plata/policy_scopes
+# Scope: *.platacard.mx, *.bancoplata.mx
+platacard.mx
+bancoplata.mx
+
+# === Stripchat (HackerOne) ===
+# Program: https://hackerone.com/stripchat/policy_scopes
+# Scope: *.stripchat.com
+stripchat.com
+go.stripchat.com
