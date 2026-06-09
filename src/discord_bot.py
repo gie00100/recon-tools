@@ -267,89 +267,114 @@ async def cmd_status():
 
 
 async def cmd_results(domain=None):
-    """Show results for a domain or all domains."""
+    """Show results for a domain or all domains, sorted by richness."""
     if not OUTPUT_DIR.exists():
         await send_embed("📁 No Results", "Output directory is empty.", 0x808080)
         return
 
-    dirs = sorted(OUTPUT_DIR.iterdir(), key=lambda d: d.stat().st_mtime, reverse=True)
-    dirs = [d for d in dirs if d.is_dir()]
+    dirs = [d for d in OUTPUT_DIR.iterdir() if d.is_dir()]
 
     if domain:
-        # Filter to matching domain
         dirs = [d for d in dirs if domain.lower() in d.name.lower()]
         if not dirs:
             await send_embed("📁 No Results", f"No results found for `{domain}`.", 0xFFA500)
             return
 
-    # Show latest 5 results
+    # Build rich info per scan dir
+    scan_data = []
+    for d in dirs:
+        info = {"dir": d, "score": 0, "stats": []}
+
+        def _count(fname):
+            f = d / fname
+            if f.exists():
+                try:
+                    return sum(1 for line in open(f, encoding="utf-8", errors="ignore") if line.strip())
+                except Exception:
+                    return 0
+            return 0
+
+        def _json_count(fname, key="findings"):
+            f = d / fname
+            if f.exists() and f.stat().st_size > 5:
+                try:
+                    data = json.loads(f.read_text(encoding="utf-8", errors="ignore"))
+                    return len(data.get(key, data) if isinstance(data, dict) else data)
+                except Exception:
+                    return 0
+            return 0
+
+        # Subdomains
+        n = _count("subdomains.txt")
+        if n:
+            info["stats"].append(f"🔍 {n} subdomains")
+            info["score"] += n
+
+        # Live hosts
+        n = _count("live_urls.txt")
+        if n:
+            info["stats"].append(f"🟢 {n} live hosts")
+            info["score"] += n * 2
+
+        # Waymore URLs
+        n = _count("waymore_urls.txt")
+        if n:
+            info["stats"].append(f"🌐 {n:,} waymore URLs")
+            info["score"] += n // 10
+
+        # VT URLs
+        n = _count("virustotal_urls.txt")
+        if n:
+            info["stats"].append(f"🦠 {n:,} VT URLs")
+            info["score"] += n // 10
+
+        # Unique URLs (deduplicated)
+        n = _count("unique_urls.txt")
+        if n:
+            info["stats"].append(f"🔗 {n:,} unique URLs")
+            info["score"] += n // 5
+
+        # Bounty findings — high weight
+        n = _json_count("bounty_targets.json", "findings")
+        if n:
+            info["stats"].append(f"🎯 **{n} bounty flags**")
+            info["score"] += n * 50
+
+        # Credentials — highest weight
+        n = _json_count("credentials_found.json")
+        if n:
+            info["stats"].append(f"🔑 **{n} CREDENTIALS FOUND**")
+            info["score"] += n * 200
+
+        # Exposed ports
+        n = _json_count("exposed_ports.json")
+        if n:
+            info["stats"].append(f"🚪 {n} exposed ports")
+            info["score"] += n * 10
+
+        info["completed"] = "✅" if (d / "report.json").exists() else "⏳"
+        scan_data.append(info)
+
+    # Sort: bounty/creds richest first, then by recency
+    scan_data.sort(key=lambda x: (x["score"], x["dir"].stat().st_mtime), reverse=True)
+
     fields = []
-    for d in dirs[:5]:
-        files = list(d.iterdir())
-        file_count = len(files)
-
-        # Try to read key stats
-        stats_parts = []
-        
-        # Count subdomains
-        sub_file = d / "subdomains.txt"
-        if sub_file.exists():
-            count = sum(1 for _ in open(sub_file))
-            stats_parts.append(f"🔍 {count} subdomains")
-
-        # Count live hosts
-        live_file = d / "live_urls.txt"
-        if live_file.exists():
-            count = sum(1 for _ in open(live_file))
-            stats_parts.append(f"🟢 {count} live hosts")
-
-        # Count unique URLs
-        url_file = d / "unique_urls.txt"
-        if url_file.exists():
-            count = sum(1 for _ in open(url_file))
-            stats_parts.append(f"🔗 {count} unique URLs")
-
-        # Check for credentials
-        cred_file = d / "credentials_found.json"
-        if cred_file.exists() and cred_file.stat().st_size > 5:
-            try:
-                creds = json.loads(cred_file.read_text())
-                if creds:
-                    stats_parts.append(f"🔑 **{len(creds)} CREDENTIALS FOUND**")
-            except Exception:
-                pass
-
-        # Check for exposed ports
-        port_file = d / "exposed_ports.json"
-        if port_file.exists() and port_file.stat().st_size > 5:
-            try:
-                ports = json.loads(port_file.read_text())
-                if ports:
-                    stats_parts.append(f"🚪 {len(ports)} exposed ports")
-            except Exception:
-                pass
-
-        # Check for bounty findings
-        bounty_file = d / "bounty_targets.json"
-        if bounty_file.exists() and bounty_file.stat().st_size > 5:
-            try:
-                bounty = json.loads(bounty_file.read_text())
-                count = len(bounty.get("findings", []))
-                if count:
-                    stats_parts.append(f"🎯 {count} bounty flags")
-            except Exception:
-                pass
-
-        value = "\n".join(stats_parts) if stats_parts else f"{file_count} files"
-        completed = "✅" if (d / "report.json").exists() else "⏳"
-
+    for info in scan_data[:10]:
+        d = info["dir"]
+        value = "\n".join(info["stats"]) if info["stats"] else "No data yet"
         fields.append({
-            "name": f"{completed} {d.name}",
+            "name": f"{info['completed']} {d.name}",
             "value": value,
-            "inline": False
+            "inline": False,
         })
 
-    await send_embed("📊 Recon Results", f"Showing latest {len(fields)} scans:", 0x00BFFF, fields)
+    total = len(scan_data)
+    await send_embed(
+        "📊 Recon Results",
+        f"Showing top {len(fields)} of {total} scan(s) — sorted by richness:",
+        0x00BFFF,
+        fields,
+    )
 
 
 async def cmd_stop():
