@@ -101,3 +101,34 @@ auth.ripio.com
 defi.ripio.com
 sandbox-b2b.ripio.com
 bridge.ripio.com
+
+# === M-Pesa (HackerOne) ===
+# Program: https://hackerone.com/mpesa/policy_scopes
+# Scope: m-pesa.com and subdomains, m-pesa.africa
+m-pesa.com
+mpa.ekyc.backoffice.m-pesa.com
+mpa.ekyc.selfregister.m-pesa.com
+openapiportal.m-pesa.com
+openapi.m-pesa.com
+m-pesa.africa
+
+# === HubSpot (HackerOne) ===
+# Program: https://hackerone.com/hubspot/policy_scopes
+# Scope: hubspot.com, hubapi.com, hubspotemail.net, hs-sites.com, hubspotpagebuilder.com/eu, chatspot.ai, hubspot.net
+hubspot.com
+hubapi.com
+hubspotemail.net
+hs-sites.com
+hs-sites-eu1.com
+hubspotpagebuilder.com
+hubspotpagebuilder.eu
+chatspot.ai
+hubspot.net
+
+# === Verily Life Sciences (HackerOne) ===
+# Program: https://hackerone.com/verily_life_sciences/policy_scopes
+# Scope: verily.com, signalpath.com, verilyme.com, projectbaseline.com
+verily.com
+signalpath.com
+verilyme.com
+projectbaseline.com
