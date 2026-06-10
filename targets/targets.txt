@@ -38,29 +38,32 @@
 # === Unico IDtech (HackerOne) ===
 # Program: https://hackerone.com/unico_idtech/policy_scopes
 # Scope: unico.io, *.uat.unico.app, *.cadastro.uat.unico.app, acesso.io subdomains
-unico.io
-secure.unico.io
-openfinance.unico.io
-devcenter.unico.io
-idpay-uat.unico.io
-issuer.idpay-uat.unico.io
-idcash-uat.unico.io
-backend-sdk.uat.private.unico.run
-identityhomolog.acesso.io
-accountshomolog.acesso.io
+# STATUS: SCANNED ✓
+# unico.io
+# secure.unico.io
+# openfinance.unico.io
+# devcenter.unico.io
+# idpay-uat.unico.io
+# issuer.idpay-uat.unico.io
+# idcash-uat.unico.io
+# backend-sdk.uat.private.unico.run
+# identityhomolog.acesso.io
+# accountshomolog.acesso.io
 
 # === Banco Plata (HackerOne) ===
 # Program: https://hackerone.com/banco_plata/policy_scopes
 # Scope: *.platacard.mx, *.bancoplata.mx
-platacard.mx
-bancoplata.mx
+# STATUS: SCANNED ✓
+# platacard.mx
+# bancoplata.mx
 
 
 # === Stripchat (HackerOne) ===
 # Program: https://hackerone.com/stripchat/policy_scopes
 # Scope: *.stripchat.com
-stripchat.com
-go.stripchat.com
+# STATUS: SCANNED ✓
+# stripchat.com
+# go.stripchat.com
 
 # === Kong (HackerOne) ===
 # Program: https://hackerone.com/kong/policy_scopes

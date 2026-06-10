@@ -17,6 +17,10 @@ import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 
+# Fix Windows console encoding for Unicode box drawing characters
+if sys.stdout.encoding.lower() != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+
 # Add parent dirs so we can import vps_helper
 sys.path.insert(0, str(Path(__file__).parent))
 from vps_helper import connect_vps, run_remote
@@ -83,7 +87,7 @@ def get_remote_scan_dirs(ssh):
             time_str = match.group(3)
             try:
                 scan_date = datetime.strptime(f"{date_str}_{time_str}", "%Y%m%d_%H%M%S")
-            except ValueError:
+            except Exception:
                 scan_date = None
         else:
             domain = dirname
