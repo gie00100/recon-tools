@@ -59,16 +59,28 @@ DISCORD_WEBHOOK = ""  # Loaded from .env below
 def _load_discord_webhook() -> str:
     env_path = PROJECT_ROOT / "src" / ".env"
     if env_path.exists():
+        status_url = ""
+        results_url = ""
         for line in env_path.read_text(encoding='utf-8').splitlines():
             if line.startswith("DISCORD_WEBHOOK_URL="):
-                return line.split("=", 1)[1].strip()
+                status_url = line.split("=", 1)[1].strip()
+            elif line.startswith("DISCORD_RESULTS_WEBHOOK_URL="):
+                results_url = line.split("=", 1)[1].strip()
+        # Prefer results webhook for scan notifications (status webhook may be expired)
+        return results_url or status_url
     return ""
+
+
+def _normalize(s: str) -> str:
+    """Normalize string for loose matching: lowercase, remove spaces/hyphens/underscores."""
+    return s.lower().replace(' ', '').replace('-', '').replace('_', '')
 
 
 def _parse_targets_txt(program_filter: str = None) -> list:
     """
     Parse targets.txt and return active (non-commented) domains.
     If program_filter is given, only return domains for that program section.
+    Matching is loose: 'wellsfargo' matches 'Wells Fargo (HackerOne)'.
     """
     if not TARGETS_FILE.exists():
         print(f"[!] targets.txt not found at {TARGETS_FILE}")
@@ -76,7 +88,7 @@ def _parse_targets_txt(program_filter: str = None) -> list:
 
     domains = []
     in_section = False
-    current_section = None
+    norm_filter = _normalize(program_filter) if program_filter else None
 
     with open(TARGETS_FILE, encoding='utf-8') as f:
         for line in f:
@@ -85,11 +97,9 @@ def _parse_targets_txt(program_filter: str = None) -> list:
 
             # Detect section headers: # === Program Name ===
             if stripped.startswith("# ===") and "===" in stripped:
-                section_name = stripped.strip("# =").strip().lower()
-                current_section = section_name
+                section_name = stripped.strip("# =").strip()
                 if program_filter:
-                    # Match loosely: "bykea" matches "Bykea (HackerOne)"
-                    in_section = program_filter.lower() in section_name
+                    in_section = norm_filter in _normalize(section_name)
                 else:
                     in_section = True
                 continue
