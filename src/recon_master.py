@@ -256,14 +256,14 @@ class ReconMaster:
         hostnames = [h for h in hostnames if h]
         
         log_info(f"Resolving {len(hostnames)} hostnames to IPs...")
-        # Resolve to IPs synchronously for simplicity
-        ips = resolve_hostnames(hostnames)
+        # resolve_hostnames v2 returns (ips, ip_to_domains)
+        ips, ip_to_domains = resolve_hostnames(hostnames)
         
         if not ips:
             log_warning("Failed to resolve any IPs.")
             return
             
-        scanner = PortScanner(ips)
+        scanner = PortScanner(ips, ip_to_domains=ip_to_domains)
         results = await scanner.scan()
         self.exposed_ports = results
         
@@ -272,11 +272,20 @@ class ReconMaster:
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(results, f, indent=2)
                 
+            # Alert on critical confirmed services only
+            critical_ports = {9200, 2375, 6379, 27017, 11211, 9090, 5601, 8500}
             for res in results:
-                if res["port"] in [9090, 9200, 2375, 5601, 8500]:
+                if res["port"] in critical_ports:
+                    domains_str = ", ".join(res.get("domains", [])) or res["ip"]
                     await self._send_alert(
                         f"CRITICAL Infrastructure Exposed! 🚨",
-                        f"**IP:** {res['ip']}\n**Port:** {res['port']}\n**Service:** {res['service']}\n**Banner:** {res.get('title', 'N/A')}",
+                        (
+                            f"**Host:** {domains_str}\n"
+                            f"**IP:** {res['ip']}\n"
+                            f"**Port:** {res['port']}\n"
+                            f"**Service:** {res['service']}\n"
+                            f"**Banner:** {res.get('banner', 'N/A')}"
+                        ),
                         16711680
                     )
                     
