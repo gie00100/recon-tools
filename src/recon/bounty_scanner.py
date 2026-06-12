@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics) — v3.0
+Module: Bounty Scanner (URL Heuristics) — v3.1
 Passively analyzes massive URL collections for high-value bug bounty endpoints.
 
 PHILOSOPHY (from decades of bounty hunting):
@@ -18,8 +18,11 @@ WHAT'S NEW IN v3.0 (based on deep analysis of 295 findings from 37 real targets)
   - Kill duplicate Password_Reset_UUID findings (dedup on path, not full URL)
   - Added SSRF param detection (url=, redirect=, next= with full http:// values)
   - Added GraphQL introspection detection (only if query contains __schema)
-  - Added API key in URL path detection (Mailgun, Twilio patterns)
-  - Added Bearer token in URL fragment detection
+
+WHAT'S NEW IN v3.1:
+  - Credential_In_URL: detects plaintext user:password embedded in URL paths
+    (VirusTotal pattern: https://auth.example.com/:user@gmail.com:P@ssw0rd)
+  - Also detects RFC 3986 basic-auth URLs (https://user:pass@host/)
 """
 
 import argparse
@@ -281,6 +284,70 @@ def _has_real_pii(params: dict) -> str:
     return ''
 
 
+# ── Credential-in-URL regex patterns ────────────────────────────────────────
+# Pattern 1: VirusTotal path-based credentials — /:username:password
+# e.g. https://auth.ripio.com/:aravenav941@gmail.com:Viviana89
+_CRED_PATH_REGEX = re.compile(
+    r'/:([\w.+@%-]{3,}):([^/?#\s]{4,})(?:[/?#]|$)'
+)
+# Pattern 2: RFC 3986 authority credentials — user:pass@host
+# e.g. https://admin:secret123@dashboard.example.com/
+_CRED_AUTH_REGEX = re.compile(
+    r'https?://([\w.+%-]{3,}):([^@/?#\s]{4,})@'
+)
+
+# Common false-positive values — path segments, not real creds
+_CRED_FP_VALUES = {
+    'www', 'http', 'https', 'ftp', 'ssh', 'null', 'user', 'pass',
+    'admin', 'guest', 'test', 'demo', 'example', 'placeholder',
+    'username', 'password', 'login', 'secret', 'v1', 'v2', 'v3',
+    'api', 'rest', 'graphql', 'query', 'action', 'method',
+}
+
+
+def _check_credential_in_url(url: str) -> str:
+    """
+    Detect plaintext credentials embedded in URLs — a CRITICAL finding.
+
+    Two patterns:
+    1. Path-based (VirusTotal format): https://auth.example.com/:user:password
+       Seen when users accidentally submit authenticated URLs to VirusTotal scanners.
+    2. RFC 3986 basic auth: https://user:password@host/
+       Some scripts/apps embed creds directly in the URL.
+
+    Filters:
+    - Skip known placeholder/version-tag values (v1, v2, api, etc.)
+    - Require password complexity: must NOT be all-lowercase-alpha
+      (purely lowercase alpha strings are likely path params, not passwords)
+    - Require password length >= 4
+    """
+    decoded = unquote(url)
+
+    # Skip mailto: links — they look like user:pass@host but aren't URLs
+    if 'mailto:' in decoded.lower():
+        return ''
+
+    # Pattern 1: /:user:password in path
+    m = _CRED_PATH_REGEX.search(decoded)
+    if m:
+        username, password = m.group(1), m.group(2)
+        if (username.lower() not in _CRED_FP_VALUES
+                and password.lower() not in _CRED_FP_VALUES):
+            # Skip pure lowercase alpha (path params like /:action:subaction)
+            if not (password.isalpha() and password.islower()):
+                return f"PATH_CRED: {username}:{password[:30]}"
+
+    # Pattern 2: user:pass@host (RFC 3986 basic auth in URL authority)
+    m = _CRED_AUTH_REGEX.search(url)
+    if m:
+        username, password = m.group(1), m.group(2)
+        if (username.lower() not in _CRED_FP_VALUES
+                and password.lower() not in _CRED_FP_VALUES):
+            return f"BASIC_AUTH: {username}:{password[:30]}"
+
+    return ''
+
+
 def _check_ssrf_params(url: str, params: dict) -> str:
     """
     Detect SSRF-prone parameters with external URLs as values.
@@ -462,6 +529,14 @@ HEURISTICS = {
         "severity": "MEDIUM",
         "description": "GraphQL introspection query in URL — schema disclosure, helps map attack surface.",
         "check": lambda url, params: _check_graphql_introspection(url, params),
+    },
+
+    # ── Plaintext credentials in URL ── (NEW in v3.1)
+    "Credential_In_URL": {
+        "severity": "CRITICAL",
+        "description": "Plaintext username:password embedded in URL path or authority — "
+                       "immediate ATO risk. Commonly found in VirusTotal URL submissions.",
+        "check": lambda url, params: _check_credential_in_url(url),
     },
 }
 
