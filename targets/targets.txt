@@ -68,39 +68,42 @@
 # === Kong (HackerOne) ===
 # Program: https://hackerone.com/kong/policy_scopes
 # Scope: *.api.konghq.com, konghq.com, etc.
-konghq.com
-developer.konghq.com
-cloud.konghq.com
-us.identity.konghq.com
-app.insomnia.rest
+# STATUS: SCANNED ✓
+# konghq.com
+# developer.konghq.com
+# cloud.konghq.com
+# us.identity.konghq.com
+# app.insomnia.rest
 
 # === Robinhood (HackerOne) ===
 # Program: https://hackerone.com/robinhood/policy_scopes
 # Scope: robinhood.com properties, bitstamp.net, tradepmr.com
-robinhood.com
-saytechnologies.com
-api.robinhood.com
-cashier.robinhood.com
-minerva.robinhood.com
-nummus.robinhood.com
-identi.robinhood.com
-www.bitstamp.net
-fusion.tradepmr.com
-www.tradepmr.com
-insight2.tradepmr.com
+# STATUS: SCANNED ✓
+# robinhood.com
+# saytechnologies.com
+# api.robinhood.com
+# cashier.robinhood.com
+# minerva.robinhood.com
+# nummus.robinhood.com
+# identi.robinhood.com
+# www.bitstamp.net
+# fusion.tradepmr.com
+# www.tradepmr.com
+# insight2.tradepmr.com
 
 # === Ripio (HackerOne) ===
 # Program: https://hackerone.com/ripio/policy_scopes
 # Scope: ripio.com, ripiotrade.co
-ripio.com
-ripiotrade.co
-trade.ripio.com
-app.ripio.com
-kyc.ripio.com
-auth.ripio.com
-defi.ripio.com
-sandbox-b2b.ripio.com
-bridge.ripio.com
+# STATUS: SCANNED ✓
+# ripio.com
+# ripiotrade.co
+# trade.ripio.com
+# app.ripio.com
+# kyc.ripio.com
+# auth.ripio.com
+# defi.ripio.com
+# sandbox-b2b.ripio.com
+# bridge.ripio.com
 
 # === M-Pesa (HackerOne) ===
 # Program: https://hackerone.com/mpesa/policy_scopes
