@@ -1,25 +1,39 @@
 @echo off
 title Recon Pipeline — Scan Launcher
 color 0B
-
-if not exist "venv\Scripts\python.exe" (
-    color 0C
-    echo [ERROR] venv\Scripts\python.exe not found.
-    echo Run: python -m venv venv ^&^& venv\Scripts\pip install -r requirements.txt
-    pause
-    exit /b 1
-)
-
 echo ============================================================
 echo   Recon Pipeline — Scan Launcher
 echo ============================================================
 echo.
-echo Usage:
-echo   scan.bat bykea.com api.bykea.net
-echo   scan.bat --active
-echo   scan.bat --file targets\targets.txt
-echo   scan.bat --sync-only
+echo   Usage examples:
+echo     scan.bat --program bykea
+echo     scan.bat --program wellsfargo
+echo     scan.bat --program khealth
+echo     scan.bat --domains bykea.com api.bykea.net
+echo     scan.bat --all
+echo     scan.bat --program bykea --dry-run
+echo     scan.bat --no-sync --program khealth   (skip code sync)
 echo.
+echo ============================================================
+echo.
+
+if not exist "venv\Scripts\python.exe" (
+    color 0C
+    echo [ERROR] Virtual environment not found!
+    echo Run setup.bat first.
+    echo.
+    pause
+    exit /b 1
+)
+
+if "%~1"=="" (
+    echo [!] No arguments given. Showing help:
+    echo.
+    venv\Scripts\python.exe scripts\local\scan.py --help
+    echo.
+    pause
+    exit /b 0
+)
 
 venv\Scripts\python.exe scripts\local\scan.py %*
 echo.

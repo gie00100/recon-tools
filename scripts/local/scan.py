@@ -1,268 +1,361 @@
 #!/usr/bin/env python3
 """
-scan.py — One-command scan launcher for the Recon Pipeline VPS
+Recon Scan Launcher — One-command scan start with VPS sync and Discord notification.
+
+Reads targets from targets.txt, syncs latest code + targets to VPS,
+launches the bulk scan in a named screen session, and notifies Discord.
 
 Usage:
-    python scripts/local/scan.py bykea.com api.bykea.net tomoe.bykea.net
-    python scripts/local/scan.py --file targets/targets.txt
-    python scripts/local/scan.py --active          # read active (uncommented) targets
-    python scripts/local/scan.py bykea.com --no-start  # deploy only, don't launch scan
+  # Scan specific domains
+  python scripts/local/scan.py --domains bykea.com api.bykea.net tomoe.bykea.net
 
-What it does:
-    1. Syncs targets.txt → VPS (SFTP)
-    2. Syncs updated source files → VPS (src/recon/*.py, src/*.py, src/.env)
-    3. git pull on VPS to get latest code
-    4. Starts a scan for each domain (bulk_runner.py in background, one per domain)
-    5. Restarts the Discord bot so it picks up the new targets list
-    6. Prints a summary with the nohup log paths to monitor
+  # Scan all domains for a named program (reads from targets.txt)
+  python scripts/local/scan.py --program bykea
+  python scripts/local/scan.py --program wellsfargo
+  python scripts/local/scan.py --program khealth
+
+  # Scan ALL un-commented domains in targets.txt
+  python scripts/local/scan.py --all
+
+  # Preview what would be scanned (no launch)
+  python scripts/local/scan.py --program bykea --dry-run
+
+  # Custom targets file
+  python scripts/local/scan.py --file targets/my_targets.txt
 """
 
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "vps"))
-from vps_helper import connect_vps, get_vps_config, run_remote
+import paramiko
+from scp import SCPClient
 
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
-# ── Paths ─────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-TARGETS_FILE  = PROJECT_ROOT / "targets" / "targets.txt"
-REMOTE_ROOT   = "/root/recon-tools"
+TARGETS_FILE = PROJECT_ROOT / "targets" / "targets.txt"
 
-# Files to always sync to VPS before starting
-FILES_TO_SYNC = [
-    ("src/.env",                         f"{REMOTE_ROOT}/src/.env"),
-    ("src/recon/bounty_scanner.py",      f"{REMOTE_ROOT}/src/recon/bounty_scanner.py"),
-    ("src/recon/vt_url_scraper.py",      f"{REMOTE_ROOT}/src/recon/vt_url_scraper.py"),
-    ("src/recon/config.py",              f"{REMOTE_ROOT}/src/recon/config.py"),
-    ("targets/targets.txt",              f"{REMOTE_ROOT}/targets/targets.txt"),
+# VPS credentials
+IP   = "134.209.72.156"
+USER = "root"
+PASS = "Kingo@123Kingo"
+REMOTE_PATH = "/root/recon-tools"
+
+# Files to sync to VPS on every scan launch (keep VPS code up to date)
+SYNC_FILES = [
+    ("src/recon/vt_url_scraper.py",  f"{REMOTE_PATH}/src/recon/vt_url_scraper.py"),
+    ("src/recon/bounty_scanner.py",  f"{REMOTE_PATH}/src/recon/bounty_scanner.py"),
+    ("src/.env",                      f"{REMOTE_PATH}/src/.env"),
+    ("targets/targets.txt",           f"{REMOTE_PATH}/targets/targets.txt"),
 ]
 
+# Discord webhook for scan notifications
+DISCORD_WEBHOOK = ""  # Loaded from .env below
 
-# ── Target parsing ─────────────────────────────────────────────
 
-def _active_targets(targets_file: Path) -> list:
-    """Read all uncommented, non-empty, non-header lines from targets.txt."""
-    targets = []
-    with open(targets_file, encoding="utf-8") as f:
+def _load_discord_webhook() -> str:
+    env_path = PROJECT_ROOT / "src" / ".env"
+    if env_path.exists():
+        for line in env_path.read_text(encoding='utf-8').splitlines():
+            if line.startswith("DISCORD_WEBHOOK_URL="):
+                return line.split("=", 1)[1].strip()
+    return ""
+
+
+def _parse_targets_txt(program_filter: str = None) -> list:
+    """
+    Parse targets.txt and return active (non-commented) domains.
+    If program_filter is given, only return domains for that program section.
+    """
+    if not TARGETS_FILE.exists():
+        print(f"[!] targets.txt not found at {TARGETS_FILE}")
+        return []
+
+    domains = []
+    in_section = False
+    current_section = None
+
+    with open(TARGETS_FILE, encoding='utf-8') as f:
         for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
+            line = line.rstrip('\n').rstrip('\r')
+            stripped = line.strip()
+
+            # Detect section headers: # === Program Name ===
+            if stripped.startswith("# ===") and "===" in stripped:
+                section_name = stripped.strip("# =").strip().lower()
+                current_section = section_name
+                if program_filter:
+                    # Match loosely: "bykea" matches "Bykea (HackerOne)"
+                    in_section = program_filter.lower() in section_name
+                else:
+                    in_section = True
                 continue
-            targets.append(line)
-    return targets
+
+            # Skip blank lines and commented-out domains
+            if not stripped or stripped.startswith("#"):
+                continue
+
+            # Active domain line
+            if program_filter:
+                if in_section:
+                    domains.append(stripped)
+            else:
+                domains.append(stripped)
+
+    return domains
 
 
-def _parse_targets(args) -> list:
-    if args.active:
-        targets = _active_targets(TARGETS_FILE)
-        print(f"[*] --active: found {len(targets)} active targets in targets.txt")
-        return targets
-    if args.file:
-        path = Path(args.file)
-        targets = _active_targets(path)
-        print(f"[*] --file: found {len(targets)} targets in {path}")
-        return targets
-    if args.domains:
-        return list(args.domains)
-    return []
+def _connect() -> paramiko.SSHClient:
+    print(f"[*] Connecting to VPS ({IP})...")
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(IP, username=USER, password=PASS, timeout=30,
+                look_for_keys=False, allow_agent=False)
+    print("[+] Connected.")
+    return ssh
 
 
-# ── VPS helpers ────────────────────────────────────────────────
-
-def sync_files(ssh, sftp):
-    """Upload local source files to the VPS."""
-    print("\n[*] Syncing files to VPS...")
-    for local_rel, remote_path in FILES_TO_SYNC:
-        local = PROJECT_ROOT / local_rel
-        if not local.exists():
-            print(f"  [!] Missing locally: {local_rel} — skip")
-            continue
-        try:
-            sftp.put(str(local), remote_path)
-            print(f"  [+] {local_rel:45s} → {remote_path}")
-        except Exception as e:
-            print(f"  [!] Failed to sync {local_rel}: {e}")
-
-
-def git_pull_vps(ssh):
-    """Run git pull on the VPS to get latest commits."""
-    print("\n[*] Git pull on VPS...")
-    out = run_remote(ssh, f"cd {REMOTE_ROOT} && git pull origin main 2>&1", silent=True)
-    print(f"  {out.splitlines()[0] if out else 'no output'}")
+def _sync_code(ssh: paramiko.SSHClient):
+    """Push latest code files + targets.txt to VPS."""
+    print("\n[*] Syncing latest code to VPS...")
+    sftp = ssh.open_sftp()
+    try:
+        for local_rel, remote_path in SYNC_FILES:
+            local_path = PROJECT_ROOT / local_rel
+            if not local_path.exists():
+                print(f"  [!] Skipping {local_rel} (not found locally)")
+                continue
+            try:
+                sftp.put(str(local_path), remote_path)
+                size_kb = local_path.stat().st_size // 1024
+                print(f"  [+] {local_rel} → {remote_path} ({size_kb} KB)")
+            except Exception as e:
+                print(f"  [!] Failed to sync {local_rel}: {e}")
+    finally:
+        sftp.close()
 
 
-def check_already_scanning(ssh, domain: str) -> bool:
-    """Return True if a scan for this domain is already running."""
-    out = run_remote(ssh, f"pgrep -a python | grep '{domain}'", silent=True)
-    return bool(out.strip())
+def _upload_scan_list(ssh: paramiko.SSHClient, domains: list, session_name: str) -> str:
+    """Upload clean domain list to VPS and return remote file path."""
+    remote_scan_file = f"{REMOTE_PATH}/{session_name}_targets.txt"
+    print(f"\n[*] Uploading {len(domains)} domains to VPS...")
+
+    domain_list = "\n".join(domains) + "\n"
+    sftp = ssh.open_sftp()
+    try:
+        with sftp.open(remote_scan_file, 'w') as f:
+            f.write(domain_list)
+        print(f"  [+] Uploaded to {remote_scan_file}")
+    finally:
+        sftp.close()
+
+    return remote_scan_file
 
 
-def start_scan(ssh, domain: str, log_dir: str = "/root/recon-tools/logs") -> str:
-    """
-    Launch a background scan for a single domain.
-    Returns the log file path.
-    """
-    ts = time.strftime("%Y%m%d_%H%M%S")
-    log_file = f"{log_dir}/{domain}_{ts}.log"
+def _run(ssh: paramiko.SSHClient, cmd: str, silent: bool = False) -> str:
+    stdin, stdout, stderr = ssh.exec_command(cmd)
+    out = stdout.read().decode('utf-8', errors='replace').strip()
+    err = stderr.read().decode('utf-8', errors='replace').strip()
+    if not silent:
+        if out:
+            print(out)
+        if err:
+            print(f"  STDERR: {err}")
+    return out
 
-    # Ensure log dir exists
-    run_remote(ssh, f"mkdir -p {log_dir}", silent=True)
 
+def _launch_scan(ssh: paramiko.SSHClient, remote_scan_file: str, session_name: str) -> bool:
+    """Launch scan in a named screen session on the VPS."""
+    filename = Path(remote_scan_file).name
+
+    # Kill existing session with same name
+    _run(ssh, f"screen -S {session_name} -X quit 2>/dev/null || true", silent=True)
+    time.sleep(1)
+
+    # Ensure screen is installed
+    _run(ssh, "which screen || apt-get install -y screen -q", silent=True)
+
+    # Launch bulk scan in detached screen
     cmd = (
-        f"cd {REMOTE_ROOT} && "
-        f"nohup venv/bin/python src/recon_master.py {domain} "
-        f"> {log_file} 2>&1 &"
+        f"cd {REMOTE_PATH} && "
+        f'screen -dmS {session_name} bash -c "'
+        f"./run_bulk.sh {filename}; "
+        f'echo \'[DONE] {session_name} complete\'; sleep 3600"'
     )
-    run_remote(ssh, cmd, silent=True)
-    return log_file
+    _run(ssh, cmd, silent=True)
+    time.sleep(2)
+
+    # Verify session started
+    sessions = _run(ssh, "screen -ls", silent=True)
+    if session_name in sessions:
+        return True
+    else:
+        print(f"  [!] Screen session '{session_name}' not found. Output:")
+        print(sessions)
+        return False
 
 
-def restart_bot(ssh):
-    """Restart the Discord bot so it picks up the updated targets.txt."""
-    print("\n[*] Restarting Discord bot...")
-    out = run_remote(ssh, "systemctl restart recon-bot && echo OK", silent=True)
-    print(f"  {'[+] Bot restarted' if 'OK' in out else '[!] ' + out}")
+def _notify_discord(webhook_url: str, domains: list, session_name: str, program: str):
+    """Send scan start notification to Discord."""
+    if not webhook_url:
+        return
+    try:
+        import urllib.request, json
+        domain_list = "\n".join(f"• `{d}`" for d in domains[:20])
+        if len(domains) > 20:
+            domain_list += f"\n• _(+{len(domains)-20} more)_"
 
+        payload = {
+            "embeds": [{
+                "title": f"🚀 Scan Started — {program.upper() if program else 'Custom'}",
+                "description": (
+                    f"**Session:** `{session_name}`\n"
+                    f"**Domains ({len(domains)}):**\n{domain_list}"
+                ),
+                "color": 0x00ff88,
+                "footer": {"text": f"Recon Pipeline • VPS {IP}"},
+                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            }]
+        }
+        data = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(
+            webhook_url,
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        urllib.request.urlopen(req, timeout=10)
+        print("  [+] Discord notification sent.")
+    except Exception as e:
+        print(f"  [!] Discord notify failed: {e}")
 
-def verify_scan_started(ssh, domain: str, log_file: str) -> bool:
-    """Give the process 3s to start, then check it's actually running."""
-    time.sleep(3)
-    pid_out = run_remote(ssh, f"pgrep -a python | grep '{domain}'", silent=True)
-    return bool(pid_out.strip())
-
-
-# ── Main ───────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Recon Pipeline — Deploy + Start Scans on VPS",
+        description="Launch recon scan on VPS with code sync and Discord notification",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Scan specific domains
-  python scripts/local/scan.py bykea.com api.bykea.net
+        epilog=__doc__
+    )
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--program", "-p", metavar="NAME",
+                       help="Program name to scan (reads from targets.txt, e.g. bykea)")
+    group.add_argument("--domains", "-d", nargs="+", metavar="DOMAIN",
+                       help="Explicit list of domains to scan")
+    group.add_argument("--file", "-f", metavar="FILE",
+                       help="Custom targets file (plain domain list)")
+    group.add_argument("--all", "-a", action="store_true",
+                       help="Scan ALL active (non-commented) domains in targets.txt")
 
-  # Scan all active (uncommented) targets from targets.txt
-  python scripts/local/scan.py --active
-
-  # Scan domains from a custom file
-  python scripts/local/scan.py --file my_targets.txt
-
-  # Deploy/sync only — don't start scans
-  python scripts/local/scan.py bykea.com --no-start
-
-  # Deploy targets.txt + restart bot (no domain scan)
-  python scripts/local/scan.py --sync-only
-        """,
-    )
-    parser.add_argument(
-        "domains",
-        nargs="*",
-        metavar="DOMAIN",
-        help="One or more domains to scan",
-    )
-    parser.add_argument(
-        "--file", "-f",
-        metavar="FILE",
-        help="Read domains from a file (one per line, # comments ignored)",
-    )
-    parser.add_argument(
-        "--active", "-a",
-        action="store_true",
-        help="Read all active (uncommented) domains from targets/targets.txt",
-    )
-    parser.add_argument(
-        "--no-start",
-        action="store_true",
-        help="Sync files and update VPS but don't launch scans",
-    )
-    parser.add_argument(
-        "--sync-only",
-        action="store_true",
-        help="Only sync targets.txt + restart bot, do not start any scan",
-    )
-    parser.add_argument(
-        "--no-sync",
-        action="store_true",
-        help="Skip file sync, just start the scan(s)",
-    )
-
+    parser.add_argument("--session", "-s", metavar="NAME",
+                        help="Screen session name (default: auto from program/timestamp)")
+    parser.add_argument("--no-sync", action="store_true",
+                        help="Skip syncing code to VPS (faster, use if code unchanged)")
+    parser.add_argument("--no-notify", action="store_true",
+                        help="Skip Discord notification")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Show what would be scanned without launching")
     args = parser.parse_args()
 
-    targets = _parse_targets(args)
+    # ── Resolve domain list ──────────────────────────────────────────────────
+    domains = []
+    program_label = "custom"
 
-    if not targets and not args.sync_only:
+    if args.program:
+        program_label = args.program
+        domains = _parse_targets_txt(args.program)
+        if not domains:
+            print(f"[!] No active domains found for program '{args.program}' in targets.txt")
+            print(f"    (Check that the section header contains '{args.program}' and domains are uncommented)")
+            sys.exit(1)
+
+    elif args.domains:
+        domains = args.domains
+        program_label = domains[0].split('.')[0]
+
+    elif args.file:
+        fpath = Path(args.file)
+        if not fpath.exists():
+            fpath = PROJECT_ROOT / args.file
+        if not fpath.exists():
+            print(f"[!] File not found: {args.file}")
+            sys.exit(1)
+        domains = [l.strip() for l in fpath.read_text(encoding='utf-8').splitlines()
+                   if l.strip() and not l.strip().startswith('#')]
+        program_label = fpath.stem
+
+    elif args.all:
+        program_label = "all"
+        domains = _parse_targets_txt(None)
+        if not domains:
+            print("[!] No active domains found in targets.txt")
+            sys.exit(1)
+
+    else:
         parser.print_help()
-        print("\n[!] Error: provide domain(s), --active, --file, or --sync-only")
-        sys.exit(1)
+        sys.exit(0)
 
-    # ── Connect ───────────────────────────────────────────────
-    try:
-        ssh, cfg = connect_vps()
-        sftp = ssh.open_sftp()
-    except Exception as e:
-        print(f"[!] Cannot connect to VPS: {e}")
-        sys.exit(1)
+    # ── Session name ─────────────────────────────────────────────────────────
+    session_name = args.session or f"recon_{program_label.replace('-', '_').replace('.', '_')}"
 
+    # ── Preview ──────────────────────────────────────────────────────────────
+    print(f"\n{'='*60}")
+    print(f"  Recon Scan — {program_label.upper()}")
+    print(f"{'='*60}")
+    print(f"  Domains   : {len(domains)}")
+    print(f"  Session   : {session_name}")
+    print(f"  Sync code : {'NO (--no-sync)' if args.no_sync else 'YES'}")
+    print(f"  Dry run   : {'YES' if args.dry_run else 'NO'}")
+    print()
+    for i, d in enumerate(domains, 1):
+        print(f"  {i:3}. {d}")
+    print()
+
+    if args.dry_run:
+        print("[DRY-RUN] No scan launched.")
+        return
+
+    # ── Connect & run ────────────────────────────────────────────────────────
+    ssh = _connect()
     try:
-        # ── Sync files ────────────────────────────────────────
+        # 1. Sync latest code + targets.txt + .env
         if not args.no_sync:
-            sync_files(ssh, sftp)
-            git_pull_vps(ssh)
+            _sync_code(ssh)
 
-        # ── Restart bot (always — picks up new targets.txt) ──
-        restart_bot(ssh)
+        # 2. Upload domain list for this scan
+        remote_scan_file = _upload_scan_list(ssh, domains, session_name)
 
-        # ── Launch scans ─────────────────────────────────────
-        if args.sync_only or args.no_start:
-            print(f"\n[=] Skipping scan launch (--{'sync-only' if args.sync_only else 'no-start'} mode)")
+        # 3. Launch scan
+        print(f"\n[*] Launching scan session '{session_name}'...")
+        success = _launch_scan(ssh, remote_scan_file, session_name)
+
+        if success:
+            print(f"\n{'='*60}")
+            print(f"  ✅ Scan launched successfully!")
+            print(f"{'='*60}")
+            print(f"  Session  : {session_name}")
+            print(f"  Targets  : {len(domains)} domains")
+            print(f"  Monitor  : ssh root@{IP} 'screen -r {session_name}'")
+            print(f"  Status   : python scripts/vps/check_recon_progress.py")
+            print(f"  Fetch    : run fetch_results.bat when done")
+            print()
+
+            # 4. Discord notification
+            if not args.no_notify:
+                print("[*] Notifying Discord...")
+                webhook = _load_discord_webhook()
+                _notify_discord(webhook, domains, session_name, program_label)
+
         else:
-            print(f"\n[*] Launching scans for {len(targets)} domain(s)...")
-            results = []
-            skipped = []
+            print("\n[!] Scan may not have started. Check VPS manually.")
 
-            for domain in targets:
-                domain = domain.strip().lower()
-                if not domain:
-                    continue
-
-                if check_already_scanning(ssh, domain):
-                    print(f"  [=] {domain:40s} → already scanning, skip")
-                    skipped.append(domain)
-                    continue
-
-                log_file = start_scan(ssh, domain)
-                started = verify_scan_started(ssh, domain, log_file)
-                status = "✓ started" if started else "? check log"
-                print(f"  [+] {domain:40s} → {status}")
-                print(f"       Log: {log_file}")
-                results.append((domain, log_file, started))
-
-            # ── Summary ───────────────────────────────────────
-            print(f"\n{'='*65}")
-            print(f"  SCAN LAUNCH SUMMARY")
-            print(f"{'='*65}")
-            ok  = [(d, l) for d, l, s in results if s]
-            bad = [(d, l) for d, l, s in results if not s]
-            print(f"  Started:  {len(ok)} domain(s)")
-            if skipped:
-                print(f"  Skipped:  {len(skipped)} (already running): {', '.join(skipped)}")
-            if bad:
-                print(f"  Failed:   {len(bad)} — check logs:")
-                for d, l in bad:
-                    print(f"    tail -f {l}")
-            print(f"\n  Monitor via Discord: !status or !scans")
-            print(f"  Or SSH:  tail -f /root/recon-tools/logs/<domain>_*.log")
-            print(f"{'='*65}")
-
+    except Exception as e:
+        print(f"\n[!] Error: {e}")
     finally:
-        sftp.close()
         ssh.close()
-        print("\n[*] Connection closed.")
+        print("[*] Connection closed.")
 
 
 if __name__ == "__main__":
