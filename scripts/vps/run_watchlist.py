@@ -76,6 +76,11 @@ def main():
         print(f"\n[*] Uploading {len(domains)} domains to VPS...")
         sftp = ssh.open_sftp()
         sftp.put(str(tmp_file), remote_file)
+        
+        # Also upload the raw targets file so the Discord !status command has the latest data
+        remote_targets_file = f"{cfg['remote_path']}/targets/targets.txt"
+        sftp.put(str(filepath), remote_targets_file)
+        
         sftp.close()
         tmp_file.unlink()  # Clean up local temp
 
