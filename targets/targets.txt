@@ -178,31 +178,79 @@
 
 # === Playtika (HackerOne) ===
 # Program: https://hackerone.com/playtika/policy_scopes
-slotomania.com
-playtika.com
-bingoblitz.com
-caesarsgames.com
-boardkingsgame.com
-houseoffun.com
-playwsop.com
-serious.li
-wooga.com
-redecor.com
-seriously.com
-monopoly-poker.com
-playticorp.com
-gnocchi-www.buffalo-ggn.net
-bestfiends.com
-governorofpoker.com
-gop3.nl
+# STATUS: SCANNED ✓
+# slotomania.com
+# playtika.com
+# bingoblitz.com
+# caesarsgames.com
+# boardkingsgame.com
+# houseoffun.com
+# playwsop.com
+# serious.li
+# wooga.com
+# redecor.com
+# seriously.com
+# monopoly-poker.com
+# playticorp.com
+# gnocchi-www.buffalo-ggn.net
+# bestfiends.com
+# governorofpoker.com
+# gop3.nl
 
 # === Finnair (HackerOne) ===
 # Program: https://hackerone.com/finnair_vdp/policy_scopes
-finnair.com
+# STATUS: SCANNED ✓
+# finnair.com
 
 # === Deriv Services Ltd (HackerOne) ===
 # Program: https://hackerone.com/deriv/policy_scopes
-deriv.com
-deriv.cloud
-derivws.com
-deriv.partners
+# STATUS: SCANNED ✓
+# deriv.com
+# deriv.cloud
+# derivws.com
+# deriv.partners
+
+# === Varonis (HackerOne) ===
+# Program: https://hackerone.com/varonis/policy_scopes
+varonis.com
+varonis.io
+varonis.net
+varonis-preprod.com
+cyral.com
+
+# === Netflix (HackerOne) ===
+# Program: https://hackerone.com/netflix/policy_scopes
+nflxext.com
+netflix.com
+ftl.netflix.com
+cloud.netflix.com
+nflxvideo.net
+dradis.netflix.com
+nflximg.net
+nflxso.net
+beacon.netflix.com
+customerevents.netflix.com
+secure.netflix.com
+help.netflix.com
+ichnaea.netflix.com
+presentationtracking.netflix.com
+nmtracking.netflix.com
+meechum.netflix.com
+ir.netflix.com
+ir.netflix.net
+netflixinvestor.com
+
+# === Early Warning (HackerOne) ===
+# Program: https://hackerone.com/early_warning/policy_scopes
+zellepay.com
+earlywarning.com
+zelle.com
+zelleservice.my.site.com
+ews-fusion.my.site.com
+zelleservice.my.salesforce.com
+www.certos.com
+clearxchange.com
+earlywarning.io
+toolkit.zellepay.com
+zellepay.force.com
+earlywarningapi.force.com
