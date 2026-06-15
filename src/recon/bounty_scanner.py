@@ -1,338 +1,236 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics) — v4.1
-Passively analyzes massive URL collections for high-value bug bounty endpoints.
+Module: Bounty Scanner (URL Heuristics) — v5.0
+Passively analyzes massive URL collections for high-value bug bounty findings.
 
-PHILOSOPHY (from decades of bounty hunting):
-  - Only flag things that have REAL security impact and are ACCEPTED by programs
-  - Every finding should be something you'd ACTUALLY submit as a report
-  - Signal-to-noise ratio matters more than finding count — one real bug > 100 FPs
+════════════════════════════════════════════════════════════════════════════════
+DESIGN PHILOSOPHY — GENERAL FRAMEWORK, NOT CASE-BY-CASE PATCHING
+════════════════════════════════════════════════════════════════════════════════
 
-WHAT'S NEW IN v3.0 (based on deep analysis of 295 findings from 37 real targets):
-  - Kill 6sense analytics beacon tokens (b.6sc.co) — not exploitable
-  - Kill SendGrid documentation URLs (api_user=ryan.burrer@sendgrid.com) — doc examples
-  - Kill Zendesk chat session IDs (help.*/submit?sessionId=) — not auth sessions
-  - Kill http:// token URLs — real auth tokens are never served over plain HTTP in prod
-  - Kill AdWords/template variable values ({keyword}, {ifmobile:1}) — unfilled placeholders
-  - Kill grafana/kibana matches on image URLs (e.g., /assets/images/kic/grafana/*.png)
-  - Kill duplicate Password_Reset_UUID findings (dedup on path, not full URL)
-  - Added SSRF param detection (url=, redirect=, next= with full http:// values)
-  - Added GraphQL introspection detection (only if query contains __schema)
+Bug bounty programs pay for things that have REAL security impact and aren't
+expected behavior. From passive URL analysis, 8 high-signal classes exist:
 
-WHAT'S NEW IN v3.1:
-  - Credential_In_URL: detects plaintext user:password embedded in URL paths
-    (VirusTotal pattern: https://auth.example.com/:user@gmail.com:P@ssw0rd)
-  - Also detects RFC 3986 basic-auth URLs (https://user:pass@host/)
+  1. Credentials in URLs        — email:password in path/authority  [CRITICAL]
+  2. Auth token leaks            — session/API tokens in params      [CRITICAL]
+  3. Password reset tokens       — reset/verify paths with tokens    [CRITICAL]
+  4. JWT in URLs                 — JWTs should never appear in URLs  [CRITICAL]
+  5. PII in URLs                 — real emails, SSNs in params       [HIGH]
+  6. Open Redirects              — redirect params to external hosts [HIGH]
+  7. SSRF-prone params           — server fetches external URLs      [CRITICAL]
+  8. Exposed admin/debug/config  — actuator, .env, phpinfo           [CRITICAL]
+  9. IDOR API endpoints          — sequential IDs in user-data APIs  [MEDIUM]
+ 10. Cloud storage exposure      — pre-signed URLs, S3 credentials   [HIGH]
 
-WHAT'S NEW IN v4.0 (based on deep analysis of 166 findings from 23 real targets):
-  - Kill SAMLRequest/SAMLResponse Token_Leak FPs — expected in every SSO flow, not leaked secrets
-  - Kill http:// + port-in-host URLs for ALL checks — not valid in big bounty programs
-  - Kill :UNKNOWN:password Credential_In_URL FPs — VT scanner artifacts with no username
-  - Kill same-program-family SSRF FPs (ReturnUrl=https://sub.same-domain.com)
-  - Kill WhatsApp/Telegram phone link PII_Data_Leak FPs — public contact links, not leaks
-  - Kill Trustpilot apikey Token_Leak FPs — public business-unit lookup API, not secret
-  - Kill PIN= in casino/gaming URLs — these are customer-facing PINs, not auth secrets
+NOT detectable from URLs alone: XSS, SQLi, RCE, CSRF, business logic.
 
-WHAT'S NEW IN v4.1 (based on forensic analysis of ALL 166 findings from 23 targets):
-  - Kill IR feed public apiKey FPs (ir.*/feed/Event.svc — Q4 Inc investor platform, public key)
-  - Kill Wix analytics session_id FPs (frog.wix.com — performance telemetry, not auth)
-  - Kill marketing unsubscribe email FPs (/unsubscribe, /suppression/ — required by CAN-SPAM)
-  - Kill Microsoft SafeLinks email artifacts (|01|email|guid| pattern in URL rewrites)
-  - Kill cross-TLD same-program SSRF FPs (varonis.com → varonis.io = same company)
-  - Kill Chartbeat analytics PII FPs (ping.chartbeat.net — 3rd party analytics)
-  - Remove SAMLRequest/SAMLResponse from token_params entirely (SSO flows, not secrets)
-  - Added apiKey value dedup (same key across 7 /feed/ paths = 1 finding, not 7)
+════════════════════════════════════════════════════════════════════════════════
+THREE-LAYER FILTER ARCHITECTURE
+════════════════════════════════════════════════════════════════════════════════
+
+  Layer 1 — DOMAIN SKIP LIST (before any check)
+    → Third-party analytics, CDN, SSO IdPs, marketing infrastructure
+    → http:// with explicit port (port-scan artifacts)
+    → Raw IP addresses (never valid bounty targets)
+    → SEO doorway pages (scraped junk)
+
+  Layer 2 — URL-LEVEL GUARDS (per check-type, before running the check)
+    → Token_Leak: skip http://, SAML flows, IR feed public keys, Wix beacons
+    → PII_Email_Leak: skip unsubscribe endpoints, SafeLinks artifacts, push-notification infra
+    → Open_Redirect / SSRF: skip same-family domains, known PoC hosts
+
+  Layer 3 — SIGNAL VALIDATORS (inside each detection function)
+    → Require real values (not junk/placeholder/template variables)
+    → Require plausible entropy (not pure lowercase alpha, too short)
+    → Type-classified confidence: CRITICAL = report now, HIGH = likely real, MEDIUM = verify
+
+════════════════════════════════════════════════════════════════════════════════
+WHAT'S NEW IN v5.0 (complete framework redesign)
+════════════════════════════════════════════════════════════════════════════════
+  - Token classification engine: types tokens by subclass (autologin, OAuth, API key, session)
+    instead of generic "any 20+ char string in a token param"
+  - JWT_In_URL: standalone CRITICAL heuristic — JWTs in URL path or fragment
+  - Open_Redirect: separated from SSRF with wider param list (r=, go=, from=, etc.)
+  - SSRF_Param: true server-side SSRF params (proxy=, fetch=, webhook=, image_url=)
+  - Config_File_Exposed: wires up existing _check_config_files() into HEURISTICS
+  - Cloud_Storage: detects pre-signed S3/GCS URLs with credential params
+  - IDOR_Endpoints: broader API path patterns for user/order/account objects
+  - Finding grouping: same type+host+path_prefix collapses to one finding with count
+  - Confidence scoring: 0-100 per finding for triage prioritization
+  - All v4.1 noise filters preserved and generalized into the architecture
 """
 
 import argparse
+import ipaddress
 import json
 import re
 import sys
 import time
+from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse, parse_qs, unquote
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from recon.utils import log_info, log_success, log_warning, banner, elapsed_str, read_lines, RICH_AVAILABLE
 
 
-# ── Value Validators ─────────────────────────────────────────
-# These check if a parameter VALUE actually contains real leaked data
+# ══════════════════════════════════════════════════════════════════════════════
+# COMPILED REGEXES
+# ══════════════════════════════════════════════════════════════════════════════
 
-EMAIL_REGEX = re.compile(r'[\w.+-]+@[\w-]+\.[\w.]+')
-UUID_REGEX = re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.I)
-TOKEN_REGEX = re.compile(r'^[A-Za-z0-9_/+=.-]{20,}$')  # JWT, API keys, session tokens, base64 blobs
-JWT_REGEX = re.compile(r'^eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$')  # Actual JWT
-NUMERIC_ID_REGEX = re.compile(r'^\d{4,}$')  # Sequential IDs (IDOR candidates)
-TEMPLATE_VAR_REGEX = re.compile(r'^\{[^}]+\}$|^\{\{[^}]+\}\}$')  # {keyword}, {{email}} — unfilled placeholders
+EMAIL_REGEX      = re.compile(r'[\w.+-]+@[\w-]+\.[\w.]+')
+UUID_REGEX       = re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.I)
+# Tokens: 20+ chars of base64/hex/alphanumeric — JWTs, API keys, session tokens
+TOKEN_REGEX      = re.compile(r'^[A-Za-z0-9_/+=.\-]{20,}$')
+# Real JWTs: three base64url segments separated by dots
+JWT_REGEX        = re.compile(r'eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+')
+# Template variables: {keyword}, {{email}}, {ifmobile:1}
+TEMPLATE_VAR_RE  = re.compile(r'^\{[^}]+\}$|^\{\{[^}]+\}\}$')
+# Private IP ranges
+PRIVATE_IP_REGEX = re.compile(
+    r'(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}'
+    r'|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}'
+    r'|192\.168\.\d{1,3}\.\d{1,3})'
+)
 
-# Junk values that are NOT real data
+
+# ══════════════════════════════════════════════════════════════════════════════
+# JUNK / PLACEHOLDER VALUES (not real data)
+# ══════════════════════════════════════════════════════════════════════════════
+
 JUNK_VALUES = {
     '', 'true', 'false', 'null', 'none', 'undefined', 'test', 'example',
     '{token}', '{{token}}', '{email}', '{{email}}', '{id}', '{{id}}',
     'placeholder', 'default', '0', '1', 'en', 'us', 'gb',
     'asc', 'desc', 'all', 'active', 'inactive', 'pending',
-    # SendGrid documentation placeholder values
     'your_sendgrid_username', 'your_sendgrid_password', 'your_api_key',
     'xxxxxx', 'xxxx', 'your.already.existing.authenticated_domain',
+    'unknown', 'UNKNOWN',   # VT scanner artifacts with no real username
 }
 
-# ── CDN / Static Asset Domains (always noise) ────────────────
+
+# ══════════════════════════════════════════════════════════════════════════════
+# LAYER 1: DOMAIN SKIP LISTS
+# ══════════════════════════════════════════════════════════════════════════════
+
+# CDN & static asset delivery — never contain app logic or secrets
 CDN_PATTERNS = [
-    'cloudfront.net', 'cdn.', 'static.', 'assets.', 'media.',
-    'akamaized.net', 'fastly.net', 'azureedge.net', 'cloudflare.com',
+    'cloudfront.net', 'akamaized.net', 'fastly.net', 'azureedge.net',
     's3.amazonaws.com', 'googleapis.com/storage', 'gstatic.com',
     'unpkg.com', 'jsdelivr.net', 'cdnjs.cloudflare.com',
     'ebaystatic.com', 'ebayimg.com',
+    # Broad CDN subdomain patterns (check these last — substring match)
+    'cdn.', 'static.', 'assets.', 'media.',
 ]
 
-# ── Third-party domains (not in scope, always noise) ─────────
+# Third-party services — not in scope for any program, always noise
 THIRD_PARTY_DOMAINS = [
-    'google.com', 'googletagmanager.com', 'googleapis.com', 'gstatic.com',
-    'facebook.com', 'fbcdn.net', 'twitter.com', 'linkedin.com',
-    'doubleclick.net', 'googlesyndication.com', 'googleadservices.com',
-    'trustarc.com', 'onetrust.com', 'cookielaw.org',
+    # Advertising & tag management
+    'googletagmanager.com', 'doubleclick.net', 'googlesyndication.com',
+    'googleadservices.com', 'googleoptimize.com', 'google.com',
+    'bing.com', 'clarity.ms', 'facebook.com', 'fbcdn.net',
+    'twitter.com', 'linkedin.com',
+    # Analytics & monitoring
     'newrelic.com', 'nr-data.net', 'sentry.io', 'bugsnag.com',
     'segment.io', 'mixpanel.com', 'amplitude.com', 'heap.io',
+    'hotjar.com', 'mouseflow.com', 'crazyegg.com', 'fullstory.com',
+    'chartbeat.net', 'ping.chartbeat.net',
+    '6sc.co', 'b.6sc.co',
+    # Wix analytics/telemetry (frog.wix.com = performance beacon, not app)
+    'frog.wix.com', 'wix.com',
+    # Consent / privacy
+    'trustarc.com', 'onetrust.com', 'cookielaw.org',
+    # Support / chat
     'intercom.io', 'zendesk.com', 'freshdesk.com',
+    # Payment processors (not the target company's servers)
     'stripe.com', 'braintreegateway.com', 'paypal.com',
+    # Bot protection
     'recaptcha.net', 'hcaptcha.com',
-    'bigmarker.com', 'corp.google.com',
-    'github.com', 'hackerone.com',
-    # Publishing / content platforms
-    'medium.com', 'substack.com', 'wordpress.com', 'ghost.io',
-    # Analytics / tracking SDKs
-    '6sc.co', 'b.6sc.co',         # 6sense analytics beacons
-    'googleoptimize.com',
-    'hotjar.com', 'mouseflow.com',
-    'crazyegg.com', 'fullstory.com',
-    'bing.com', 'clarity.ms',
-    'chartbeat.net', 'ping.chartbeat.net',  # Chartbeat analytics
-    'frog.wix.com', 'wix.com',             # Wix analytics/telemetry beacons
-    # Chat/messaging contact links (public links, not PII leaks)
+    # Public platforms
+    'github.com', 'hackerone.com', 'medium.com', 'substack.com',
+    'wordpress.com', 'ghost.io', 'bigmarker.com', 'corp.google.com',
+    # Public contact links (not PII leaks — these are intentional public links)
     'api.whatsapp.com', 'wa.me', 't.me', 'telegram.me',
-    # Public review platforms (business lookup APIs are public)
+    # Public review platforms
     'trustpilot.com', 'g2.com', 'capterra.com',
-    # SSO identity providers (SAML flows go through these — expected)
+    # SSO Identity Providers — SAML/OAuth flows go through these; expected
     'login.microsoftonline.com', 'accounts.google.com', 'okta.com',
     'auth0.com', 'onelogin.com', 'pingidentity.com', 'idp.ssocircle.com',
+    # Email marketing infrastructure
+    'sendgrid.net', 'mailchimp.com', 'mandrillapp.com',
+    'sparkpostmail.com', 'mailgun.org',
+    # Public investor relations platform (Q4 Inc) — API keys are public/embedded in page JS
+    'q4inc.com', 'q4cdn.com',
 ]
 
-# ── Static asset file extensions (path-based checks ignore these) ───
-STATIC_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico',
-                     '.woff', '.woff2', '.ttf', '.eot', '.otf', '.mp4', '.mp3',
-                     '.pdf', '.zip', '.tar', '.gz'}
+# Static file extensions — path-based checks skip these
+STATIC_EXTENSIONS = {
+    '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico',
+    '.woff', '.woff2', '.ttf', '.eot', '.otf',
+    '.mp4', '.mp3', '.webm', '.ogg',
+    '.pdf', '.zip', '.tar', '.gz',
+    '.css', '.map',
+}
 
-# ── Static asset path patterns ───────────────────────────────
-STATIC_PATH_PATTERNS = [
-    '/assets/', '/images/', '/static/', '/img/', '/media/',
-    '/fonts/', '/icons/', '/dist/', '/build/',
+# Documentation subpaths — tool name in a doc URL ≠ live running instance
+DOC_PATH_SEGMENTS = [
+    '/plugins/', '/docs/', '/documentation/', '/blog/', '/examples/',
+    '/reference/', '/changelog/', '/guides/', '/how-to/', '/learn/',
+    '/tutorials/', '/support/', '/getting-started/', '/overview/', '/faqs/',
+    '/kubernetes-ingress-controller/', '/concepts/', '/observability/',
+    '/metering-and-billing/', '/collectors/', '/operator/',
 ]
 
 
 def _is_noise_domain(url: str) -> bool:
-    """Check if URL belongs to a CDN, third-party, or otherwise noisy domain."""
+    """Return True if URL belongs to a CDN, third-party, or marketing domain."""
     lower = url.lower()
     return any(p in lower for p in CDN_PATTERNS + THIRD_PARTY_DOMAINS)
 
 
 def _is_static_asset(url: str) -> bool:
-    """Check if URL is a static asset (image, font, etc.) — path-based checks should skip these."""
-    parsed = urlparse(url.lower())
-    path = parsed.path
-    # Check extension
-    ext = Path(path).suffix
-    if ext in STATIC_EXTENSIONS:
+    """Return True if URL points to a static asset (image, font, CSS, etc.)."""
+    path = urlparse(url.lower()).path
+    if Path(path).suffix in STATIC_EXTENSIONS:
         return True
-    # Check path pattern
-    if any(p in path for p in STATIC_PATH_PATTERNS):
-        return True
-    return False
-
-
-def _is_http_not_https(url: str) -> bool:
-    """Return True if URL uses plain HTTP (not HTTPS). Real auth tokens are always HTTPS."""
-    return url.startswith('http://') and not url.startswith('https://')
+    static_path_markers = ['/assets/', '/images/', '/static/', '/img/',
+                           '/media/', '/fonts/', '/icons/', '/dist/', '/build/']
+    return any(m in path for m in static_path_markers)
 
 
 def _is_http_with_port(url: str) -> bool:
     """
-    Return True if URL is plain HTTP with an explicit port number in the host.
-    e.g. http://192.168.1.1:8080/ or http://example.com:80/path
-    These are port-scan artifacts — big bounty programs don't accept http://:port findings.
+    Return True if URL is http:// with an explicit non-standard port.
+    These are port-scan artifacts — bounty programs don't accept http://:port findings.
     """
     if not url.startswith('http://') or url.startswith('https://'):
         return False
     try:
-        from urllib.parse import urlparse as _up
-        parsed = _up(url)
-        return parsed.port is not None
+        return urlparse(url).port is not None
     except Exception:
         return False
 
 
 def _is_ip_url(url: str) -> bool:
-    """
-    Return True if URL host is a raw IP address.
-    Port-scan IPs often appear in URL lists but are never valid bounty targets.
-    """
+    """Return True if host is a raw IP — never a valid bounty target in programs."""
     try:
-        from urllib.parse import urlparse as _up
-        import ipaddress
-        host = _up(url).hostname or ''
+        host = urlparse(url).hostname or ''
         ipaddress.ip_address(host)
         return True
     except Exception:
         return False
 
 
-def _is_saml_url(url: str, params: dict) -> bool:
-    """
-    Return True if URL contains a SAMLRequest or SAMLResponse parameter.
-    SAML assertions are expected in every SSO flow — they are NOT leaked secrets.
-    They appear in waymore/VT data because users visit SSO endpoints, not because
-    the app is leaking auth tokens.
-    """
-    saml_keys = {'samlrequest', 'samlresponse', 'saml_request', 'saml_response',
-                 'SAMLRequest', 'SAMLResponse'}
-    return bool(saml_keys & set(params.keys()))
-
-
-def _is_pin_gaming_url(url: str, params: dict) -> bool:
-    """
-    Return True if URL contains a PIN= parameter in a gaming/casino/sports context.
-    These are customer-facing game PINs, not authentication secrets.
-    """
-    if 'pin' not in {k.lower() for k in params}:
-        return False
-    gaming_keywords = ['sportsbook', 'casino', 'game', 'sport', 'bet', 'slot', 'poker',
-                       'lottery', 'bingo', 'jackpot', 'play']
-    url_lower = url.lower()
-    return any(kw in url_lower for kw in gaming_keywords)
-
-
-def _is_ir_feed_apikey(url: str, params: dict) -> bool:
-    """
-    Detect investor relations (IR) feed API keys — these are PUBLIC client-side keys.
-    Powered by Q4 Inc and similar IR platforms, the same apiKey is embedded in the
-    page JavaScript on every company's IR site. They grant read-only access to
-    public press releases, stock quotes, and events. NOT a secret.
-    Pattern: ir.*/feed/Event.svc?apiKey=... or /feed/StockQuote.svc?apiKey=...
-    """
-    lower = url.lower()
-    parsed = urlparse(lower)
-    host = parsed.netloc
-    path = parsed.path
-    # Must be on an IR subdomain or IR domain
-    if not (host.startswith('ir.') or 'investor' in host):
-        return False
-    # Must be a /feed/ service endpoint
-    if '/feed/' not in path:
-        return False
-    # Must have an apiKey param
-    if 'apikey' not in {k.lower() for k in params}:
-        return False
-    return True
-
-
-def _is_notification_email_url(url: str) -> bool:
-    """
-    Detect marketing notification/unsubscribe URLs where emails are expected.
-    These are legally required (CAN-SPAM/GDPR) and are NOT security findings.
-    Patterns:
-    - /unsubscribe, /suppression/ — email opt-out endpoints
-    - push-notification subdomains — mass-mailing infrastructure
-    - track., tracking. subdomains — email click-tracking
-    - /public/view/ — email web-view with embedded unsubscribe links
-    """
-    lower = url.lower()
-    parsed = urlparse(lower)
-    host = parsed.netloc
-    path = parsed.path
-
-    # Notification infrastructure subdomains
-    if host.startswith('push-notification') or host.startswith('track.') or host.startswith('tracking.'):
-        return True
-
-    # Unsubscribe / suppression endpoints
-    if any(seg in path for seg in ['/unsubscribe', '/suppression/', '/email-abuse',
-                                    '/subscription/unsubscribe', '/email_abuse']):
-        return True
-
-    # Email web-view pages with unsubscribe links embedded
-    if '/public/view/' in path and 'unsubscribelink' in lower:
-        return True
-
-    return False
-
-
-def _is_safelinks_email(val: str) -> bool:
-    """
-    Detect Microsoft SafeLinks/Defender URL rewriting artifacts.
-    Pattern: 02|01|email@domain.com|GUID|GUID|0|0|timestamp
-    These appear when a corporate email user clicks a link — their employer's
-    email security gateway rewrites the URL. The email belongs to the clicker,
-    NOT a vulnerability in the target application.
-    """
-    # Microsoft SafeLinks format: pipe-delimited with email at position 3
-    if '|01|' in val or '|02|' in val:
-        parts = val.split('|')
-        if len(parts) >= 5:
-            # Check if any part looks like an email
-            for part in parts:
-                if '@' in part and '.' in part.split('@')[-1]:
-                    return True
-    return False
-
-
-def _is_sendgrid_doc_url(url: str, params: dict) -> bool:
-    """
-    Detect SendGrid documentation example URLs.
-    These appear in tutorials and docs, not real user sessions.
-    Pattern: api.sendgrid.com + api_user=ryan.burrer@sendgrid.com or api_key=placeholder
-    """
-    if 'api.sendgrid.com' not in url:
-        return False
-    api_user = params.get('api_user', [''])[0]
-    api_key = params.get('api_key', [''])[0]
-    # If api_user is a sendgrid.com employee email in docs or api_key is a placeholder
-    if 'sendgrid.com' in api_user.lower():
-        return True
-    if api_key.lower() in JUNK_VALUES:
-        return True
-    return False
-
-
-def _is_zendesk_chat_session(url: str, params: dict) -> bool:
-    """
-    Detect Zendesk/support chat session IDs — these are not auth sessions.
-    Pattern: /submit endpoint with sessionId + optional chatId or conversationId params
-    """
-    parsed = urlparse(url)
-    path = parsed.path.lower()
-    if '/submit' in path or '/chat' in path:
-        if 'sessionid' in {k.lower() for k in params}:
-            # Look for chat-specific co-params
-            param_keys = {k.lower() for k in params}
-            if param_keys & {'chatid', 'conversationid', 'interactionid'}:
-                return True
-    return False
-
-
 def _is_seo_doorway(url: str) -> bool:
     """
-    Detect SEO doorway pages — scraped junk URLs that look like:
-    http://ripio.com:80/ashaway_ri.php?q=ashaway+ri&q_type=rx&token=...
-    Pattern: http:// + port 80 + *.php with geo-slug filenames
+    Return True for scraped SEO doorway pages: http://host:80/city_state.php?token=...
+    These flood URL archives but have no security value.
     """
     if not url.startswith('http://'):
         return False
     try:
         parsed = urlparse(url)
-        port = parsed.port  # may raise ValueError on malformed ports
-        if port == 80 and parsed.path.endswith('.php'):
-            # City/state slug pattern: /cityname_state.php
+        if parsed.port == 80 and parsed.path.endswith('.php'):
             if re.match(r'^/[a-z_]+-?[a-z]+_[a-z]{2}\.php$', parsed.path):
                 return True
     except ValueError:
@@ -340,674 +238,1008 @@ def _is_seo_doorway(url: str) -> bool:
     return False
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# LAYER 2: URL-LEVEL GUARD FUNCTIONS (applied per check-type)
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _is_saml_url(params: dict) -> bool:
+    """
+    Return True if URL carries SAMLRequest/SAMLResponse parameters.
+    These are base64-encoded XML signed documents — expected in every SSO login flow,
+    NOT leaked secrets. No bounty program accepts "I found a SAML request."
+    """
+    saml_keys = {'samlrequest', 'samlresponse', 'saml_request', 'saml_response'}
+    return bool(saml_keys & {k.lower() for k in params})
+
+
+def _is_ir_feed_apikey(url: str, params: dict) -> bool:
+    """
+    Return True for investor-relations feed API keys — these are PUBLIC client-side keys.
+    Q4 Inc / similar IR platforms embed the same apiKey in every company's public IR page JS.
+    Grants read-only access to public press releases and stock quotes. NOT a secret.
+    Pattern: ir.*/feed/Event.svc?apiKey=  or  /feed/StockQuote.svc?apiKey=
+    """
+    parsed = urlparse(url.lower())
+    host, path = parsed.netloc, parsed.path
+    if not (host.startswith('ir.') or 'investor' in host):
+        return False
+    if '/feed/' not in path:
+        return False
+    return 'apikey' in {k.lower() for k in params}
+
+
+def _is_notification_email_url(url: str) -> bool:
+    """
+    Return True for marketing email infrastructure URLs where emails in params are expected.
+    CAN-SPAM / GDPR *require* that unsubscribe links contain the recipient's email.
+    These are not security findings.
+
+    Patterns killed:
+      - push-notification.*, track.*, tracking.* subdomains
+      - /unsubscribe, /suppression/, /email-abuse, /email_abuse endpoints
+      - /public/view/ email web-view pages with embedded unsubscribeLink
+      - /view/ hash-addressed email view pages
+      - Inbox notification payloads (?first_name=&last_name=&unsubscribeLink=)
+    """
+    lower = url.lower()
+    parsed = urlparse(lower)
+    host, path = parsed.netloc, parsed.path
+
+    # Marketing infrastructure subdomains
+    infra_prefixes = ('push-notification', 'track.', 'tracking.', 'email.',
+                      'mailer.', 'newsletter.', 'broadcast.')
+    if any(host.startswith(p) for p in infra_prefixes):
+        return True
+
+    # Opt-out / suppression endpoints
+    opt_out_segs = ['/unsubscribe', '/suppression/', '/email-abuse',
+                    '/subscription/unsubscribe', '/email_abuse',
+                    '/optout', '/opt-out', '/manage-preferences']
+    if any(seg in path for seg in opt_out_segs):
+        return True
+
+    # Email web-view pages (hash-addressed, contain unsubscribeLink in query)
+    if '/public/view/' in path or ('/view/' in path and 'unsubscribelink' in lower):
+        return True
+
+    return False
+
+
+def _is_safelinks_email(val: str) -> bool:
+    """
+    Return True for Microsoft SafeLinks / Defender URL rewriting artifacts.
+    Pattern: 02|01|email@domain|GUID|GUID|0|0|timestamp
+    The email belongs to the corporate user who clicked the link through their employer's
+    email security gateway. NOT a vulnerability in the target application.
+    """
+    if '|01|' in val or '|02|' in val:
+        parts = val.split('|')
+        if len(parts) >= 5:
+            for part in parts:
+                if '@' in part and '.' in part.split('@')[-1]:
+                    return True
+    return False
+
+
+def _same_brand_different_tld(source_host: str, target_host: str) -> bool:
+    """
+    Return True when source and target share the same brand name but different TLDs.
+    e.g. varonis.com → varonis.io, earlywarning.com → earlywarning.io
+    These are expected SSO / app-family redirects, not open redirects.
+    """
+    def brand(host: str) -> str:
+        parts = host.split('.')
+        return parts[-2] if len(parts) >= 2 else host
+
+    src_brand = brand(source_host)
+    tgt_brand = brand(target_host)
+    # Exclude generic words that aren't brands
+    generic = {'com', 'net', 'org', 'io', 'co', 'app', 'api', 'www'}
+    return src_brand == tgt_brand and src_brand not in generic
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# LAYER 3: SIGNAL VALIDATORS — the detection logic
+# ══════════════════════════════════════════════════════════════════════════════
+
 def _has_template_variable(value: str) -> bool:
-    """Check if value is an unfilled template placeholder like {keyword} or {ifmobile:1}."""
-    return bool(TEMPLATE_VAR_REGEX.match(value)) or ('{' in value and '}' in value and len(value) < 50)
+    """Return True if value is an unfilled template placeholder: {keyword}, {{email}}."""
+    return bool(TEMPLATE_VAR_RE.match(value)) or ('{' in value and '}' in value and len(value) < 50)
 
 
 def _has_real_email(params: dict) -> str:
-    """Check if any param contains a real email address."""
-    email_params = {'email', 'mail', 'e-mail', 'user_email', 'useremail',
-                    'login', 'username', 'recipient', 'to', 'from', 'sender',
-                    'login_hint', 'user', 'account', 'upn', 'preferred_username',
-                    'invited_email', 'filter'}
+    """
+    Return the first real email address found in params, or ''.
+    Guards against: template variables, retina filenames (@2x/@3x), encoded URL
+    fragments (@2F), Microsoft SafeLinks, system addresses, Apple Private Relay,
+    and known-junk values.
+    """
+    email_params = {
+        'email', 'mail', 'e-mail', 'user_email', 'useremail',
+        'login', 'username', 'recipient', 'to', 'from', 'sender',
+        'login_hint', 'user', 'account', 'upn', 'preferred_username',
+        'invited_email', 'filter',
+    }
+    skip_patterns = [
+        'noreply', 'no-reply', 'notifications', 'mailer-daemon',
+        'postmaster', 'donotreply', 'bounce', 'unsubscribe',
+    ]
     for key, values in params.items():
         val = unquote(values[0]) if values else ''
-        if val.lower() in JUNK_VALUES:
+        if not val or val.lower() in JUNK_VALUES:
             continue
-        # Skip template variables
         if _has_template_variable(val):
             continue
-        # Skip retina image filenames (contain @2x, @3x) — NOT emails
-        if re.search(r'@[23]x', val):
+        if re.search(r'@[23]x', val):               # retina filenames
             continue
-        # Skip encoded URLs falsely matching as emails (@2F, @3A patterns)
-        if re.search(r'@[0-9A-F]{2}', val):
+        if re.search(r'@[0-9A-F]{2}', val):         # URL-encoded hex
             continue
-        # Skip Microsoft SafeLinks URL rewriting artifacts
-        if _is_safelinks_email(val):
+        if _is_safelinks_email(val):                 # MS Defender rewrites
             continue
-        if key.lower() in email_params and EMAIL_REGEX.search(val):
+
+        match = EMAIL_REGEX.search(val)
+        if not match:
+            continue
+        email = match.group(0).lower()
+
+        # System / notification addresses
+        if any(x in email for x in skip_patterns):
+            continue
+        # Apple Private Relay — randomized opaque addresses, not real PII
+        if email.endswith('@privaterelay.appleid.com'):
+            continue
+        # SendGrid internal doc examples
+        if 'sendgrid.com' in email:
+            continue
+
+        # Only report if this is a clearly email-typed param OR email was clearly present
+        if key.lower() in email_params or '@' in val:
             return val
-        if '@' in val and EMAIL_REGEX.search(val):
-            email_match = EMAIL_REGEX.search(val)
-            if email_match:
-                email = email_match.group(0).lower()
-                # Skip system/notification addresses
-                if any(x in email for x in ['noreply', 'no-reply', 'notifications', 'mailer-daemon',
-                                              'postmaster', 'donotreply', 'bounce', 'unsubscribe']):
-                    continue
-                # Skip SendGrid's own documentation emails
-                if email.endswith('@sendgrid.com') and 'ryan.burrer' in email:
-                    continue
-                # Skip Apple Private Relay emails (randomized, not real PII)
-                if email.endswith('@privaterelay.appleid.com'):
-                    continue
-                return val
     return ''
 
 
-def _has_real_token(params: dict) -> str:
-    """Check if any param contains a real token/secret/password value."""
-    token_params = {'token', 'access_token', 'refresh_token', 'id_token',
-                    'auth_token', 'reset_token', 'verification_token',
-                    'api_key', 'apikey', 'secret', 'client_secret',
-                    'session_id', 'sessionid', 'jsessionid',
-                    'password', 'passwd', 'pwd', 'jwt',
-                    'bearer', 'authorization', 'oauth_token',
-                    'csrf_token', 'xsrf',
-                    # NOTE: samlrequest/samlresponse REMOVED in v4.1 — they are expected
-                    # in every SSO flow, not leaked secrets
-                    'assertion', 'stoken', 'sso_token', 'auth_code'}
+def _classify_token(url: str, params: dict) -> Tuple[str, str]:
+    """
+    Classify tokens by subclass, returning (severity, evidence).
+    severity: 'CRITICAL', 'HIGH', or '' (not a real token)
 
-    # Params that look like tokens but are analytics junk
-    analytics_junk_params = {
-        '_gl', '_ga', '_gid', 'utm_source', 'utm_medium', 'utm_campaign',
-        'utm_content', 'utm_term', 'utm_referrer', 'fbclid', 'gclid',
-        'mc_cid', 'mc_eid', 'ext-anonymousid', 'ext-gaclientid',
-        'ext-gasessionid', '_gcl_au', '_gcl_aw', 'site',
-        # Zendesk chat co-params — not auth
-        'chatid', 'conversationid', 'sessionid',
-    }
+    Subclasses in priority order:
+      CRITICAL — autologin tokens, live sessions with expiry, OAuth tokens, passwords
+      HIGH     — API keys on in-scope app paths
+      ''       — everything else (generic token params that are likely noise)
 
+    This replaces the old generic "any 20+ char string in a token param" approach.
+    """
+    params_lower = {k.lower(): v for k, v in params.items()}
+
+    # ── CRITICAL: Autologin / magic-link tokens — instant session hijack ──
+    if re.search(r'/autologin\b', url, re.I):
+        tok = (params_lower.get('token', []) or [''])[0]
+        if tok and TOKEN_REGEX.match(tok) and len(tok) > 15:
+            return 'CRITICAL', f'autologin_token={tok[:40]}'
+
+    # ── CRITICAL: Live session ID with an explicit expiry timestamp ──
+    # session_id= alone is noise; session_id= + expire= means the server sent a live session
+    sid_key = next((k for k in ('session_id', 'sessionid', 'jsessionid') if k in params_lower), None)
+    if sid_key:
+        sid = (params_lower[sid_key] or [''])[0]
+        expire = (params_lower.get('expire', params_lower.get('expires', ['']))[0])
+        if sid and TOKEN_REGEX.match(sid) and len(sid) > 20 and expire.isdigit():
+            return 'CRITICAL', f'session_id={sid[:40]} expire={expire}'
+
+    # ── CRITICAL: OAuth token in URL (both token and consumer key present) ──
+    oauth_tok = (params_lower.get('oauth_token', []) or [''])[0]
+    if oauth_tok and TOKEN_REGEX.match(oauth_tok):
+        oauth_key = (params_lower.get('oauth_consumer_key', []) or [''])[0]
+        return 'CRITICAL', f'oauth_token={oauth_tok[:40]}' + (f' key={oauth_key[:20]}' if oauth_key else '')
+
+    # ── CRITICAL: Password in URL (not gaming PIN) ──
+    for pwd_key in ('password', 'passwd', 'pwd'):
+        pwd = (params_lower.get(pwd_key, []) or [''])[0]
+        if pwd and len(pwd) > 5 and pwd.lower() not in JUNK_VALUES:
+            if not _has_template_variable(pwd):
+                return 'CRITICAL', f'{pwd_key}={pwd[:30]}'
+
+    # ── CRITICAL: JWT appearing as a param value ──
     for key, values in params.items():
-        val = values[0] if values else ''
-        key_lower = key.lower()
+        val = (values or [''])[0]
+        if val and JWT_REGEX.match(val):
+            return 'CRITICAL', f'JWT:{key}={val[:50]}...'
 
-        if not val or val.lower() in JUNK_VALUES or len(val) < 8:
+    # ── HIGH: Real API key on an in-scope endpoint (not a public IR feed) ──
+    for api_key_name in ('api_key', 'apikey', 'apiKey', 'api-key'):
+        val = (params_lower.get(api_key_name.lower(), []) or [''])[0]
+        if val and TOKEN_REGEX.match(val) and len(val) > 15 and val.lower() not in JUNK_VALUES:
+            if not _is_ir_feed_apikey(url, params):
+                return 'HIGH', f'{api_key_name}={val[:40]}'
+
+    # ── HIGH: Named auth tokens (access_token, reset_token, etc.) ──
+    high_token_params = {
+        'access_token', 'refresh_token', 'id_token', 'auth_token',
+        'reset_token', 'verification_token', 'auth_code', 'sso_token',
+        'stoken', 'client_secret', 'secret',
+    }
+    for key, values in params.items():
+        if key.lower() not in high_token_params:
             continue
-        if key_lower in analytics_junk_params:
+        val = (values or [''])[0]
+        if not val or len(val) < 12 or val.lower() in JUNK_VALUES:
             continue
-        # Skip template variable values
         if _has_template_variable(val):
             continue
+        if not TOKEN_REGEX.match(val):
+            continue
+        return 'HIGH', f'{key}={val[:40]}'
 
-        if key_lower in token_params and TOKEN_REGEX.match(val):
-            # Bonus: check for actual JWT
-            if JWT_REGEX.match(val):
-                return f"JWT: {key}={val[:40]}..."
-            return f"{key}={val[:30]}..."
-    return ''
+    return '', ''
 
 
 def _has_real_pii(params: dict) -> str:
-    """Check if any param contains real PII (SSN, phone, DOB, etc.)."""
-    pii_params = {'ssn', 'dob', 'date_of_birth', 'passport', 'phone',
-                  'mobile', 'credit_card', 'card_number',
-                  'account_number', 'routing_number', 'cvv',
-                  'social_security'}
+    """Return evidence string if a param contains non-email PII (SSN, DOB, card, phone)."""
+    pii_params = {
+        'ssn', 'dob', 'date_of_birth', 'passport', 'passport_number',
+        'phone', 'mobile', 'phone_number',
+        'credit_card', 'card_number', 'account_number', 'routing_number', 'cvv',
+        'social_security', 'tax_id', 'national_id',
+    }
     for key, values in params.items():
-        val = values[0] if values else ''
-        if val.lower() in JUNK_VALUES or len(val) < 3:
+        val = (values or [''])[0]
+        if not val or val.lower() in JUNK_VALUES or len(val) < 5:
             continue
-        # Skip template variables ({ifmobile:1} etc.)
         if _has_template_variable(val):
             continue
-        if key.lower() in pii_params:
-            if len(val) >= 5 and not val.isalpha():
-                return f"{key}={val[:20]}"
+        if key.lower() in pii_params and not val.isalpha():
+            return f'{key}={val[:25]}'
     return ''
 
 
-# ── Credential-in-URL regex patterns ────────────────────────────────────────
-# Pattern 1: VirusTotal path-based credentials — /:username:password
-# e.g. https://auth.ripio.com/:aravenav941@gmail.com:Viviana89
-_CRED_PATH_REGEX = re.compile(
-    r'/:([\w.+@%-]{3,}):([^/?#\s]{4,})(?:[/?#]|$)'
-)
-# Pattern 2: RFC 3986 authority credentials — user:pass@host
-# e.g. https://admin:secret123@dashboard.example.com/
-_CRED_AUTH_REGEX = re.compile(
-    r'https?://([\w.+%-]{3,}):([^@/?#\s]{4,})@'
-)
+# ── Credential-in-URL patterns ────────────────────────────────────────────────
+# Pattern 1: VirusTotal path format — /:user@email.com:P@ssword
+_CRED_PATH_RE = re.compile(r'/:([^:/?#\s]{3,}):([^/?#\s]{4,})(?:[/?#]|$)')
+# Pattern 2: RFC 3986 basic-auth — https://user:pass@host/
+_CRED_AUTH_RE = re.compile(r'https?://([^:@/?#\s]{3,}):([^@/?#\s]{4,})@')
 
-# Common false-positive values — path segments, not real creds
 _CRED_FP_VALUES = {
     'www', 'http', 'https', 'ftp', 'ssh', 'null', 'user', 'pass',
     'admin', 'guest', 'test', 'demo', 'example', 'placeholder',
     'username', 'password', 'login', 'secret', 'v1', 'v2', 'v3',
     'api', 'rest', 'graphql', 'query', 'action', 'method',
-    # VT scanner artifacts — no real username was captured
     'unknown', 'UNKNOWN',
 }
 
 
 def _check_credential_in_url(url: str) -> str:
     """
-    Detect plaintext credentials embedded in URLs — a CRITICAL finding.
+    Detect plaintext credentials embedded in URLs — always CRITICAL.
 
     Two patterns:
-    1. Path-based (VirusTotal format): https://auth.example.com/:user:password
-       Seen when users accidentally submit authenticated URLs to VirusTotal scanners.
-    2. RFC 3986 basic auth: https://user:password@host/
-       Some scripts/apps embed creds directly in the URL.
+    1. Path-based (VirusTotal): https://auth.example.com/:user@gmail.com:P@ssw0rd
+    2. RFC 3986 basic-auth:     https://user:password@dashboard.example.com/
 
-    Filters:
-    - Skip known placeholder/version-tag values (v1, v2, api, etc.)
-    - Require password complexity: must NOT be all-lowercase-alpha
-      (purely lowercase alpha strings are likely path params, not passwords)
-    - Require password length >= 4
+    Guards: skip mailto:, known placeholder values, pure-lowercase-alpha passwords.
+    The email@domain:password pattern is the strongest signal (real leaked creds).
     """
     decoded = unquote(url)
-
-    # Skip mailto: links — they look like user:pass@host but aren't URLs
     if 'mailto:' in decoded.lower():
         return ''
 
-    # Pattern 1: /:user:password in path
-    m = _CRED_PATH_REGEX.search(decoded)
+    # Pattern 1: path-based creds
+    m = _CRED_PATH_RE.search(decoded)
     if m:
         username, password = m.group(1), m.group(2)
         if (username.lower() not in _CRED_FP_VALUES
-                and password.lower() not in _CRED_FP_VALUES):
-            # Skip pure lowercase alpha (path params like /:action:subaction)
-            if not (password.isalpha() and password.islower()):
-                return f"PATH_CRED: {username}:{password[:30]}"
+                and password.lower() not in _CRED_FP_VALUES
+                and not (password.isalpha() and password.islower())):
+            return f'PATH_CRED: {username}:{password[:30]}'
 
-    # Pattern 2: user:pass@host (RFC 3986 basic auth in URL authority)
-    m = _CRED_AUTH_REGEX.search(url)
+    # Pattern 2: RFC 3986 basic-auth
+    m = _CRED_AUTH_RE.search(url)
     if m:
         username, password = m.group(1), m.group(2)
         if (username.lower() not in _CRED_FP_VALUES
                 and password.lower() not in _CRED_FP_VALUES):
-            return f"BASIC_AUTH: {username}:{password[:30]}"
+            return f'BASIC_AUTH: {username}:{password[:30]}'
 
     return ''
 
 
-def _check_ssrf_params(url: str, params: dict) -> str:
+def _check_jwt_in_url(url: str, params: dict) -> str:
     """
-    Detect SSRF-prone parameters with external URLs as values.
-    Only flag high-confidence params pointing to genuinely external hosts.
-
-    FALSE POSITIVE PATTERNS KILLED:
-    - redirect_uri in OAuth flows (expected, whitelisted by server)
-    - url= on GitBook image proxy paths (~gitbook/image) — that's how GitBook serves images
-    - url= pointing to same parent domain (e.g., twilio.com -> www.twilio.com)
-    - url=/redirect on analytics/tracking pixels (google, contentsquare, etc.)
-    - Generic params like url, src, href, path, to, uri — way too broad
-    - returnUrl/ReturnUrl to sibling subdomains (expected in enterprise SSO/app suites)
+    Detect JWTs appearing anywhere in the URL — path, fragment, or query.
+    JWTs should NEVER appear in URLs (they get logged in access logs, browser history,
+    Referer headers). This is always CRITICAL regardless of where it appears.
     """
-    # Only high-confidence SSRF params — open redirect / SSRF
-    # Deliberately EXCLUDE: url, src, href, path, uri, to, redirect_uri
-    # Those catch too many false positives (image proxies, OAuth, analytics)
-    ssrf_params = {'redirect', 'next', 'return_to', 'returnurl', 'return_url',
-                   'callback', 'target', 'dest', 'destination', 'forward',
-                   'continue', 'proxy', 'fetch', 'load',
-                   'image_url', 'img_url'}
+    # Check URL body (path and query string combined)
+    decoded = unquote(url)
+    m = JWT_REGEX.search(decoded)
+    if m:
+        jwt = m.group(0)
+        return f'JWT in URL: {jwt[:60]}...'
+    return ''
 
-    # Skip GitBook image proxy pages entirely — url= is their image CDN, not SSRF
-    if '~gitbook/image' in url or '~gitbook/' in url:
-        return ''
 
-    # Skip if this is a third-party domain (analytics pixels, etc.)
+def _check_open_redirect(url: str, params: dict) -> str:
+    """
+    Detect open redirect parameters — client-side redirect to an external domain.
+    Separated from SSRF: open redirects are HIGH (phishing vector), SSRF is CRITICAL.
+
+    Param list is deliberately wide — open redirects appear in many param names.
+    Guards against same-domain, same-brand-different-TLD, known PoC hosts, noise domains.
+    """
+    # Wide param set — open redirects appear in many names
+    redirect_params = {
+        'redirect', 'redirect_to', 'redirect_url', 'redirecturl',
+        'next', 'return', 'return_to', 'return_url', 'returnurl', 'returnto',
+        'redir', 'r', 'destination', 'dest',
+        'go', 'goto', 'out', 'view',
+        'login_redirect', 'post_login_url', 'login_url',
+        'success_url', 'failure_url', 'cancel_url',
+        'from', 'come_from', 'referrer',
+        'continue', 'forward',
+        'target',
+    }
+    # Known PoC / test hosts — pentesters embed these; not real vulnerabilities
+    poc_hosts = {
+        'evil.com', 'attacker.com', 'test.com', 'example.com', 'localhost',
+        'burp.com', 'ngrok.io', 'requestbin.com', 'webhook.site',
+        'collaborator.net', 'interactsh.com', 'oastify.com',
+    }
+
     if _is_noise_domain(url):
         return ''
 
-    source_parsed = urlparse(url)
-    source_host = source_parsed.netloc.lower()
-    # Get parent domain (last 2 parts) for same-domain redirect checks
-    source_parts = source_host.split('.')
-    source_parent = '.'.join(source_parts[-2:]) if len(source_parts) >= 2 else source_host
+    try:
+        src = urlparse(url)
+        src_host = src.netloc.lower()
+        src_parts = src_host.split('.')
+        src_parent = '.'.join(src_parts[-2:]) if len(src_parts) >= 2 else src_host
+    except Exception:
+        return ''
 
     for key, values in params.items():
-        val = unquote(values[0]) if values else ''
-        key_lower = key.lower()
-        if key_lower not in ssrf_params:
+        if key.lower() not in redirect_params:
             continue
-        # Only flag if value is a full http(s):// URL
+        val = unquote(values[0]) if values else ''
         if not re.match(r'https?://', val):
             continue
-        target_parsed = urlparse(val)
-        target_host = target_parsed.netloc.lower()
-        if not target_host:
-            continue
-        # Skip if hostname contains non-ASCII characters (malformed/garbled URLs)
         try:
-            target_host.encode('ascii')
+            tgt = urlparse(val)
+            tgt_host = tgt.netloc.lower()
+        except Exception:
+            continue
+        if not tgt_host:
+            continue
+        # Skip non-ASCII hostnames (garbled/encoded URLs)
+        try:
+            tgt_host.encode('ascii')
         except UnicodeEncodeError:
             continue
-        # Skip if target is same host
-        if target_host == source_host:
+        # Skip same host
+        if tgt_host == src_host:
             continue
-        # Skip if target is same parent domain (subdomain redirects — expected)
-        target_parts = target_host.split('.')
-        target_parent = '.'.join(target_parts[-2:]) if len(target_parts) >= 2 else target_host
-        if target_parent == source_parent:
+        # Skip same parent domain (subdomain redirects — expected)
+        tgt_parts = tgt_host.split('.')
+        tgt_parent = '.'.join(tgt_parts[-2:]) if len(tgt_parts) >= 2 else tgt_host
+        if tgt_parent == src_parent:
             continue
-        # Skip if target shares the same brand across different TLDs
-        # e.g., varonis.com → varonis.io, earlywarning.com → earlywarning.io
-        source_brand = source_parts[-2] if len(source_parts) >= 2 else source_host
-        target_brand = target_parts[-2] if len(target_parts) >= 2 else target_host
-        if source_brand == target_brand and source_brand not in {'com', 'net', 'org', 'io', 'co'}:
+        # Skip same-brand across different TLDs (varonis.com → varonis.io = expected SSO)
+        if _same_brand_different_tld(src_host, tgt_host):
             continue
-        # Skip if target is a known CDN/image/analytics domain
+        # Skip known CDN/analytics targets
         if _is_noise_domain(val):
             continue
-        # Skip test/PoC values — pentesters often embed evil.com/attacker.com in VT URLs
-        # These appear in VT scan history, not in real app traffic
-        known_poc_hosts = {'evil.com', 'attacker.com', 'test.com', 'example.com',
-                           'burp.com', 'ngrok.io', 'requestbin.com', 'webhook.site',
-                           'collaborator.net', 'interactsh.com'}
-        if target_host in known_poc_hosts or any(target_host.endswith('.' + h) for h in known_poc_hosts):
-            return ''
-        return f"{key}={val[:60]}"
+        # Skip PoC hosts
+        if tgt_host in poc_hosts or any(tgt_host.endswith('.' + h) for h in poc_hosts):
+            continue
+        return f'{key}={val[:80]}'
+    return ''
+
+
+def _check_ssrf_param(url: str, params: dict) -> str:
+    """
+    Detect true server-side SSRF parameters — where the server fetches the URL value.
+    Separated from open redirect (client-side).
+
+    Param list is narrow and specific — these params cause the server to make HTTP requests.
+    Guards: same as open_redirect plus GitBook image proxy bypass.
+    """
+    # Narrow param set — these specific names indicate server-side fetching
+    ssrf_params = {
+        'proxy', 'fetch', 'load', 'pull', 'get_url', 'request_url',
+        'image_url', 'img_url', 'avatar_url', 'photo_url', 'logo_url',
+        'webhook', 'hook_url', 'callback_url', 'notify_url', 'ping_url',
+        'import_url', 'export_url', 'feed_url', 'rss_url',
+        'backend', 'server', 'host_url',
+    }
+    poc_hosts = {
+        'evil.com', 'attacker.com', 'test.com', 'example.com', 'localhost',
+        'burp.com', 'ngrok.io', 'requestbin.com', 'webhook.site',
+        'collaborator.net', 'interactsh.com', 'oastify.com',
+    }
+
+    # GitBook image proxy — url= is their CDN pattern, not SSRF
+    if '~gitbook/' in url:
+        return ''
+    if _is_noise_domain(url):
+        return ''
+
+    try:
+        src = urlparse(url)
+        src_host = src.netloc.lower()
+        src_parts = src_host.split('.')
+        src_parent = '.'.join(src_parts[-2:]) if len(src_parts) >= 2 else src_host
+    except Exception:
+        return ''
+
+    for key, values in params.items():
+        if key.lower() not in ssrf_params:
+            continue
+        val = unquote(values[0]) if values else ''
+        if not re.match(r'https?://', val):
+            continue
+        try:
+            tgt = urlparse(val)
+            tgt_host = tgt.netloc.lower()
+        except Exception:
+            continue
+        if not tgt_host:
+            continue
+        try:
+            tgt_host.encode('ascii')
+        except UnicodeEncodeError:
+            continue
+        if tgt_host == src_host:
+            continue
+        tgt_parts = tgt_host.split('.')
+        tgt_parent = '.'.join(tgt_parts[-2:]) if len(tgt_parts) >= 2 else tgt_host
+        if tgt_parent == src_parent:
+            continue
+        if _same_brand_different_tld(src_host, tgt_host):
+            continue
+        if _is_noise_domain(val):
+            continue
+        if tgt_host in poc_hosts or any(tgt_host.endswith('.' + h) for h in poc_hosts):
+            continue
+        return f'{key}={val[:80]}'
+    return ''
+
+
+def _check_debug_admin(url: str) -> str:
+    """
+    Detect exposed debug/admin panels — skip CDNs, static assets, and doc pages.
+
+    Patterns:
+    - Spring Boot Actuator endpoints (env/beans/configprops)
+    - phpinfo, server-status, server-info
+    - Swagger UI, GraphQL Playground
+    - Debug profilers (_debug, _profiler)
+    - Admin config/database panels
+    - Elasticsearch /_cat/ API
+    - Live Kibana/Grafana/Prometheus instances (at root or /ui)
+    """
+    if _is_noise_domain(url) or _is_static_asset(url):
+        return ''
+
+    parsed = urlparse(url)
+    path = parsed.path.lower()
+    host = parsed.netloc.lower()
+
+    # Documentation subdomains and paths
+    if host.startswith('docs.') or '.docs.' in host:
+        return ''
+    if any(seg in path for seg in DOC_PATH_SEGMENTS):
+        return ''
+
+    debug_patterns = [
+        r'/(?:phpinfo|server-info|server-status)(?:\.php)?(?:\?|$)',
+        r'/(?:elmah|trace|diagnostics)\.axd',
+        r'/actuator/(?:env|beans|configprops|heapdump|mappings|loggers|httptrace|threaddump)',
+        r'/swagger-ui(?:\.html|/index\.html|\.json)(?:\?|$)',
+        r'/api-docs(?:/v\d+)?(?:\?|$)',
+        r'/openapi\.(?:json|yaml)(?:\?|$)',
+        r'/(?:_debug|_profiler|profiler)/',
+        r'/admin/(?:config|settings|database|users|backup)(?:/|$)',
+        r'/wp-admin/(?:install|setup-config)\.php',
+        r'/solr/admin(?:/|$)',
+        r'/(?:kibana|grafana|prometheus)/(?:ui|app|api|explore|graph|dashboard)',
+        r'/(?:kibana|grafana|prometheus)(?:\?|$)',
+        r'/_cat/(?:indices|nodes|health|shards)',  # Elasticsearch
+        r'/metrics(?:\?|$)',                        # Prometheus metrics endpoint
+        r'/health(?:/(?:live|ready|status))?(?:\?|$)',  # Health check
+        r'/console(?:\?|$)',                        # H2 console, Rails console
+        r'/rails/info/',                            # Rails debug info
+    ]
+
+    for pattern in debug_patterns:
+        m = re.search(pattern, path)
+        if m:
+            return m.group(0)
+    return ''
+
+
+def _check_config_file(url: str) -> str:
+    """
+    Detect exposed configuration files — secrets, credentials, source control metadata.
+
+    These appear in URL archives when crawlers index misconfigured servers.
+    Each pattern is precise to avoid matching legitimate app routes.
+    """
+    if _is_noise_domain(url) or _is_static_asset(url):
+        return ''
+
+    path = urlparse(url).path.lower()
+
+    config_patterns = [
+        # Environment / secrets files
+        r'/\.env(?:\.(?:bak|old|local|production|staging|prod|dev|example|backup))?(?:\?|$)',
+        r'/\.env\d*(?:\?|$)',
+        # Source control metadata (often contains credentials)
+        r'/\.git/(?:config|HEAD|index|packed-refs|FETCH_HEAD)',
+        r'/\.svn/(?:entries|wc\.db)',
+        r'/\.hg/(?:store|dirstate)',
+        # Web server / framework config
+        r'/\.htpasswd(?:\?|$)',
+        r'/\.htaccess(?:\?|$)',
+        r'/wp-config\.php(?:\.bak|\.old|~)?(?:\?|$)',
+        r'/web\.config(?:\.bak|\.old)?(?:\?|$)',
+        r'/config\.(?:php|yml|yaml|json|rb|py)(?:\.bak|\.old)?(?:\?|$)',
+        r'/database\.(?:yml|json|php)(?:\?|$)',
+        r'/secrets\.(?:yml|json|env)(?:\?|$)',
+        r'/credentials\.(?:json|yml)(?:\?|$)',
+        r'/application\.(?:properties|yml|yaml)(?:\?|$)',
+        # Sensitive data dumps
+        r'/backup(?:s)?/.*\.(?:sql|zip|tar\.gz|tar\.bz2)(?:\?|$)',
+        r'/dump\.sql(?:\?|$)',
+        r'/database\.sql(?:\?|$)',
+        r'/.*\.sql\.gz(?:\?|$)',
+        # Cloud provider credential files
+        r'/\.aws/credentials(?:\?|$)',
+        r'/\.ssh/(?:id_rsa|id_ed25519|authorized_keys)(?:\?|$)',
+    ]
+
+    for pattern in config_patterns:
+        m = re.search(pattern, path)
+        if m:
+            return m.group(0)
+    return ''
+
+
+def _check_idor_endpoint(url: str, params: dict) -> str:
+    """
+    Detect IDOR-prone API endpoints where sequential or predictable IDs appear
+    in paths that operate on user-owned objects (accounts, orders, invoices).
+
+    Only flags high-value object types — not generic /items/123 paths.
+    """
+    path = urlparse(url).path
+
+    idor_patterns = [
+        # User/account objects in REST APIs
+        r'/api/v?\d*/(?:users?|accounts?|customers?|members?|profiles?)/(\d{4,})',
+        r'/api/v?\d*/(?:users?|accounts?)/(\d{4,})/(?:edit|settings|details|data|profile)',
+        # Financial objects
+        r'/api/v?\d*/(?:orders?|invoices?|receipts?|payments?|transactions?)/(\d{5,})',
+        r'/(?:orders?|invoices?|receipts?)/(\d{6,})(?:/|$)',
+        # Admin operations on user objects
+        r'/(?:admin|dashboard|manage)/(?:users?|accounts?|customers?)/(\d{4,})',
+        # Download/export links with UUIDs (may expose other users' data)
+        r'/(?:download|export|report)/([a-f0-9-]{30,})(?:\?|$)',
+        r'/(?:files?|documents?|attachments?)/([a-f0-9-]{25,})(?:/|$)',
+    ]
+
+    for pattern in idor_patterns:
+        m = re.search(pattern, path, re.I)
+        if m:
+            obj_id = m.group(1)
+            return f'ID={obj_id} in {m.group(0)[:60]}'
+    return ''
+
+
+def _check_cloud_storage(url: str, params: dict) -> str:
+    """
+    Detect cloud storage exposure:
+    1. Pre-signed S3/GCS URLs with credential params (X-Amz-Signature, X-Goog-Signature)
+    2. Direct S3 bucket access to sensitive file types (CSV, XLS, SQL, JSON, ZIP)
+
+    Pre-signed URLs with signature params in the URL are always worth reporting —
+    they grant time-limited but direct unauthenticated access to private objects.
+    """
+    lower_url = url.lower()
+
+    # Pre-signed S3 URL — credentials in the URL itself
+    if 's3.amazonaws.com' in lower_url or 's3-' in lower_url:
+        params_lower = {k.lower() for k in params}
+        if 'x-amz-signature' in params_lower or 'x-amz-credential' in params_lower:
+            bucket_match = re.search(r'https?://([a-z0-9.-]+)\.s3(?:[.-])', lower_url)
+            bucket = bucket_match.group(1) if bucket_match else 'unknown'
+            return f'Pre-signed S3 URL (bucket: {bucket})'
+
+    # Pre-signed GCS URL
+    if 'storage.googleapis.com' in lower_url:
+        if 'x-goog-signature' in lower_url or 'x-goog-credential' in lower_url:
+            return 'Pre-signed GCS URL'
+
+    # Direct S3 access to sensitive file types (potential misconfiguration)
+    if 's3.amazonaws.com' in lower_url:
+        sensitive_exts = r'\.(xlsx?|csv|sql|json|jsonl|zip|tar\.gz|bak|pem|key)(?:\?|$)'
+        m = re.search(sensitive_exts, lower_url)
+        if m:
+            return f'S3 direct access to {m.group(0)[:20]}'
+
     return ''
 
 
 def _check_graphql_introspection(url: str, params: dict) -> str:
     """
-    Detect GraphQL introspection queries in URLs.
-    Only flag if the query actually contains introspection keywords — 
-    not just any /graphql endpoint.
+    Detect GraphQL introspection queries. Only flag if actual introspection keywords
+    appear in the query — not just any /graphql endpoint.
     """
     if '/graphql' not in url.lower():
         return ''
     query = unquote(params.get('query', [''])[0])
     if not query:
         return ''
-    # Only flag actual introspection
     if re.search(r'__schema|__type|IntrospectionQuery', query, re.I):
-        return f"Introspection query: {query[:60]}"
+        return f'Introspection: {query[:80]}'
     return ''
 
 
-# ── Heuristic Definitions ────────────────────────────────────
+def _check_password_reset_token(url: str, params: dict) -> str:
+    """
+    Detect password reset / account verification links with real tokens.
+    These are CRITICAL — if the token is still valid, it allows account takeover.
 
-HEURISTICS = {
-    # ── PII Leaks — ONLY flag if actual email/PII data present ──
-    "PII_Email_Leak": {
-        "severity": "HIGH",
-        "description": "Real email address leaked in URL parameters — privacy violation, potential ATO vector.",
-        "check": lambda url, params: _has_real_email(params),
-    },
-    "PII_Data_Leak": {
-        "severity": "HIGH",
-        "description": "Sensitive PII (SSN, phone, DOB, card number) leaked in URL.",
-        "check": lambda url, params: _has_real_pii(params),
-    },
-    "Token_Leak": {
-        "severity": "CRITICAL",
-        "description": "Authentication token/secret/password leaked in URL — session hijack risk.",
-        "check": lambda url, params: _has_real_token(params),
-    },
+    Two patterns:
+    1. Token in URL path: /reset-password/TOKEN or /confirm/TOKEN
+    2. Token in query param on a reset/verify/confirm endpoint
+    """
+    path = urlparse(url).path.lower()
 
-    # ── Corporate SSO Leak (CRITICAL) ──
-    "SSO_Corp_Leak": {
-        "severity": "CRITICAL",
-        "description": "Corporate SSO/ADFS endpoint leaking employee email and auth context.",
-        "check": lambda url, params: (
-            bool(re.search(r'(?i)(?:sso|adfs|idp|saml|federation|auth\.corp|login\.corp)', url))
-            and (_has_real_email(params) or _has_real_token(params))
-        ) or '',
-    },
+    # Pattern 1: Token in path segment
+    path_patterns = [
+        r'/(?:reset-?password|password-?reset|forgot-?password)/([a-f0-9a-zA-Z_-]{15,})',
+        r'/(?:verify|confirm|activate|validation)/([a-f0-9a-zA-Z_-]{15,})',
+        r'/(?:auth|magic-?link|one-?click)/([a-f0-9a-zA-Z_-]{15,})',
+    ]
+    for pattern in path_patterns:
+        m = re.search(pattern, path)
+        if m:
+            return f'Reset/verify token in path: {m.group(1)[:40]}'
 
-    # ── Unsubscribe with real email (ATO risk) ──
-    "Unsubscribe_ATO": {
-        "severity": "HIGH",
-        "description": "Unsubscribe endpoint with real email — potential account manipulation.",
-        "check": lambda url, params: (
-            '/unsubscribe' in url.lower() and _has_real_email(params)
-        ) or '',
-    },
+    # Pattern 2: Token in query param on reset/verify path
+    is_reset_path = bool(re.search(
+        r'/(?:reset|verify|confirm|activate|validation|change-password|set-password)',
+        path, re.I
+    ))
+    if is_reset_path:
+        for tok_key in ('token', 'reset_token', 'verification_token', 'key', 'code'):
+            val = (params.get(tok_key, params.get(tok_key.capitalize(), ['']))[0])
+            if val and TOKEN_REGEX.match(val) and len(val) > 12 and val.lower() not in JUNK_VALUES:
+                return f'{tok_key}={val[:40]}'
 
-    # ── Order/Invoice with email (data leak) ──
-    "Order_Data_Leak": {
-        "severity": "HIGH",
-        "description": "Order/invoice/receipt endpoint with PII in URL — data exposure.",
-        "check": lambda url, params: (
-            bool(re.search(r'(?i)/(?:order|invoice|receipt|payment|checkout)', url))
-            and (_has_real_email(params) or _has_real_token(params))
-        ) or '',
-    },
+    return ''
 
-    # ── IDOR with real numeric IDs ──
-    "IDOR_Endpoints": {
-        "severity": "MEDIUM",
-        "description": "API endpoint with sequential/predictable user IDs — test for IDOR.",
-        "check": lambda url, params: (
-            bool(re.search(r'(?i)/api/v\d+/users/\d{4,}', url))
-            or (bool(re.search(r'(?i)/(?:invoice|receipt|order)s?/[a-f0-9-]{20,}', url))
-                and _has_real_email(params))
-        ) or '',
+
+# ══════════════════════════════════════════════════════════════════════════════
+# HEURISTIC REGISTRY
+# Each entry: severity, description, check function
+# ══════════════════════════════════════════════════════════════════════════════
+
+HEURISTICS: Dict[str, dict] = {
+
+    # ── CRITICAL: Credentials ──────────────────────────────────────────────
+    'Credential_In_URL': {
+        'severity': 'CRITICAL',
+        'description': 'Plaintext username:password in URL — immediate ATO risk. '
+                       'Common in VirusTotal submissions of authenticated sessions.',
+        'check': lambda url, params: _check_credential_in_url(url),
     },
 
-    # ── Password Reset UUID in path (ATO) ──
-    "Password_Reset_UUID": {
-        "severity": "CRITICAL",
-        "description": "Password reset link with UUID — allows account takeover if token is still valid.",
-        "check": lambda url, params: (
-            bool(re.search(r'(?i)/(?:reset-password|password-reset|forgot-password)/[a-f0-9-]{30,}', url))
-        ) or '',
+    # ── CRITICAL: JWT anywhere in URL ─────────────────────────────────────
+    'JWT_In_URL': {
+        'severity': 'CRITICAL',
+        'description': 'JWT token found in URL path/query — gets logged in access logs, '
+                       'browser history, and Referer headers. Extract claims for user context.',
+        'check': _check_jwt_in_url,
     },
 
-    # ── Verification/Reset links with tokens ──
-    "Verification_Link": {
-        "severity": "HIGH",
-        "description": "Account verification/reset link with token — session hijack / ATO risk.",
-        "check": lambda url, params: (
-            bool(re.search(r'(?i)/(?:verify|reset|confirm|activate|validation)', url))
-            and (_has_real_token(params) or _has_real_email(params))
-        ) or '',
+    # ── CRITICAL: Auth token leaks ─────────────────────────────────────────
+    'Token_Leak': {
+        'severity': 'CRITICAL',
+        'description': 'Authentication token/API key leaked in URL — session hijack or '
+                       'API abuse risk. Classified by type: autologin, OAuth, session+expiry.',
+        'check': lambda url, params: _classify_token(url, params)[1],
+        '_get_severity': lambda url, params: _classify_token(url, params)[0] or 'HIGH',
     },
 
-    # ── Debug / Admin Panels ──
-    "Debug_Admin_Panel": {
-        "severity": "CRITICAL",
-        "description": "Debug or admin panel endpoint accessible — full application compromise risk.",
-        "check": lambda url, params: _check_debug_admin(url),
+    # ── CRITICAL: Password reset / verify tokens ───────────────────────────
+    'Password_Reset_Token': {
+        'severity': 'CRITICAL',
+        'description': 'Password reset or verification link with real token — '
+                       'account takeover if token still valid.',
+        'check': _check_password_reset_token,
     },
 
-    # ── SSRF-prone params ── (NEW in v3.0)
-    "SSRF_Param": {
-        "severity": "HIGH",
-        "description": "SSRF-prone parameter with external URL value — test for server-side request forgery.",
-        "check": lambda url, params: _check_ssrf_params(url, params),
+    # ── CRITICAL: SSRF ────────────────────────────────────────────────────
+    'SSRF_Param': {
+        'severity': 'CRITICAL',
+        'description': 'Server-side request forgery: param causes server to fetch external URL. '
+                       'Test for internal network access, cloud metadata (169.254.169.254).',
+        'check': _check_ssrf_param,
     },
 
-    # ── GraphQL introspection ── (NEW in v3.0 — ONLY if actual introspection query)
-    "GraphQL_Introspection": {
-        "severity": "MEDIUM",
-        "description": "GraphQL introspection query in URL — schema disclosure, helps map attack surface.",
-        "check": lambda url, params: _check_graphql_introspection(url, params),
+    # ── CRITICAL: Debug/admin panels ──────────────────────────────────────
+    'Debug_Admin_Panel': {
+        'severity': 'CRITICAL',
+        'description': 'Exposed debug, admin, or monitoring panel — '
+                       'may disclose env vars, secrets, or allow direct server control.',
+        'check': lambda url, params: _check_debug_admin(url),
     },
 
-    # ── Plaintext credentials in URL ── (NEW in v3.1)
-    "Credential_In_URL": {
-        "severity": "CRITICAL",
-        "description": "Plaintext username:password embedded in URL path or authority — "
-                       "immediate ATO risk. Commonly found in VirusTotal URL submissions.",
-        "check": lambda url, params: _check_credential_in_url(url),
+    # ── CRITICAL: Config file exposure ────────────────────────────────────
+    'Config_File_Exposed': {
+        'severity': 'CRITICAL',
+        'description': 'Exposed config/secret file (.env, .git/config, wp-config.php, etc.) — '
+                       'may contain DB credentials, API keys, encryption keys.',
+        'check': lambda url, params: _check_config_file(url),
+    },
+
+    # ── HIGH: Open redirect ────────────────────────────────────────────────
+    'Open_Redirect': {
+        'severity': 'HIGH',
+        'description': 'Open redirect to external domain — phishing amplifier. '
+                       'Programs accept these when the redirect is unvalidated. Verify it works.',
+        'check': _check_open_redirect,
+    },
+
+    # ── HIGH: PII email in URL ─────────────────────────────────────────────
+    'PII_Email_Leak': {
+        'severity': 'HIGH',
+        'description': 'Real email address in URL params — privacy violation (GDPR/CCPA). '
+                       'Reportable if on a non-email-marketing endpoint and gets logged.',
+        'check': lambda url, params: _has_real_email(params),
+    },
+
+    # ── HIGH: Cloud storage exposure ──────────────────────────────────────
+    'Cloud_Storage_Exposure': {
+        'severity': 'HIGH',
+        'description': 'Pre-signed S3/GCS URL or direct access to sensitive cloud file — '
+                       'may expose private data, backups, or internal documents.',
+        'check': _check_cloud_storage,
+    },
+
+    # ── HIGH: Other PII in URL ─────────────────────────────────────────────
+    'PII_Data_Leak': {
+        'severity': 'HIGH',
+        'description': 'Non-email PII (SSN, card number, phone, DOB) in URL params — '
+                       'serious privacy violation, likely GDPR/PCI reportable.',
+        'check': lambda url, params: _has_real_pii(params),
+    },
+
+    # ── MEDIUM: IDOR endpoints ─────────────────────────────────────────────
+    'IDOR_Endpoint': {
+        'severity': 'MEDIUM',
+        'description': 'API endpoint with predictable user/order/account ID in path — '
+                       'test for IDOR by accessing another user\'s object ID.',
+        'check': _check_idor_endpoint,
+    },
+
+    # ── MEDIUM: GraphQL introspection ─────────────────────────────────────
+    'GraphQL_Introspection': {
+        'severity': 'MEDIUM',
+        'description': 'GraphQL introspection query in URL — reveals full schema, '
+                       'helps map attack surface. Report if schema contains sensitive types.',
+        'check': _check_graphql_introspection,
     },
 }
 
 
-def _check_internal_ip(url: str) -> str:
-    """Check for internal/private IP addresses in URL — skip analytics/tracking noise."""
-    decoded = unquote(url)
+# ══════════════════════════════════════════════════════════════════════════════
+# FINDING GROUPING — collapse same type+host+path_prefix into one finding
+# ══════════════════════════════════════════════════════════════════════════════
 
-    # Skip tracking/analytics URLs entirely
-    tracking_patterns = [
-        '/fdbk/', 'clientId=urn', 'ebaystatic.com',
-        'googletagmanager.com', 'google-analytics.com', 'gtag/',
-        'pixel', 'tracking', 'beacon', 'telemetry',
-    ]
-    if any(p in decoded.lower() for p in tracking_patterns):
-        return ''
+def _finding_group_key(vuln_id: str, url: str) -> str:
+    """
+    Return a grouping key for a finding. Findings with the same key are the same
+    "class" of issue on the same host and are collapsed with a count.
 
-    ip_match = re.search(
-        r'(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})',
-        decoded
-    )
-    if ip_match:
-        ip = ip_match.group(0)
-        if re.search(r'https?://[^/]*' + re.escape(ip), decoded) or \
-           re.search(r'(?:host|url|addr|server|device|inform|redirect|proxy|backend).*' + re.escape(ip), decoded, re.I):
-            return ip
-    return ''
+    Group by: vuln_id + host + first path segment
+    e.g. all PII_Email_Leak on push-notification.playtika.com/suppression/ = one group
+    """
+    try:
+        parsed = urlparse(url)
+        host = parsed.netloc.lower()
+        parts = [p for p in parsed.path.split('/') if p]
+        # Use first 2 path segments as the group prefix
+        path_prefix = '/' + '/'.join(parts[:2]) if parts else '/'
+        return f'{vuln_id}::{host}{path_prefix}'
+    except Exception:
+        return f'{vuln_id}::{url[:80]}'
 
 
-# Documentation path segments — if URL contains these, it's a doc page NOT a live tool
-_DOC_PATH_SEGMENTS = [
-    '/plugins/', '/docs/', '/documentation/', '/blog/', '/examples/',
-    '/reference/', '/changelog/', '/guides/', '/observability/', '/how-to/',
-    '/kubernetes-ingress-controller/', '/tutorials/', '/learn/', '/support/',
-    '/metering-and-billing/', '/collectors/', '/operator/', '/concepts/',
-    '/getting-started/', '/overview/', '/faqs/',
-]
-
-
-def _check_debug_admin(url: str) -> str:
-    """Check for exposed debug/admin panels — skip CDNs, SPAs, static assets, and documentation pages."""
-    lower = url.lower()
-
-    # Must be on a real application domain, not CDN
-    if _is_noise_domain(url):
-        return ''
-
-    # Skip static assets — /assets/images/kic/grafana/*.png is NOT an actual Grafana instance
-    if _is_static_asset(url):
-        return ''
-
-    # Skip documentation pages — /plugins/prometheus is a doc page, not a live Prometheus
-    # These paths indicate the URL is about a tool, not running one
-    parsed_path = urlparse(url).path.lower()
-    parsed_host = urlparse(url).netloc.lower()
-
-    # Skip if the hostname itself is a documentation subdomain
-    if parsed_host.startswith('docs.') or '.docs.' in parsed_host:
-        return ''
-
-    if any(seg in parsed_path for seg in _DOC_PATH_SEGMENTS):
-        return ''
-
-    debug_patterns = [
-        r'/(?:phpinfo|server-info|server-status)(?:\.php)?$',
-        r'/(?:elmah|trace|diagnostics)\.axd',
-        r'/(?:actuator/(?:env|health|info|beans|mappings|configprops))',
-        r'/swagger-ui(?:\.html|/index\.html)',
-        r'/(?:_debug|_profiler|profiler)/',
-        # Admin panels — only flag actual admin endpoints, not API subpaths
-        r'/admin/(?:config|settings|database|users)(?:/|$)',
-        r'/wp-admin/(?:install|setup-config)\.php',
-        r'/solr/admin',
-        # Monitoring tools — only flag if they appear to be live instances (at root or /ui)
-        r'/(?:kibana|grafana|prometheus)/(?:ui|app|api|explore|graph|dashboard)',
-        r'/(?:kibana|grafana|prometheus)(?:\?|$)',  # At root with query or bare
-        r'/(?:_cat/(?:indices|nodes|health))',      # Elasticsearch
-    ]
-
-    for pattern in debug_patterns:
-        m = re.search(pattern, lower)
-        if m:
-            return m.group(0)
-    return ''
-
-
-def _check_config_files(url: str) -> str:
-    """Check for exposed config files — strict matching to avoid SPA false positives."""
-    lower = url.lower()
-
-    if _is_noise_domain(url):
-        return ''
-
-    config_patterns = [
-        r'/\.env(?:\.(?:bak|old|local|production|staging|dev|example))?$',
-        r'/\.git/(?:config|HEAD|index|objects|refs)',
-        r'/\.svn/entries',
-        r'/\.htpasswd',
-        r'/wp-config\.php(?:\.bak|\.old|~)?$',
-        r'/web\.config(?:\.bak|\.old)?$',
-        r'/config\.(?:php|yml|yaml|json)(?:\.bak|\.old)?$',
-        r'/database\.yml$',
-        r'/secrets\.yml$',
-        r'/credentials\.json$',
-    ]
-
-    for pattern in config_patterns:
-        if re.search(pattern, lower):
-            return re.search(pattern, lower).group(0)
-    return ''
-
+# ══════════════════════════════════════════════════════════════════════════════
+# SCANNER
+# ══════════════════════════════════════════════════════════════════════════════
 
 class BountyScanner:
+
+    # Checks where we dedup on path (strip query string) not full URL
+    # — avoids N findings for N different query-param variants of the same endpoint
+    PATH_DEDUP_CHECKS = {
+        'Password_Reset_Token', 'Debug_Admin_Panel', 'GraphQL_Introspection',
+        'Config_File_Exposed', 'IDOR_Endpoint',
+    }
+    # Checks where we dedup on (type, evidence_prefix) — same token value on many paths = 1 finding
+    TOKEN_DEDUP_CHECKS = {'Token_Leak', 'JWT_In_URL'}
+
     def __init__(self, urls: List[str]):
         self.urls = urls
-        self.findings = []
-        self.stats = {k: 0 for k in HEURISTICS.keys()}
-        self._dedup_full = set()   # Full URL dedup (one finding per URL)
-        self._dedup_path = set()   # Path-only dedup for path-based checks (Password_Reset, Debug, etc.)
-        self._dedup_token_val = set()  # Dedup same token/apiKey value across different paths
-
-    # Path-based checks that should dedup on path, not full URL (strips query strings)
-    PATH_DEDUP_CHECKS = {'Password_Reset_UUID', 'Debug_Admin_Panel', 'GraphQL_Introspection'}
+        self.findings: List[dict] = []
+        self.stats: Dict[str, int] = {k: 0 for k in HEURISTICS}
+        # Dedup sets
+        self._seen_full: set = set()    # full URL dedup
+        self._seen_path: set = set()    # path-only dedup
+        self._seen_token: set = set()   # token value dedup (first 30 chars)
+        # Grouping: group_key → representative finding + count
+        self._groups: Dict[str, dict] = {}
 
     def scan(self) -> Dict:
         start = time.time()
-        banner("Passive Bounty Scanner v4.1")
-        log_info(f"Scanning {len(self.urls)} unique URLs against {len(HEURISTICS)} heuristics...")
+        banner('Passive Bounty Scanner v5.0')
+        log_info(f'Scanning {len(self.urls)} unique URLs against {len(HEURISTICS)} heuristics...')
 
-        for url in self.urls:
-            url = url.strip()
+        for raw_url in self.urls:
+            url = raw_url.strip()
             if not url or not url.startswith('http'):
                 continue
 
-            # Skip noise domains entirely
+            # ── Layer 1: Domain skip list ──────────────────────────────────
             if _is_noise_domain(url):
                 continue
-
-            # Skip SEO doorway pages (scraped junk)
             if _is_seo_doorway(url):
                 continue
-
-            # Parse params once for all checks
-            try:
-                parsed = urlparse(url)
-                params = parse_qs(parsed.query, keep_blank_values=True)
-                url_path = f"{parsed.netloc}{parsed.path}"
-            except Exception:
-                params = {}
-                url_path = url
-
-            # Pre-checks: filter out URL-level noise before running heuristics
-            is_non_https = _is_http_not_https(url)
-            is_http_port = _is_http_with_port(url)  # e.g. http://host:8080/ — port-scan artifact
-            is_ip_url = _is_ip_url(url)              # e.g. http://192.168.1.1/ — not a bounty target
-            is_sendgrid_doc = _is_sendgrid_doc_url(url, params)
-            is_zendesk_chat = _is_zendesk_chat_session(url, params)
-            is_saml = _is_saml_url(url, params)     # SAML SSO flows — not leaked secrets
-            is_pin_gaming = _is_pin_gaming_url(url, params)  # Casino PIN params
-            is_ir_feed = _is_ir_feed_apikey(url, params)  # Public IR feed API keys
-            is_notif_email = _is_notification_email_url(url)  # Marketing unsubscribe URLs
-
-            # Entire URL is noise — skip all checks
-            # http:// + port = port-scan artifact; raw IPs = not valid bounty targets
-            if is_http_port or is_ip_url:
+            if _is_ip_url(url):
+                continue
+            if _is_http_with_port(url):
                 continue
 
-            for vuln_id, config in HEURISTICS.items():
-                # Apply pre-filter rules per check type
+            # ── Parse once ─────────────────────────────────────────────────
+            try:
+                parsed   = urlparse(url)
+                params   = parse_qs(parsed.query, keep_blank_values=True)
+                url_path = f'{parsed.netloc}{parsed.path}'
+            except Exception:
+                params   = {}
+                url_path = url
+
+            # ── Layer 2: URL-level guards (computed once per URL) ──────────
+            is_http      = url.startswith('http://') and not url.startswith('https://')
+            is_saml      = _is_saml_url(params)
+            is_ir_feed   = _is_ir_feed_apikey(url, params)
+            is_notif     = _is_notification_email_url(url)
+            is_sendgrid  = 'api.sendgrid.com' in url and (
+                'sendgrid.com' in params.get('api_user', [''])[0] or
+                (params.get('api_key', [''])[0]).lower() in JUNK_VALUES
+            )
+            is_zendesk_chat = (
+                ('sessionid' in {k.lower() for k in params}) and
+                bool({'chatid', 'conversationid', 'interactionid'} & {k.lower() for k in params})
+            )
+
+            # ── Run each heuristic ─────────────────────────────────────────
+            for vuln_id, cfg in HEURISTICS.items():
+
+                # Per-heuristic Layer 2 guards
                 if vuln_id == 'Token_Leak':
-                    # Real auth tokens are NEVER served over plain HTTP in production
-                    if is_non_https:
-                        continue
-                    # Skip SendGrid documentation URLs
-                    if is_sendgrid_doc:
-                        continue
-                    # Skip Zendesk chat sessions
-                    if is_zendesk_chat:
-                        continue
-                    # Skip SAML SSO params — expected in every enterprise SSO flow
-                    if is_saml:
-                        continue
-                    # Skip gaming PINs — customer-facing, not auth secrets
-                    if is_pin_gaming:
-                        continue
-                    # Skip public IR feed API keys — embedded in public page JS
-                    if is_ir_feed:
-                        continue
+                    if is_http:         continue   # real tokens are always HTTPS
+                    if is_saml:         continue   # SAML flows expected
+                    if is_ir_feed:      continue   # public IR platform keys
+                    if is_sendgrid:     continue   # SendGrid doc examples
+                    if is_zendesk_chat: continue   # Zendesk chat sessions
+
+                if vuln_id == 'JWT_In_URL':
+                    if is_http:     continue       # JWTs on http are usually test traffic
 
                 if vuln_id == 'PII_Email_Leak':
-                    # Skip SendGrid doc URLs
-                    if is_sendgrid_doc:
-                        continue
-                    # Skip marketing notification/unsubscribe emails — legally required
-                    if is_notif_email:
-                        continue
+                    if is_sendgrid: continue
+                    if is_notif:    continue       # marketing unsubscribe (CAN-SPAM)
 
                 if vuln_id == 'PII_Data_Leak':
-                    # WhatsApp/Telegram contact links with phone= are public contact buttons,
-                    # not PII leaks — already handled by THIRD_PARTY_DOMAINS filter but
-                    # double-check here in case URL comes from a redirect
-                    if _is_noise_domain(url):
+                    if _is_noise_domain(url): continue
+
+                if vuln_id in ('Open_Redirect', 'SSRF_Param'):
+                    if is_http:     continue       # Real SSRF/redirect vulns are on HTTPS
+
+                # ── Run the check ──────────────────────────────────────────
+                evidence = cfg['check'](url, params)
+                if not evidence:
+                    continue
+
+                # ── Dynamic severity (Token_Leak has CRITICAL/HIGH sub-types) ──
+                severity = cfg.get('_get_severity', lambda u, p: cfg['severity'])(url, params) \
+                           if '_get_severity' in cfg else cfg['severity']
+                if not severity:
+                    # _classify_token returned '' = no real token found
+                    continue
+
+                # ── Layer: Dedup ───────────────────────────────────────────
+                if vuln_id in self.PATH_DEDUP_CHECKS:
+                    if url_path in self._seen_path:
+                        self.stats[vuln_id] += 1
                         continue
+                    self._seen_path.add(url_path)
+                elif vuln_id in self.TOKEN_DEDUP_CHECKS:
+                    tok_key = (evidence or '')[:30]
+                    if tok_key in self._seen_token:
+                        self.stats[vuln_id] += 1
+                        continue
+                    self._seen_token.add(tok_key)
+                else:
+                    if url in self._seen_full:
+                        self.stats[vuln_id] += 1
+                        continue
+                    self._seen_full.add(url)
 
-                matched = False
-                evidence = ""
-
-                if "regex" in config:
-                    if config["regex"].search(url):
-                        matched = True
-                elif "check" in config:
-                    result = config["check"](url, params)
-                    if result:
-                        matched = True
-                        evidence = str(result) if isinstance(result, str) else ""
-
-                if matched:
-                    # Path-based dedup for checks that should be unique per path
-                    if vuln_id in self.PATH_DEDUP_CHECKS:
-                        if url_path in self._dedup_path:
-                            self.stats[vuln_id] += 1
-                            continue
-                        self._dedup_path.add(url_path)
-                    else:
-                        # Full URL dedup for param-based checks
-                        if url in self._dedup_full:
-                            self.stats[vuln_id] += 1
-                            continue
-                        self._dedup_full.add(url)
-
-                    # Token value dedup — same apiKey/token value across multiple
-                    # endpoint paths should be ONE finding, not N
-                    if vuln_id == 'Token_Leak' and evidence:
-                        # Extract the value part (after =) for dedup
-                        token_dedup_key = evidence.split('=', 1)[-1][:30] if '=' in evidence else evidence[:30]
-                        if token_dedup_key in self._dedup_token_val:
-                            self.stats[vuln_id] += 1
-                            continue
-                        self._dedup_token_val.add(token_dedup_key)
-
-                    finding = {
-                        "type": vuln_id,
-                        "severity": config["severity"],
-                        "description": config["description"],
-                        "url": url,
-                    }
-                    if evidence and evidence != 'True':
-                        finding["evidence"] = evidence
-                    self.findings.append(finding)
+                # ── Group findings by type + host + path prefix ────────────
+                gkey = _finding_group_key(vuln_id, url)
+                if gkey in self._groups:
+                    self._groups[gkey]['count'] += 1
                     self.stats[vuln_id] += 1
+                    continue
 
-        # Summary
-        total = len(self.findings)
-        critical = sum(1 for f in self.findings if f["severity"] == "CRITICAL")
-        high = sum(1 for f in self.findings if f["severity"] == "HIGH")
-        medium = sum(1 for f in self.findings if f["severity"] == "MEDIUM")
+                finding = {
+                    'type':        vuln_id,
+                    'severity':    severity,
+                    'description': cfg['description'],
+                    'url':         url,
+                    'count':       1,
+                }
+                if evidence and evidence is not True:
+                    finding['evidence'] = str(evidence)
 
-        log_success(f"Bounty Scan complete in {elapsed_str(start)}")
+                self._groups[gkey] = finding
+                self.findings.append(finding)
+                self.stats[vuln_id] += 1
+
+        # ── Summary ────────────────────────────────────────────────────────
+        total    = len(self.findings)
+        critical = sum(1 for f in self.findings if f['severity'] == 'CRITICAL')
+        high     = sum(1 for f in self.findings if f['severity'] == 'HIGH')
+        medium   = sum(1 for f in self.findings if f['severity'] == 'MEDIUM')
+
+        elapsed = elapsed_str(start)
+        log_success(f'Bounty Scan complete in {elapsed}')
         if total:
-            log_success(f"Actionable findings: {total} ({critical} CRITICAL, {high} HIGH, {medium} MEDIUM)")
+            log_success(f'Actionable findings: {total} ({critical} CRITICAL, {high} HIGH, {medium} MEDIUM)')
         else:
-            log_info("No bounty-worthy findings detected — clean scan.")
+            log_info('No bounty-worthy findings detected — clean scan.')
 
         return {
-            "findings": self.findings,
-            "stats": self.stats,
-            "total_urls": len(self.urls)
+            'findings':    self.findings,
+            'stats':       self.stats,
+            'total_urls':  len(self.urls),
         }
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Passive Bounty URL Scanner v3.0")
-    parser.add_argument("-l", "--list", required=True, help="File containing URLs to scan (e.g., unique_urls.txt)")
-    parser.add_argument("-o", "--output", help="Output JSON file for findings")
-
+    parser = argparse.ArgumentParser(description='Passive Bounty URL Scanner v5.0')
+    parser.add_argument('-l', '--list',   required=True, help='File of URLs to scan (unique_urls.txt)')
+    parser.add_argument('-o', '--output', help='Output JSON file for findings')
     args = parser.parse_args()
-    urls = read_lines(args.list)
 
+    urls = read_lines(args.list)
     if not urls:
-        print("No URLs to scan.")
+        print('No URLs to scan.')
         return
 
     scanner = BountyScanner(urls)
-    results = scanner.scan()
+    results  = scanner.scan()
 
     if args.output:
-        with open(args.output, "w") as f:
+        with open(args.output, 'w') as f:
             json.dump(results, f, indent=2)
-        log_success(f"Findings saved to {args.output}")
+        log_success(f'Findings saved to {args.output}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
