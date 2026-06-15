@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics) — v4.0
+Module: Bounty Scanner (URL Heuristics) — v4.1
 Passively analyzes massive URL collections for high-value bug bounty endpoints.
 
 PHILOSOPHY (from decades of bounty hunting):
@@ -32,6 +32,16 @@ WHAT'S NEW IN v4.0 (based on deep analysis of 166 findings from 23 real targets)
   - Kill WhatsApp/Telegram phone link PII_Data_Leak FPs — public contact links, not leaks
   - Kill Trustpilot apikey Token_Leak FPs — public business-unit lookup API, not secret
   - Kill PIN= in casino/gaming URLs — these are customer-facing PINs, not auth secrets
+
+WHAT'S NEW IN v4.1 (based on forensic analysis of ALL 166 findings from 23 targets):
+  - Kill IR feed public apiKey FPs (ir.*/feed/Event.svc — Q4 Inc investor platform, public key)
+  - Kill Wix analytics session_id FPs (frog.wix.com — performance telemetry, not auth)
+  - Kill marketing unsubscribe email FPs (/unsubscribe, /suppression/ — required by CAN-SPAM)
+  - Kill Microsoft SafeLinks email artifacts (|01|email|guid| pattern in URL rewrites)
+  - Kill cross-TLD same-program SSRF FPs (varonis.com → varonis.io = same company)
+  - Kill Chartbeat analytics PII FPs (ping.chartbeat.net — 3rd party analytics)
+  - Remove SAMLRequest/SAMLResponse from token_params entirely (SSO flows, not secrets)
+  - Added apiKey value dedup (same key across 7 /feed/ paths = 1 finding, not 7)
 """
 
 import argparse
@@ -98,6 +108,8 @@ THIRD_PARTY_DOMAINS = [
     'hotjar.com', 'mouseflow.com',
     'crazyegg.com', 'fullstory.com',
     'bing.com', 'clarity.ms',
+    'chartbeat.net', 'ping.chartbeat.net',  # Chartbeat analytics
+    'frog.wix.com', 'wix.com',             # Wix analytics/telemetry beacons
     # Chat/messaging contact links (public links, not PII leaks)
     'api.whatsapp.com', 'wa.me', 't.me', 'telegram.me',
     # Public review platforms (business lookup APIs are public)
@@ -200,6 +212,80 @@ def _is_pin_gaming_url(url: str, params: dict) -> bool:
     return any(kw in url_lower for kw in gaming_keywords)
 
 
+def _is_ir_feed_apikey(url: str, params: dict) -> bool:
+    """
+    Detect investor relations (IR) feed API keys — these are PUBLIC client-side keys.
+    Powered by Q4 Inc and similar IR platforms, the same apiKey is embedded in the
+    page JavaScript on every company's IR site. They grant read-only access to
+    public press releases, stock quotes, and events. NOT a secret.
+    Pattern: ir.*/feed/Event.svc?apiKey=... or /feed/StockQuote.svc?apiKey=...
+    """
+    lower = url.lower()
+    parsed = urlparse(lower)
+    host = parsed.netloc
+    path = parsed.path
+    # Must be on an IR subdomain or IR domain
+    if not (host.startswith('ir.') or 'investor' in host):
+        return False
+    # Must be a /feed/ service endpoint
+    if '/feed/' not in path:
+        return False
+    # Must have an apiKey param
+    if 'apikey' not in {k.lower() for k in params}:
+        return False
+    return True
+
+
+def _is_notification_email_url(url: str) -> bool:
+    """
+    Detect marketing notification/unsubscribe URLs where emails are expected.
+    These are legally required (CAN-SPAM/GDPR) and are NOT security findings.
+    Patterns:
+    - /unsubscribe, /suppression/ — email opt-out endpoints
+    - push-notification subdomains — mass-mailing infrastructure
+    - track., tracking. subdomains — email click-tracking
+    - /public/view/ — email web-view with embedded unsubscribe links
+    """
+    lower = url.lower()
+    parsed = urlparse(lower)
+    host = parsed.netloc
+    path = parsed.path
+
+    # Notification infrastructure subdomains
+    if host.startswith('push-notification') or host.startswith('track.') or host.startswith('tracking.'):
+        return True
+
+    # Unsubscribe / suppression endpoints
+    if any(seg in path for seg in ['/unsubscribe', '/suppression/', '/email-abuse',
+                                    '/subscription/unsubscribe', '/email_abuse']):
+        return True
+
+    # Email web-view pages with unsubscribe links embedded
+    if '/public/view/' in path and 'unsubscribelink' in lower:
+        return True
+
+    return False
+
+
+def _is_safelinks_email(val: str) -> bool:
+    """
+    Detect Microsoft SafeLinks/Defender URL rewriting artifacts.
+    Pattern: 02|01|email@domain.com|GUID|GUID|0|0|timestamp
+    These appear when a corporate email user clicks a link — their employer's
+    email security gateway rewrites the URL. The email belongs to the clicker,
+    NOT a vulnerability in the target application.
+    """
+    # Microsoft SafeLinks format: pipe-delimited with email at position 3
+    if '|01|' in val or '|02|' in val:
+        parts = val.split('|')
+        if len(parts) >= 5:
+            # Check if any part looks like an email
+            for part in parts:
+                if '@' in part and '.' in part.split('@')[-1]:
+                    return True
+    return False
+
+
 def _is_sendgrid_doc_url(url: str, params: dict) -> bool:
     """
     Detect SendGrid documentation example URLs.
@@ -278,6 +364,9 @@ def _has_real_email(params: dict) -> str:
         # Skip encoded URLs falsely matching as emails (@2F, @3A patterns)
         if re.search(r'@[0-9A-F]{2}', val):
             continue
+        # Skip Microsoft SafeLinks URL rewriting artifacts
+        if _is_safelinks_email(val):
+            continue
         if key.lower() in email_params and EMAIL_REGEX.search(val):
             return val
         if '@' in val and EMAIL_REGEX.search(val):
@@ -290,6 +379,9 @@ def _has_real_email(params: dict) -> str:
                     continue
                 # Skip SendGrid's own documentation emails
                 if email.endswith('@sendgrid.com') and 'ryan.burrer' in email:
+                    continue
+                # Skip Apple Private Relay emails (randomized, not real PII)
+                if email.endswith('@privaterelay.appleid.com'):
                     continue
                 return val
     return ''
@@ -304,7 +396,8 @@ def _has_real_token(params: dict) -> str:
                     'password', 'passwd', 'pwd', 'jwt',
                     'bearer', 'authorization', 'oauth_token',
                     'csrf_token', 'xsrf',
-                    'samlresponse', 'samlrequest',
+                    # NOTE: samlrequest/samlresponse REMOVED in v4.1 — they are expected
+                    # in every SSO flow, not leaked secrets
                     'assertion', 'stoken', 'sso_token', 'auth_code'}
 
     # Params that look like tokens but are analytics junk
@@ -481,6 +574,12 @@ def _check_ssrf_params(url: str, params: dict) -> str:
         target_parts = target_host.split('.')
         target_parent = '.'.join(target_parts[-2:]) if len(target_parts) >= 2 else target_host
         if target_parent == source_parent:
+            continue
+        # Skip if target shares the same brand across different TLDs
+        # e.g., varonis.com → varonis.io, earlywarning.com → earlywarning.io
+        source_brand = source_parts[-2] if len(source_parts) >= 2 else source_host
+        target_brand = target_parts[-2] if len(target_parts) >= 2 else target_host
+        if source_brand == target_brand and source_brand not in {'com', 'net', 'org', 'io', 'co'}:
             continue
         # Skip if target is a known CDN/image/analytics domain
         if _is_noise_domain(val):
@@ -738,13 +837,14 @@ class BountyScanner:
         self.stats = {k: 0 for k in HEURISTICS.keys()}
         self._dedup_full = set()   # Full URL dedup (one finding per URL)
         self._dedup_path = set()   # Path-only dedup for path-based checks (Password_Reset, Debug, etc.)
+        self._dedup_token_val = set()  # Dedup same token/apiKey value across different paths
 
     # Path-based checks that should dedup on path, not full URL (strips query strings)
     PATH_DEDUP_CHECKS = {'Password_Reset_UUID', 'Debug_Admin_Panel', 'GraphQL_Introspection'}
 
     def scan(self) -> Dict:
         start = time.time()
-        banner("Passive Bounty Scanner v4.0")
+        banner("Passive Bounty Scanner v4.1")
         log_info(f"Scanning {len(self.urls)} unique URLs against {len(HEURISTICS)} heuristics...")
 
         for url in self.urls:
@@ -777,6 +877,8 @@ class BountyScanner:
             is_zendesk_chat = _is_zendesk_chat_session(url, params)
             is_saml = _is_saml_url(url, params)     # SAML SSO flows — not leaked secrets
             is_pin_gaming = _is_pin_gaming_url(url, params)  # Casino PIN params
+            is_ir_feed = _is_ir_feed_apikey(url, params)  # Public IR feed API keys
+            is_notif_email = _is_notification_email_url(url)  # Marketing unsubscribe URLs
 
             # Entire URL is noise — skip all checks
             # http:// + port = port-scan artifact; raw IPs = not valid bounty targets
@@ -801,10 +903,16 @@ class BountyScanner:
                     # Skip gaming PINs — customer-facing, not auth secrets
                     if is_pin_gaming:
                         continue
+                    # Skip public IR feed API keys — embedded in public page JS
+                    if is_ir_feed:
+                        continue
 
                 if vuln_id == 'PII_Email_Leak':
                     # Skip SendGrid doc URLs
                     if is_sendgrid_doc:
+                        continue
+                    # Skip marketing notification/unsubscribe emails — legally required
+                    if is_notif_email:
                         continue
 
                 if vuln_id == 'PII_Data_Leak':
@@ -839,6 +947,16 @@ class BountyScanner:
                             self.stats[vuln_id] += 1
                             continue
                         self._dedup_full.add(url)
+
+                    # Token value dedup — same apiKey/token value across multiple
+                    # endpoint paths should be ONE finding, not N
+                    if vuln_id == 'Token_Leak' and evidence:
+                        # Extract the value part (after =) for dedup
+                        token_dedup_key = evidence.split('=', 1)[-1][:30] if '=' in evidence else evidence[:30]
+                        if token_dedup_key in self._dedup_token_val:
+                            self.stats[vuln_id] += 1
+                            continue
+                        self._dedup_token_val.add(token_dedup_key)
 
                     finding = {
                         "type": vuln_id,
