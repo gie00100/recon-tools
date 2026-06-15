@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics) — v3.1
+Module: Bounty Scanner (URL Heuristics) — v4.0
 Passively analyzes massive URL collections for high-value bug bounty endpoints.
 
 PHILOSOPHY (from decades of bounty hunting):
@@ -23,6 +23,15 @@ WHAT'S NEW IN v3.1:
   - Credential_In_URL: detects plaintext user:password embedded in URL paths
     (VirusTotal pattern: https://auth.example.com/:user@gmail.com:P@ssw0rd)
   - Also detects RFC 3986 basic-auth URLs (https://user:pass@host/)
+
+WHAT'S NEW IN v4.0 (based on deep analysis of 166 findings from 23 real targets):
+  - Kill SAMLRequest/SAMLResponse Token_Leak FPs — expected in every SSO flow, not leaked secrets
+  - Kill http:// + port-in-host URLs for ALL checks — not valid in big bounty programs
+  - Kill :UNKNOWN:password Credential_In_URL FPs — VT scanner artifacts with no username
+  - Kill same-program-family SSRF FPs (ReturnUrl=https://sub.same-domain.com)
+  - Kill WhatsApp/Telegram phone link PII_Data_Leak FPs — public contact links, not leaks
+  - Kill Trustpilot apikey Token_Leak FPs — public business-unit lookup API, not secret
+  - Kill PIN= in casino/gaming URLs — these are customer-facing PINs, not auth secrets
 """
 
 import argparse
@@ -89,6 +98,13 @@ THIRD_PARTY_DOMAINS = [
     'hotjar.com', 'mouseflow.com',
     'crazyegg.com', 'fullstory.com',
     'bing.com', 'clarity.ms',
+    # Chat/messaging contact links (public links, not PII leaks)
+    'api.whatsapp.com', 'wa.me', 't.me', 'telegram.me',
+    # Public review platforms (business lookup APIs are public)
+    'trustpilot.com', 'g2.com', 'capterra.com',
+    # SSO identity providers (SAML flows go through these — expected)
+    'login.microsoftonline.com', 'accounts.google.com', 'okta.com',
+    'auth0.com', 'onelogin.com', 'pingidentity.com', 'idp.ssocircle.com',
 ]
 
 # ── Static asset file extensions (path-based checks ignore these) ───
@@ -126,6 +142,62 @@ def _is_static_asset(url: str) -> bool:
 def _is_http_not_https(url: str) -> bool:
     """Return True if URL uses plain HTTP (not HTTPS). Real auth tokens are always HTTPS."""
     return url.startswith('http://') and not url.startswith('https://')
+
+
+def _is_http_with_port(url: str) -> bool:
+    """
+    Return True if URL is plain HTTP with an explicit port number in the host.
+    e.g. http://192.168.1.1:8080/ or http://example.com:80/path
+    These are port-scan artifacts — big bounty programs don't accept http://:port findings.
+    """
+    if not url.startswith('http://') or url.startswith('https://'):
+        return False
+    try:
+        from urllib.parse import urlparse as _up
+        parsed = _up(url)
+        return parsed.port is not None
+    except Exception:
+        return False
+
+
+def _is_ip_url(url: str) -> bool:
+    """
+    Return True if URL host is a raw IP address.
+    Port-scan IPs often appear in URL lists but are never valid bounty targets.
+    """
+    try:
+        from urllib.parse import urlparse as _up
+        import ipaddress
+        host = _up(url).hostname or ''
+        ipaddress.ip_address(host)
+        return True
+    except Exception:
+        return False
+
+
+def _is_saml_url(url: str, params: dict) -> bool:
+    """
+    Return True if URL contains a SAMLRequest or SAMLResponse parameter.
+    SAML assertions are expected in every SSO flow — they are NOT leaked secrets.
+    They appear in waymore/VT data because users visit SSO endpoints, not because
+    the app is leaking auth tokens.
+    """
+    saml_keys = {'samlrequest', 'samlresponse', 'saml_request', 'saml_response',
+                 'SAMLRequest', 'SAMLResponse'}
+    return bool(saml_keys & set(params.keys()))
+
+
+def _is_pin_gaming_url(url: str, params: dict) -> bool:
+    """
+    Return True if URL contains a PIN= parameter in a gaming/casino/sports context.
+    These are customer-facing game PINs, not authentication secrets.
+    """
+    if 'pin' not in {k.lower() for k in params}:
+        return False
+    gaming_keywords = ['sportsbook', 'casino', 'game', 'sport', 'bet', 'slot', 'poker',
+                       'lottery', 'bingo', 'jackpot', 'play']
+    url_lower = url.lower()
+    return any(kw in url_lower for kw in gaming_keywords)
 
 
 def _is_sendgrid_doc_url(url: str, params: dict) -> bool:
@@ -302,6 +374,8 @@ _CRED_FP_VALUES = {
     'admin', 'guest', 'test', 'demo', 'example', 'placeholder',
     'username', 'password', 'login', 'secret', 'v1', 'v2', 'v3',
     'api', 'rest', 'graphql', 'query', 'action', 'method',
+    # VT scanner artifacts — no real username was captured
+    'unknown', 'UNKNOWN',
 }
 
 
@@ -359,6 +433,7 @@ def _check_ssrf_params(url: str, params: dict) -> str:
     - url= pointing to same parent domain (e.g., twilio.com -> www.twilio.com)
     - url=/redirect on analytics/tracking pixels (google, contentsquare, etc.)
     - Generic params like url, src, href, path, to, uri — way too broad
+    - returnUrl/ReturnUrl to sibling subdomains (expected in enterprise SSO/app suites)
     """
     # Only high-confidence SSRF params — open redirect / SSRF
     # Deliberately EXCLUDE: url, src, href, path, uri, to, redirect_uri
@@ -410,6 +485,13 @@ def _check_ssrf_params(url: str, params: dict) -> str:
         # Skip if target is a known CDN/image/analytics domain
         if _is_noise_domain(val):
             continue
+        # Skip test/PoC values — pentesters often embed evil.com/attacker.com in VT URLs
+        # These appear in VT scan history, not in real app traffic
+        known_poc_hosts = {'evil.com', 'attacker.com', 'test.com', 'example.com',
+                           'burp.com', 'ngrok.io', 'requestbin.com', 'webhook.site',
+                           'collaborator.net', 'interactsh.com'}
+        if target_host in known_poc_hosts or any(target_host.endswith('.' + h) for h in known_poc_hosts):
+            return ''
         return f"{key}={val[:60]}"
     return ''
 
@@ -662,7 +744,7 @@ class BountyScanner:
 
     def scan(self) -> Dict:
         start = time.time()
-        banner("Passive Bounty Scanner v3.0")
+        banner("Passive Bounty Scanner v4.0")
         log_info(f"Scanning {len(self.urls)} unique URLs against {len(HEURISTICS)} heuristics...")
 
         for url in self.urls:
@@ -689,8 +771,17 @@ class BountyScanner:
 
             # Pre-checks: filter out URL-level noise before running heuristics
             is_non_https = _is_http_not_https(url)
+            is_http_port = _is_http_with_port(url)  # e.g. http://host:8080/ — port-scan artifact
+            is_ip_url = _is_ip_url(url)              # e.g. http://192.168.1.1/ — not a bounty target
             is_sendgrid_doc = _is_sendgrid_doc_url(url, params)
             is_zendesk_chat = _is_zendesk_chat_session(url, params)
+            is_saml = _is_saml_url(url, params)     # SAML SSO flows — not leaked secrets
+            is_pin_gaming = _is_pin_gaming_url(url, params)  # Casino PIN params
+
+            # Entire URL is noise — skip all checks
+            # http:// + port = port-scan artifact; raw IPs = not valid bounty targets
+            if is_http_port or is_ip_url:
+                continue
 
             for vuln_id, config in HEURISTICS.items():
                 # Apply pre-filter rules per check type
@@ -704,10 +795,23 @@ class BountyScanner:
                     # Skip Zendesk chat sessions
                     if is_zendesk_chat:
                         continue
+                    # Skip SAML SSO params — expected in every enterprise SSO flow
+                    if is_saml:
+                        continue
+                    # Skip gaming PINs — customer-facing, not auth secrets
+                    if is_pin_gaming:
+                        continue
 
                 if vuln_id == 'PII_Email_Leak':
                     # Skip SendGrid doc URLs
                     if is_sendgrid_doc:
+                        continue
+
+                if vuln_id == 'PII_Data_Leak':
+                    # WhatsApp/Telegram contact links with phone= are public contact buttons,
+                    # not PII leaks — already handled by THIRD_PARTY_DOMAINS filter but
+                    # double-check here in case URL comes from a redirect
+                    if _is_noise_domain(url):
                         continue
 
                 matched = False
