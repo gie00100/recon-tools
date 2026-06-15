@@ -22,6 +22,7 @@ build/
 
 # ── Scan Output (large files, domain-specific) ──
 output/
+all_output/
 results/
 
 # ── IDE / Editor ──
