@@ -39,7 +39,10 @@ _reply_channel = None
 # ── Webhook Helpers ──────────────────────────────────────────
 
 async def send_embed(title, description, color=0x00FF00, fields=None):
-    """Send a rich embed — replies in channel if Gateway mode, else webhook."""
+    """Send a rich embed — replies in channel if Gateway mode, else webhook.
+
+    NOTE: Only ONE path fires per call — gateway OR webhook, never both.
+    """
     global _reply_channel
     import discord as _discord
 
@@ -53,7 +56,7 @@ async def send_embed(title, description, color=0x00FF00, fields=None):
         for f in fields[:25]:
             embed_obj.add_field(
                 name=f.get("name", ""),
-                value=f.get("value", ""),
+                value=f.get("value", "") or "\u200b",  # zero-width space if empty
                 inline=f.get("inline", False),
             )
 
@@ -61,11 +64,12 @@ async def send_embed(title, description, color=0x00FF00, fields=None):
     if _reply_channel is not None:
         try:
             await _reply_channel.send(embed=embed_obj)
-            return
+            return  # SUCCESS — do NOT also send via webhook
         except Exception as e:
             print(f"[!] Channel send failed: {e}, falling back to webhook")
+            # Only falls through to webhook if gateway send actually fails
 
-    # Fallback: send via webhook
+    # Webhook fallback (or primary path when no gateway)
     if not WEBHOOK_URL:
         return
     embed_dict = {
@@ -75,7 +79,14 @@ async def send_embed(title, description, color=0x00FF00, fields=None):
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
     if fields:
-        embed_dict["fields"] = fields[:25]
+        embed_dict["fields"] = [
+            {
+                "name": f.get("name", ""),
+                "value": (f.get("value") or "\u200b")[:1024],
+                "inline": f.get("inline", False),
+            }
+            for f in fields[:25]
+        ]
     async with aiohttp.ClientSession() as session:
         await session.post(WEBHOOK_URL, json={"embeds": [embed_dict]})
 
@@ -233,23 +244,57 @@ async def cmd_status():
     except Exception:
         pass
 
+    # ── Helper: split a long domain list into ≤1024-char fields ──
+    def _paginate_field(label, lines, emoji=""):
+        """Split a list of lines into multiple embed fields of ≤1024 chars each."""
+        result = []
+        chunk, chunk_len = [], 0
+        page = 1
+        total_pages = 1
+        # Pre-calculate pages
+        temp, temp_len = [], 0
+        for l in lines:
+            entry = l + "\n"
+            if temp_len + len(entry) > 1020:
+                total_pages += 1
+                temp, temp_len = [entry], len(entry)
+            else:
+                temp.append(entry)
+                temp_len += len(entry)
+
+        for l in lines:
+            entry = l + "\n"
+            if chunk_len + len(entry) > 1020:
+                name = label if page == 1 else f"{label} (cont.)"
+                result.append({"name": name, "value": "".join(chunk).strip(), "inline": False})
+                chunk, chunk_len, page = [], 0, page + 1
+            chunk.append(entry)
+            chunk_len += len(entry)
+        if chunk:
+            name = label if page == 1 else f"{label} (cont.)"
+            result.append({"name": name, "value": "".join(chunk).strip(), "inline": False})
+        return result
+
     # 7. Build the embed
     fields = []
 
     if done_list:
-        done_text = "\n".join(done_list)
-        fields.append({"name": f"✅ Completed ({len(done_list)})", "value": done_text[:1024], "inline": False})
+        fields.extend(_paginate_field(f"✅ Completed ({len(done_list)})", done_list))
 
     if running_list or extra_running:
         all_running = [f"🔄 `{d}`" for d in running_list] + [f"🔄 `{d}` *(extra)*" for d in extra_running]
-        fields.append({"name": f"🔄 Running ({len(all_running)})", "value": "\n".join(all_running)[:1024], "inline": False})
+        fields.extend(_paginate_field(f"🔄 Running ({len(all_running)})", all_running))
 
     if pending_list:
-        fields.append({"name": f"⏳ Pending ({len(pending_list)})", "value": "\n".join(pending_list)[:1024], "inline": False})
+        fields.extend(_paginate_field(f"⏳ Pending ({len(pending_list)})", pending_list))
 
     if extra_completed:
-        extra_text = "\n".join(f"➕ `{d}`" for d in extra_completed)
-        fields.append({"name": f"➕ Extra Completed ({len(extra_completed)})", "value": extra_text[:1024], "inline": False})
+        extra_lines = [f"➕ `{d}`" for d in extra_completed]
+        fields.extend(_paginate_field(f"➕ Extra Completed ({len(extra_completed)})", extra_lines))
+
+    # Discord allows max 25 fields per embed — split into multiple embeds if needed
+    FIELD_LIMIT = 25
+    field_chunks = [fields[i:i+FIELD_LIMIT] for i in range(0, max(len(fields), 1), FIELD_LIMIT)]
 
     total_running = len(running_list) + len(extra_running)
     summary = (
@@ -263,7 +308,12 @@ async def cmd_status():
     if output_size:
         summary += f"\n{output_size}"
 
-    await send_embed("📊 Recon Pipeline Status", summary, 0x00BFFF, fields)
+    # Send first embed with summary + first batch of fields
+    await send_embed("📊 Recon Pipeline Status", summary, 0x00BFFF, field_chunks[0] if field_chunks else None)
+
+    # Send continuation embeds (if pending list was very long)
+    for i, chunk in enumerate(field_chunks[1:], 2):
+        await send_embed(f"📊 Status (cont. {i}/{len(field_chunks)})", "", 0x00BFFF, chunk)
 
 
 async def cmd_results(domain=None):
