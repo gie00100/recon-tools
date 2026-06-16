@@ -271,19 +271,31 @@ class ReconMaster:
             output_file = self.output_dir / "exposed_ports.json"
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(results, f, indent=2)
-                
-            # Alert on critical confirmed services only
-            critical_ports = {9200, 2375, 6379, 27017, 11211, 9090, 5601, 8500}
+
+            # ONLY alert on protocol-verified critical database/infra services.
+            # Ports 8080/8443 are excluded here — even after CDN filtering they produce
+            # too many false positives from shared-IP web infrastructure.
+            # The port scanner v2 already requires protocol verification (banner), so
+            # any result here has been confirmed — but web ports are still noisy.
+            ALERT_PORTS = {
+                2375:  "Docker API (UNAUTHENTICATED) — CRITICAL",
+                6379:  "Redis (Unauthenticated)",
+                9200:  "Elasticsearch (Unauthenticated)",
+                27017: "MongoDB (Unauthenticated)",
+                11211: "Memcached (Unauthenticated)",
+                9090:  "Prometheus (Exposed Metrics)",
+                5601:  "Kibana (Exposed)",
+                8500:  "Consul (Unauthenticated API)",
+            }
             for res in results:
-                if res["port"] in critical_ports:
+                if res["port"] in ALERT_PORTS:
                     domains_str = ", ".join(res.get("domains", [])) or res["ip"]
                     await self._send_alert(
-                        f"CRITICAL Infrastructure Exposed! 🚨",
+                        f"🚨 CRITICAL Infrastructure Exposed!",
                         (
                             f"**Host:** {domains_str}\n"
                             f"**IP:** {res['ip']}\n"
-                            f"**Port:** {res['port']}\n"
-                            f"**Service:** {res['service']}\n"
+                            f"**Port:** {res['port']} ({ALERT_PORTS[res['port']]})\n"
                             f"**Banner:** {res.get('banner', 'N/A')}"
                         ),
                         16711680

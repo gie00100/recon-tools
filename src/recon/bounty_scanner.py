@@ -161,6 +161,11 @@ THIRD_PARTY_DOMAINS = [
     'sparkpostmail.com', 'mailgun.org',
     # Public investor relations platform (Q4 Inc) — API keys are public/embedded in page JS
     'q4inc.com', 'q4cdn.com',
+    # Cloudflare Zero Trust / Access — JWTs in /cdn-cgi/access/login callbacks are expected
+    # cf. https://developers.cloudflare.com/cloudflare-one/identity/authorization-cookie/
+    'cloudflareaccess.com',
+    # GeoIP service — referrer param is just the source page, not an open redirect
+    'geoip-js.com',
 ]
 
 # Static file extensions — path-based checks skip these
@@ -272,7 +277,8 @@ def _is_notification_email_url(url: str) -> bool:
     """
     Return True for marketing email infrastructure URLs where emails in params are expected.
     CAN-SPAM / GDPR *require* that unsubscribe links contain the recipient's email.
-    These are not security findings.
+    Also returns True for OAuth2 flows where login_hint carries the user's email —
+    this is the standard OAuth2 authorization request mechanism, not a PII leak.
 
     Patterns killed:
       - push-notification.*, track.*, tracking.* subdomains
@@ -280,6 +286,7 @@ def _is_notification_email_url(url: str) -> bool:
       - /public/view/ email web-view pages with embedded unsubscribeLink
       - /view/ hash-addressed email view pages
       - Inbox notification payloads (?first_name=&last_name=&unsubscribeLink=)
+      - OAuth2 /oauth2/auth or /authorize with login_hint param (standard OIDC flow)
     """
     lower = url.lower()
     parsed = urlparse(lower)
@@ -301,6 +308,15 @@ def _is_notification_email_url(url: str) -> bool:
     # Email web-view pages (hash-addressed, contain unsubscribeLink in query)
     if '/public/view/' in path or ('/view/' in path and 'unsubscribelink' in lower):
         return True
+
+    # OAuth2 / OIDC authorization endpoint with login_hint:
+    # RFC 6749 + OIDC Core allow login_hint to pre-fill the user's identity.
+    # This is standard behavior, not a PII leak.
+    oauth_paths = ('/oauth2/auth', '/oauth/authorize', '/oauth2/authorize',
+                   '/connect/authorize', '/as/authorization', '/authorize')
+    if any(path.startswith(p) or path.endswith(p) for p in oauth_paths):
+        if 'login_hint' in lower or 'login_hint' in url:
+            return True
 
     return False
 
@@ -744,10 +760,17 @@ def _check_debug_admin(url: str) -> str:
         r'/(?:kibana|grafana|prometheus)/(?:ui|app|api|explore|graph|dashboard)',
         r'/(?:kibana|grafana|prometheus)(?:\?|$)',
         r'/_cat/(?:indices|nodes|health|shards)',  # Elasticsearch
-        r'/metrics(?:\?|$)',                        # Prometheus metrics endpoint
-        r'/health(?:/(?:live|ready|status))?(?:\?|$)',  # Health check
+        # NOTE: /health, /metrics, /ping are intentionally EXCLUDED:
+        #   /health  — standard load-balancer probe, publicly exposed by design on every service
+        #   /metrics — Prometheus scrape target; only a bug if unauthenticated AND exposes secrets
+        #              (a URL alone cannot tell us whether auth is required — too many FPs)
+        #   /ping    — trivial availability check
+        # These paths generate near-100% false positives in bounty programs.
         r'/console(?:\?|$)',                        # H2 console, Rails console
         r'/rails/info/',                            # Rails debug info
+        r'/heapdump(?:\?|$)',                       # JVM heap dump — always CRITICAL if exposed
+        r'/env(?:\?|$)',                            # Spring Boot /env — exposes all config
+        r'/actuator(?:\?|$)',                       # Spring Boot actuator root
     ]
 
     for pattern in debug_patterns:
@@ -810,21 +833,31 @@ def _check_idor_endpoint(url: str, params: dict) -> str:
     in paths that operate on user-owned objects (accounts, orders, invoices).
 
     Only flags high-value object types — not generic /items/123 paths.
+
+    NOISE GUARDS:
+    - UUID-based patterns (/document/UUID, /files/UUID) are restricted to API paths.
+      SaaS platforms expose document viewer URLs (/ui/document/UUID) where each customer
+      has an isolated tenant — these are not cross-tenant IDOR without active exploitation.
+    - Require /api/ prefix for UUID-based findings to avoid SaaS UI URL false positives.
+    - Numeric IDOR only flagged in true REST resource paths, not in pagination or filter params.
     """
-    path = urlparse(url).path
+    parsed = urlparse(url)
+    path = parsed.path
+    path_lower = path.lower()
 
     idor_patterns = [
-        # User/account objects in REST APIs
+        # User/account objects in REST APIs — require /api/ context
         r'/api/v?\d*/(?:users?|accounts?|customers?|members?|profiles?)/(\d{4,})',
         r'/api/v?\d*/(?:users?|accounts?)/(\d{4,})/(?:edit|settings|details|data|profile)',
-        # Financial objects
+        # Financial objects — require /api/ context or standalone invoice/order path
         r'/api/v?\d*/(?:orders?|invoices?|receipts?|payments?|transactions?)/(\d{5,})',
         r'/(?:orders?|invoices?|receipts?)/(\d{6,})(?:/|$)',
         # Admin operations on user objects
         r'/(?:admin|dashboard|manage)/(?:users?|accounts?|customers?)/(\d{4,})',
-        # Download/export links with UUIDs (may expose other users' data)
-        r'/(?:download|export|report)/([a-f0-9-]{30,})(?:\?|$)',
-        r'/(?:files?|documents?|attachments?)/([a-f0-9-]{25,})(?:/|$)',
+        # Download/export links with UUIDs — ONLY in API context, not in UI viewers
+        # Rationale: /api/export/UUID = data access; /ui/document/UUID = product navigation
+        r'/api/(?:v\d+/)?(?:download|export|report)/([a-f0-9-]{30,})(?:\?|$)',
+        r'/api/(?:v\d+/)?(?:files?|documents?|attachments?)/([a-f0-9-]{25,})(?:/|$)',
     ]
 
     for pattern in idor_patterns:
@@ -884,6 +917,19 @@ def _check_graphql_introspection(url: str, params: dict) -> str:
     return ''
 
 
+# Common auth page names that are NOT tokens (used in /auth/<name> pattern)
+_AUTH_ACTION_WORDS = {
+    'login', 'logout', 'signin', 'signout', 'sign-in', 'sign-out',
+    'signup', 'sign-up', 'register', 'registration',
+    'forgot-password', 'forgotpassword', 'reset-password', 'resetpassword',
+    'change-password', 'changepassword', 'set-password', 'setpassword',
+    'verify-email', 'verifyemail', 'confirm-email', 'confirmemail',
+    'two-factor', 'twofactor', '2fa', 'mfa', 'otp',
+    'callback', 'redirect', 'return', 'sso', 'saml', 'oauth',
+    'unauthorized', 'forbidden', 'error', 'success', 'complete', 'completed',
+}
+
+
 def _check_password_reset_token(url: str, params: dict) -> str:
     """
     Detect password reset / account verification links with real tokens.
@@ -892,19 +938,43 @@ def _check_password_reset_token(url: str, params: dict) -> str:
     Two patterns:
     1. Token in URL path: /reset-password/TOKEN or /confirm/TOKEN
     2. Token in query param on a reset/verify/confirm endpoint
-    """
-    path = urlparse(url).path.lower()
 
-    # Pattern 1: Token in path segment
+    NOISE GUARDS (general, not case-by-case):
+    - Skip static JS/CSS/map files — Next.js/webpack content hashes look like tokens
+    - Skip /auth/<word> where word is a known auth action name (not a token)
+    - Require the captured segment to contain at least some numeric or uppercase chars
+      (pure lowercase alpha = route name, not a random token)
+    """
+    parsed = urlparse(url)
+    path = parsed.path.lower()
+
+    # Skip static assets — JS bundle hashes (32-char hex) match token patterns
+    if path.endswith(('.js', '.css', '.map', '.ts', '.jsx', '.tsx')):
+        return ''
+    # Skip _next/static/ Next.js bundles entirely — all filenames are content hashes
+    if '/_next/static/' in path or '/static/chunks/' in path or '/static/js/' in path:
+        return ''
+
+    # Pattern 1: Token in path segment — specific reset/verify/confirm keywords only
+    # NOTE: /auth/ is intentionally excluded here because /auth/forgot-password,
+    # /auth/sign-in, etc. match any 15-char auth page name as a "token".
     path_patterns = [
         r'/(?:reset-?password|password-?reset|forgot-?password)/([a-f0-9a-zA-Z_-]{15,})',
         r'/(?:verify|confirm|activate|validation)/([a-f0-9a-zA-Z_-]{15,})',
-        r'/(?:auth|magic-?link|one-?click)/([a-f0-9a-zA-Z_-]{15,})',
+        r'/(?:magic-?link|one-?click|auto-?login|autologin)/([a-f0-9a-zA-Z_-]{15,})',
     ]
     for pattern in path_patterns:
         m = re.search(pattern, path)
         if m:
-            return f'Reset/verify token in path: {m.group(1)[:40]}'
+            token_candidate = m.group(1)
+            # Skip known auth action words that look like tokens (e.g. forgot-password = 15 chars)
+            if token_candidate.lower().rstrip('/') in _AUTH_ACTION_WORDS:
+                continue
+            # Require at least some non-lowercase-alpha chars (digits, uppercase, special)
+            # Pure lowercase alpha = a route/page name, not a random token
+            if token_candidate.isalpha() and token_candidate.islower():
+                continue
+            return f'Reset/verify token in path: {token_candidate[:40]}'
 
     # Pattern 2: Token in query param on reset/verify path
     is_reset_path = bool(re.search(
