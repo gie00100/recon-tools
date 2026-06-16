@@ -2,17 +2,24 @@
 Run Watchlist Scan — Sequential recon on all watchlist domains via VPS.
 
 Steps performed automatically:
-  1. Clean old VPS output directory (rm -rf output/*)
-  2. git pull latest code + targets on VPS
-  3. Parse active (uncommented) domains from targets/targets.txt
-  4. Upload clean domain list to VPS
-  5. Launch one-by-one sequential scan in a detached screen session
+  1. Kill old watchlist scan sessions (NOT the discord bot)
+  2. Clean old VPS output directory (rm -rf output/*)
+  3. Git pull latest code + targets on VPS
+  4. Restart Discord bot via systemctl (safe — avoids duplicate processes)
+  5. Upload clean domain list to VPS
+  6. Launch one-by-one sequential scan in a detached screen session
 
 Usage:
   python scripts/vps/run_watchlist.py                     # Use targets/targets.txt
   python scripts/vps/run_watchlist.py --file custom.txt   # Use custom file
   python scripts/vps/run_watchlist.py --dry-run           # Show domains without launching
   python scripts/vps/run_watchlist.py --no-clean          # Skip VPS output cleanup
+  python scripts/vps/run_watchlist.py --no-bot-restart    # Skip Discord bot restart
+
+NOTE: The Discord bot is managed by systemd (recon-bot.service).
+      NEVER use pkill or nohup to restart it — always use systemctl.
+      Mixing manual launches with systemd causes duplicate bot processes
+      and double responses to every Discord command.
 """
 
 import argparse
@@ -47,6 +54,7 @@ def main():
     parser.add_argument("--file", default="targets.txt", help="Target file in targets/ dir (default: targets.txt)")
     parser.add_argument("--dry-run", action="store_true", help="Show parsed domains without launching")
     parser.add_argument("--no-clean", action="store_true", help="Skip cleaning VPS output directory")
+    parser.add_argument("--no-bot-restart", action="store_true", help="Skip Discord bot restart (use if bot is already running correctly)")
     args = parser.parse_args()
 
     # Resolve file path
@@ -74,8 +82,13 @@ def main():
     remote_path = cfg["remote_path"]
 
     try:
-        # ── Step 1: Kill any existing scan sessions ───────────────────────
-        print("\n[*] Stopping any running scan sessions...")
+        # ── Step 1: Kill existing SCAN sessions only (NOT the discord bot) ──
+        # IMPORTANT: Do NOT pkill discord_bot.py here.
+        # The bot is managed by systemd (recon-bot.service) with Restart=always.
+        # Killing it with pkill causes systemd to restart it immediately,
+        # and any manual nohup launch on top creates duplicate processes
+        # → both respond to Discord commands = double messages.
+        print("\n[*] Stopping any running scan sessions (NOT the Discord bot)...")
         run_remote(ssh, "screen -S watchlist_recon -X quit 2>/dev/null || true", silent=True)
         run_remote(ssh, "screen -S recon -X quit 2>/dev/null || true", silent=True)
         run_remote(ssh, "pkill -f 'recon_master.py' 2>/dev/null || true", silent=True)
@@ -101,6 +114,22 @@ def main():
             silent=True
         )
         print(f"    {git_out.splitlines()[-1] if git_out else 'Done.'}")
+
+        # ── Step 4: Restart Discord bot via systemctl ─────────────────────
+        # Always use systemctl — NEVER pkill + nohup.
+        # systemctl ensures exactly ONE process is running at all times.
+        if not args.no_bot_restart:
+            print(f"\n[*] Restarting Discord bot (systemctl restart recon-bot.service)...")
+            bot_out = run_remote(ssh, "systemctl restart recon-bot.service 2>&1", silent=True)
+            time.sleep(3)
+            bot_status = run_remote(ssh, "systemctl is-active recon-bot.service 2>/dev/null", silent=True)
+            bot_pid = run_remote(ssh, "pgrep -f discord_bot.py | wc -l", silent=True)
+            if bot_status.strip() == "active" and bot_pid.strip() == "1":
+                print(f"    Bot restarted successfully (1 process, status=active)")
+            else:
+                print(f"    [!] Bot status={bot_status.strip()} processes={bot_pid.strip()} — check manually")
+        else:
+            print("\n[--no-bot-restart] Skipping Discord bot restart.")
 
         # ── Step 4: Upload clean domain list ─────────────────────────────
         tmp_file = PROJECT_ROOT / "targets" / ".watchlist_run.txt"
