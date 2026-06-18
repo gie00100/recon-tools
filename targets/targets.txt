@@ -504,23 +504,42 @@ gethypr.com
 
 # === bbpos_limited (HackerOne) ===
 # Program: https://hackerone.com/bbpos_limited/policy_scopes
-*.bbpos.com
 bbpos.com
-*.emms.bbpos.com
+bbpos.com
+emms.bbpos.com
 www.emms.bbpos.com
 portal.wisemanager.com
 login.wisemanager.com
-*.wisemanager.com
+wisemanager.com
 tms.bbpos.com
 developer.bbpos.com
-*.bbpos.com.hk
-*.bbpos.com.cn
+bbpos.com.hk
+bbpos.com.cn
 
 # === wurl (HackerOne) ===
 # Program: https://hackerone.com/wurl/policy_scopes
-*.wurl.com
+wurl.com
 platform.wurl.com
 accelerate.wurl.com
 reporting.wurl.com
 portal.wurl.com
-*.wurl.tv
+wurl.tv
+
+# === gocardless_bbp (HackerOne) ===
+# Program: https://hackerone.com/gocardless_bbp/policy_scopes
+pay-sandbox.gocardless.com
+api-sandbox.gocardless.com
+connect-sandbox.gocardless.com
+oauth-sandbox.gocardless.com
+payer-details-sandbox.gocardless.com
+manage-sandbox.gocardless.com
+ob.gocardless.com
+www.gocardless.com
+developer.gocardless.com
+gocardless.io
+gocardless-banking.io
+gocardless-cicd.io
+gocardless-lab.io
+gocardless.dev
+auth0.gocardless.com
+sso-demo.gocardless-staging.io
