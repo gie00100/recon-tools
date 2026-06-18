@@ -479,3 +479,25 @@ adjust.com
 adjust.net
 adjust.net.in
 adjust.world
+
+# === Trip.com (HackerOne) ===
+# Program: https://hackerone.com/trip_com/policy_scopes
+trip.com
+travix.com
+travix.io
+trainpal.com
+mytrainpal.com
+cheaptickets.nl
+triplinkintl.com
+tyo-masters.co.jp
+budgetair.com
+flugladen.de
+vayama.com
+vliegwinkel.nl
+trip.biz
+app.blueskytravelvietnam.com
+
+# === HYPR (HackerOne) ===
+# Program: https://hackerone.com/hypr-corp/policy_scopes
+hypr.com
+gethypr.com
