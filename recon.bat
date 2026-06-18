@@ -1,33 +1,32 @@
 @echo off
-chcp 65001 >nul 2>&1
-title Recon Pipeline — Control Panel
+title Recon Pipeline - Control Panel
 color 0A
 
 :MENU
 cls
 echo.
-echo  ╔══════════════════════════════════════════════════════════════╗
-echo  ║          RECON PIPELINE — Control Panel                     ║
-echo  ║          VPS: 134.209.72.156                                ║
-echo  ╠══════════════════════════════════════════════════════════════╣
-echo  ║                                                              ║
-echo  ║  [1]  Run Watchlist Scan    (clean + update + scan all)      ║
-echo  ║  [2]  Fetch Results         (pull output from VPS)           ║
-echo  ║  [3]  VPS Status            (screen sessions + progress)     ║
-echo  ║  [4]  Stop All Sessions     (kill all running scans)         ║
-echo  ║  [5]  Clean VPS Data        (remove old output files)        ║
-echo  ║  [6]  Scan Single Domain    (recon on one domain)            ║
-echo  ║  [7]  Dry Run               (preview targets, no scan)       ║
-echo  ║  [8]  Setup / Install       (install deps and configure)     ║
-echo  ║  [Q]  Quit                                                   ║
-echo  ║                                                              ║
-echo  ╚══════════════════════════════════════════════════════════════╝
+echo  ================================================================
+echo    RECON PIPELINE - Control Panel
+echo    VPS: 134.209.72.156
+echo  ================================================================
+echo.
+echo    [1]  Run Watchlist Scan    (clean + update + scan all)
+echo    [2]  Fetch Results         (pull output from VPS)
+echo    [3]  VPS Status            (screen sessions + progress)
+echo    [4]  Stop All Sessions     (kill all running scans)
+echo    [5]  Clean VPS Data        (remove old output files)
+echo    [6]  Scan Single Domain    (recon on one domain)
+echo    [7]  Dry Run               (preview targets, no scan)
+echo    [8]  Setup / Install       (install deps and configure)
+echo    [Q]  Quit
+echo.
+echo  ================================================================
 echo.
 
 if not exist "venv\Scripts\python.exe" (
     color 0C
     echo  [ERROR] Virtual environment not found!
-    echo  Run option [8] Setup first, or run: python -m venv venv ^&^& venv\Scripts\pip install -r requirements.txt
+    echo  Run option [8] Setup first.
     echo.
 )
 
@@ -49,21 +48,20 @@ timeout /t 1 >nul
 goto :MENU
 
 
-REM ══════════════════════════════════════════════════════════════════
+REM ================================================================
 :WATCHLIST
 cls
 echo.
-echo  ╔══════════════════════════════════════════════════════════════╗
-echo  ║  [1] Run Watchlist Scan                                     ║
-echo  ╚══════════════════════════════════════════════════════════════╝
+echo  ================================================================
+echo    [1] Run Watchlist Scan
+echo  ================================================================
 echo.
-echo  Steps:
+echo  Steps performed:
 echo    1. Kill existing scan sessions on VPS
 echo    2. Clean VPS output directory
 echo    3. Git pull latest code + targets on VPS
-echo    4. Restart Discord bot (systemctl — avoids duplicate processes)
-echo    5. Upload active domains from targets\targets.txt to VPS
-echo    5b. Sync targets.txt on VPS so !status shows correct list
+echo    4. Restart Discord bot (systemctl - avoids duplicate processes)
+echo    5. Upload active domains + sync targets.txt on VPS
 echo    6. Launch sequential scan in detached screen session
 echo.
 echo  Active domains: all uncommented lines in targets\targets.txt
@@ -72,16 +70,12 @@ echo  Options:
 echo    [1] Full run (default)
 echo    [2] Skip VPS output cleanup  (--no-clean)
 echo    [3] Skip Discord bot restart (--no-bot-restart)
-echo    [4] Skip both                (--no-clean --no-bot-restart)
+echo    [4] Skip both
 echo    [B] Back to menu
 echo.
 set /p WL_CHOICE="  Select: "
 
 if /i "%WL_CHOICE%"=="B" goto :MENU
-if /i "%WL_CHOICE%"=="1" (
-    set WL_FLAGS=
-    goto :RUN_WATCHLIST
-)
 if /i "%WL_CHOICE%"=="2" (
     set WL_FLAGS=--no-clean
     goto :RUN_WATCHLIST
@@ -94,7 +88,6 @@ if /i "%WL_CHOICE%"=="4" (
     set WL_FLAGS=--no-clean --no-bot-restart
     goto :RUN_WATCHLIST
 )
-echo  [!] Invalid — defaulting to full run.
 set WL_FLAGS=
 
 :RUN_WATCHLIST
@@ -103,37 +96,37 @@ venv\Scripts\python.exe scripts\vps\run_watchlist.py --file targets.txt %WL_FLAG
 goto :DONE
 
 
-REM ══════════════════════════════════════════════════════════════════
+REM ================================================================
 :FETCH
 cls
 echo.
-echo  ╔══════════════════════════════════════════════════════════════╗
-echo  ║  [2] Fetch Results from VPS                                 ║
-echo  ╚══════════════════════════════════════════════════════════════╝
+echo  ================================================================
+echo    [2] Fetch Results from VPS
+echo  ================================================================
 echo.
 venv\Scripts\python.exe scripts\local\fetch_results.py
 goto :DONE
 
 
-REM ══════════════════════════════════════════════════════════════════
+REM ================================================================
 :STATUS
 cls
 echo.
-echo  ╔══════════════════════════════════════════════════════════════╗
-echo  ║  [3] VPS Status                                             ║
-echo  ╚══════════════════════════════════════════════════════════════╝
+echo  ================================================================
+echo    [3] VPS Status
+echo  ================================================================
 echo.
 venv\Scripts\python.exe scripts\vps\check_recon_progress.py
 goto :DONE
 
 
-REM ══════════════════════════════════════════════════════════════════
+REM ================================================================
 :STOP
 cls
 echo.
-echo  ╔══════════════════════════════════════════════════════════════╗
-echo  ║  [4] Stop All Sessions                                      ║
-echo  ╚══════════════════════════════════════════════════════════════╝
+echo  ================================================================
+echo    [4] Stop All Sessions
+echo  ================================================================
 echo.
 echo  WARNING: This will kill all running scan processes on VPS.
 echo  The Discord bot will NOT be affected.
@@ -145,14 +138,12 @@ if /i not "%CONFIRM%"=="YES" (
 )
 echo.
 venv\Scripts\python.exe -c "
-import sys
+import sys, time
 sys.path.insert(0, 'scripts/vps')
 from vps_helper import connect_vps, run_remote
-import time
 
 ssh, cfg = connect_vps()
 print()
-
 print('[*] Current screen sessions:')
 out = run_remote(ssh, 'screen -ls', silent=True)
 print(out or '  (none)')
@@ -163,7 +154,7 @@ run_remote(ssh, 'screen -ls | grep -oP \"\\d+\\.\\S+\" | xargs -I{} screen -X -S
 time.sleep(1)
 
 print('[*] Killing scan processes...')
-run_remote(ssh, 'pkill -f bulk_runner.py 2>/dev/null; pkill -f \"python.*recon\" 2>/dev/null; pkill -f run_scan.sh 2>/dev/null; pkill -f run_bulk.sh 2>/dev/null; true', silent=True)
+run_remote(ssh, 'pkill -f bulk_runner.py 2>/dev/null; pkill -f run_bulk.sh 2>/dev/null; pkill -f recon_master.py 2>/dev/null; true', silent=True)
 time.sleep(1)
 
 print()
@@ -178,25 +169,25 @@ print('[+] All scan sessions stopped.')
 goto :DONE
 
 
-REM ══════════════════════════════════════════════════════════════════
+REM ================================================================
 :CLEAN
 cls
 echo.
-echo  ╔══════════════════════════════════════════════════════════════╗
-echo  ║  [5] Clean VPS Data                                         ║
-echo  ╚══════════════════════════════════════════════════════════════╝
+echo  ================================================================
+echo    [5] Clean VPS Data
+echo  ================================================================
 echo.
-venv\Scripts\python.exe scripts\vps\clean_vps_data.py %*
+venv\Scripts\python.exe scripts\vps\clean_vps_data.py
 goto :DONE
 
 
-REM ══════════════════════════════════════════════════════════════════
+REM ================================================================
 :SINGLE
 cls
 echo.
-echo  ╔══════════════════════════════════════════════════════════════╗
-echo  ║  [6] Scan Single Domain                                     ║
-echo  ╚══════════════════════════════════════════════════════════════╝
+echo  ================================================================
+echo    [6] Scan Single Domain
+echo  ================================================================
 echo.
 set /p DOMAIN="  Enter domain to scan (e.g. example.com): "
 if "%DOMAIN%"=="" (
@@ -208,34 +199,34 @@ venv\Scripts\python.exe scripts\local\scan.py --domains %DOMAIN%
 goto :DONE
 
 
-REM ══════════════════════════════════════════════════════════════════
+REM ================================================================
 :DRYRUN
 cls
 echo.
-echo  ╔══════════════════════════════════════════════════════════════╗
-echo  ║  [7] Dry Run — Preview Targets                              ║
-echo  ╚══════════════════════════════════════════════════════════════╝
+echo  ================================================================
+echo    [7] Dry Run - Preview Targets
+echo  ================================================================
 echo.
 venv\Scripts\python.exe scripts\vps\run_watchlist.py --file targets.txt --dry-run
 goto :DONE
 
 
-REM ══════════════════════════════════════════════════════════════════
+REM ================================================================
 :SETUP
 cls
 echo.
-echo  ╔══════════════════════════════════════════════════════════════╗
-echo  ║  [8] Setup / Install                                        ║
-echo  ╚══════════════════════════════════════════════════════════════╝
+echo  ================================================================
+echo    [8] Setup / Install
+echo  ================================================================
 echo.
 call setup.bat
 goto :DONE
 
 
-REM ══════════════════════════════════════════════════════════════════
+REM ================================================================
 :DONE
 echo.
-echo ════════════════════════════════════════════════════════════════
+echo  ================================================================
 echo.
 set /p BACK="  Press Enter to return to menu, or Q to quit: "
 if /i "%BACK%"=="Q" goto :EOF
