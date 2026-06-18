@@ -505,7 +505,6 @@ gethypr.com
 # === bbpos_limited (HackerOne) ===
 # Program: https://hackerone.com/bbpos_limited/policy_scopes
 bbpos.com
-bbpos.com
 emms.bbpos.com
 www.emms.bbpos.com
 portal.wisemanager.com
