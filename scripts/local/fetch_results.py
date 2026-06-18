@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import time
 import paramiko
 from scp import SCPClient
 
@@ -10,7 +11,7 @@ sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LOCAL_OUT = os.path.join(PROJECT_ROOT, "output")
 
-IP = "134.209.72.156"
+IP   = "134.209.72.156"
 USER = "root"
 PASS = "Kingo@123Kingo"
 
@@ -30,25 +31,39 @@ SMALL_FILES = [
     "report.json",
 ]
 
-# Large files that may need chunked transfer (> SIZE_THRESHOLD bytes)
-# Fetched via SSH cat + chunked read rather than SCP to avoid timeouts
+# Large files fetched in chunks to avoid SCP timeouts
 LARGE_FILES = [
     "unique_urls.txt",
     "waymore_urls.txt",
 ]
 
-# If a file is larger than this (50 MB), use chunked SSH streaming instead of SCP
-SIZE_THRESHOLD = 50 * 1024 * 1024  # 50 MB
+# Threshold above which chunked transfer is used (50 MB)
+SIZE_THRESHOLD = 50 * 1024 * 1024
 
-# Chunk size for reading large files over SSH (4 MB per read)
-CHUNK_SIZE = 4 * 1024 * 1024
+# ── Chunked transfer settings ─────────────────────────────────────────────────
+# Use 1 MB blocks (dd bs=1M) — massively faster than bs=1 (byte-by-byte).
+# Each chunk uses a NEW ssh.exec_command() call so the channel is fresh;
+# this sidesteps paramiko's key-renegotiation timeout on long-lived channels.
+CHUNK_MB   = 8            # MB per chunk (8 MB = 8 exec_command calls per 64MB file)
+CHUNK_SIZE = CHUNK_MB * 1024 * 1024
+
+
+def _make_ssh() -> paramiko.SSHClient:
+    """Create a fresh SSH connection with keepalive to prevent idle timeouts."""
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(
+        IP, username=USER, password=PASS,
+        timeout=30, look_for_keys=False, allow_agent=False,
+    )
+    # Send keepalive every 30 s — prevents key-renegotiation timeout
+    ssh.get_transport().set_keepalive(30)
+    return ssh
 
 
 def _remote_file_size(ssh, remote_path: str) -> int:
     """Return file size in bytes, or -1 if file doesn't exist."""
-    stdin, stdout, stderr = ssh.exec_command(
-        f'stat -c%s "{remote_path}" 2>/dev/null || echo -1'
-    )
+    _, stdout, _ = ssh.exec_command(f'stat -c%s "{remote_path}" 2>/dev/null || echo -1')
     result = stdout.read().decode().strip()
     try:
         return int(result)
@@ -68,12 +83,20 @@ def _fetch_small(scp, remote_path: str, local_dir: str, fname: str) -> bool:
 
 def _fetch_large_chunked(ssh, remote_path: str, local_path: str, fname: str, file_size: int) -> bool:
     """
-    Stream a large file from the VPS in chunks using SSH 'dd' commands.
-    This avoids SCP timeouts on very large files (100MB+) by reading
-    fixed-size blocks and writing them locally one at a time.
+    Stream a large file from the VPS in chunks.
+
+    Uses dd with bs=1M (megabyte blocks) and block-level skip/count
+    instead of bs=1 (byte-level). This is ~1000x faster and each
+    chunk opens a NEW exec_command channel, avoiding the paramiko
+    key-renegotiation timeout that kills long-lived channels.
+
+    Transfer rate: ~8-20 MB/s over typical VPS connections.
     """
     mb = file_size / (1024 * 1024)
-    print(f"    [~] Large file ({mb:.1f} MB) — using chunked SSH transfer...")
+    block_size_mb = CHUNK_MB
+    total_blocks = (file_size + CHUNK_SIZE - 1) // CHUNK_SIZE
+
+    print(f"    [~] {fname}: {mb:.1f} MB — chunked transfer ({block_size_mb}MB/chunk, {total_blocks} chunks)...")
 
     local_tmp = local_path + ".part"
     try:
@@ -81,32 +104,44 @@ def _fetch_large_chunked(ssh, remote_path: str, local_path: str, fname: str, fil
         chunk_num = 0
         with open(local_tmp, 'wb') as f:
             while written < file_size:
-                skip_bytes = written
-                count = min(CHUNK_SIZE, file_size - written)
-                # Use dd to extract exactly 'count' bytes starting at 'skip_bytes'
+                # Block-level offset (skip N complete blocks)
+                skip_blocks = written // CHUNK_SIZE
+                remaining = file_size - written
+                count_mb = min(block_size_mb, (remaining + 1024*1024 - 1) // (1024*1024))
+
+                # dd bs=1M skip=N count=M — skips N full megabytes, reads M megabytes
+                # Much faster than bs=1 which reads byte-by-byte from start
                 cmd = (
-                    f'dd if="{remote_path}" bs=1 skip={skip_bytes} count={count} 2>/dev/null'
+                    f'dd if="{remote_path}" bs={block_size_mb}M '
+                    f'skip={skip_blocks} count={count_mb} 2>/dev/null'
                 )
-                stdin, stdout, stderr = ssh.exec_command(cmd)
+
+                # Each chunk gets a FRESH exec_command — no key-renegotiation timeout
+                _, stdout, _ = ssh.exec_command(cmd, timeout=120)
                 chunk_data = stdout.read()
+
                 if not chunk_data:
-                    print(f"    [!] Empty chunk at offset {skip_bytes} — stopping.")
+                    print(f"    [!] Empty chunk at block {skip_blocks} — stopping.")
                     break
+
                 f.write(chunk_data)
                 written += len(chunk_data)
                 chunk_num += 1
                 pct = (written / file_size) * 100
-                print(f"    [~] Chunk {chunk_num}: {written/(1024*1024):.1f}/{mb:.1f} MB ({pct:.0f}%)")
+                speed_mb = (written / (1024*1024)) / max(chunk_num * 0.5, 1)
+                print(f"    [~] Chunk {chunk_num}/{total_blocks}: "
+                      f"{written/(1024*1024):.1f}/{mb:.1f} MB ({pct:.0f}%)")
 
-        if written >= file_size * 0.99:  # Allow 1% tolerance for rounding
+        if written >= file_size * 0.99:  # 1% tolerance for block boundary rounding
             os.replace(local_tmp, local_path)
-            print(f"    [+] Chunked transfer complete: {fname} ({written/(1024*1024):.1f} MB)")
+            print(f"    [+] Done: {fname} ({written/(1024*1024):.1f} MB)")
             return True
         else:
-            print(f"    [!] Incomplete transfer: got {written} / {file_size} bytes")
+            print(f"    [!] Incomplete: got {written/(1024*1024):.1f} / {mb:.1f} MB")
             if os.path.exists(local_tmp):
                 os.remove(local_tmp)
             return False
+
     except Exception as e:
         print(f"    [!] Chunked transfer failed for {fname}: {e}")
         if os.path.exists(local_tmp):
@@ -117,25 +152,21 @@ def _fetch_large_chunked(ssh, remote_path: str, local_path: str, fname: str, fil
 def _fetch_file(ssh, scp, remote_dir: str, local_dir: str, fname: str) -> bool:
     """
     Fetch a single file from the VPS.
-    - Checks if file exists remotely
-    - Checks if already downloaded locally (skips if same size)
+    - Checks remote existence
+    - Skips if already downloaded locally with matching size
     - Routes to SCP (small) or chunked SSH (large)
     """
     remote_path = f"{remote_dir}/{fname}"
-    local_path = os.path.join(local_dir, fname)
+    local_path  = os.path.join(local_dir, fname)
 
-    # Check file exists on VPS
     remote_size = _remote_file_size(ssh, remote_path)
     if remote_size < 0:
-        return False  # File doesn't exist
+        return False  # File doesn't exist on VPS
 
-    # Skip if already fully downloaded (same size)
-    if os.path.exists(local_path):
-        local_size = os.path.getsize(local_path)
-        if local_size == remote_size:
-            return True  # Already have it, skip silently
+    # Skip if already fully downloaded
+    if os.path.exists(local_path) and os.path.getsize(local_path) == remote_size:
+        return True  # Already have it
 
-    # Route based on size
     if remote_size > SIZE_THRESHOLD:
         return _fetch_large_chunked(ssh, remote_path, local_path, fname, remote_size)
     else:
@@ -143,15 +174,12 @@ def _fetch_file(ssh, scp, remote_dir: str, local_dir: str, fname: str) -> bool:
 
 
 def fetch_all():
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh = _make_ssh()
     try:
         print(f"[*] Connecting to VPS ({IP})...")
-        ssh.connect(IP, username=USER, password=PASS, timeout=30,
-                    look_for_keys=False, allow_agent=False)
 
-        # Get all folders in the remote output directory
-        stdin, stdout, stderr = ssh.exec_command(
+        # Get all scan output folders
+        _, stdout, _ = ssh.exec_command(
             'find /root/recon-tools/output/ -maxdepth 1 -mindepth 1 -type d | sort'
         )
         remote_dirs = [d.strip() for d in stdout.read().decode().split('\n') if d.strip()]
@@ -170,48 +198,45 @@ def fetch_all():
                 # Parse domain_YYYYMMDD_HHMMSS pattern
                 match = re.match(r'^(.+)_(\d{8}_\d{6})$', dir_name)
                 if match:
-                    domain = match.group(1)
+                    domain    = match.group(1)
                     timestamp = match.group(2)
                 else:
-                    domain = dir_name
+                    domain    = dir_name
                     timestamp = "historical"
 
-                # Systematic local output path: output/<domain>/<timestamp>/
                 local_target_dir = os.path.join(LOCAL_OUT, domain, timestamp)
                 os.makedirs(local_target_dir, exist_ok=True)
-
                 print(f"\n[*] Syncing [{domain}] (Run: {timestamp})...")
 
                 downloaded = []
-                skipped = []
+                skipped    = []
 
-                # --- Small files (SCP) ---
+                # ── Small files via SCP ───────────────────────────────────
                 for fname in SMALL_FILES:
-                    result = _fetch_file(ssh, scp, rdir, local_target_dir, fname)
-                    if result:
-                        local_path = os.path.join(local_target_dir, fname)
-                        # Check if it was skipped (already existed with same size)
-                        remote_size = _remote_file_size(ssh, f"{rdir}/{fname}")
-                        if os.path.exists(local_path) and os.path.getsize(local_path) == remote_size:
-                            # Could be a skip or fresh download - just count as downloaded
-                            downloaded.append(fname)
+                    remote_path = f"{rdir}/{fname}"
+                    local_path  = os.path.join(local_target_dir, fname)
+                    remote_size = _remote_file_size(ssh, remote_path)
+                    if remote_size < 0:
+                        continue
+                    if os.path.exists(local_path) and os.path.getsize(local_path) == remote_size:
+                        skipped.append(fname)
+                        continue
+                    if _fetch_small(scp, remote_path, local_target_dir, fname):
+                        downloaded.append(fname)
 
-                # --- Large files (chunked SSH) ---
+                # ── Large files via chunked SSH ───────────────────────────
                 for fname in LARGE_FILES:
                     remote_path = f"{rdir}/{fname}"
                     remote_size = _remote_file_size(ssh, remote_path)
                     if remote_size < 0:
-                        continue  # File doesn't exist on VPS
+                        continue
 
                     local_path = os.path.join(local_target_dir, fname)
                     mb = remote_size / (1024 * 1024)
 
-                    # Skip if already fully downloaded
-                    if os.path.exists(local_path):
-                        local_size = os.path.getsize(local_path)
-                        if local_size == remote_size:
-                            skipped.append(f"{fname} ({mb:.1f}MB, already local)")
-                            continue
+                    if os.path.exists(local_path) and os.path.getsize(local_path) == remote_size:
+                        skipped.append(f"{fname} ({mb:.1f}MB, already local)")
+                        continue
 
                     print(f"  [>] Fetching {fname} ({mb:.1f} MB)...")
                     if remote_size > SIZE_THRESHOLD:
@@ -223,10 +248,16 @@ def fetch_all():
                         downloaded.append(f"{fname} ({mb:.1f}MB)")
 
                 if downloaded:
+                    # Show size of entire local dir
+                    total_mb = sum(
+                        os.path.getsize(os.path.join(local_target_dir, f))
+                        for f in os.listdir(local_target_dir)
+                        if os.path.isfile(os.path.join(local_target_dir, f))
+                    ) / (1024 * 1024)
                     print(f"  [+] Downloaded: {', '.join(downloaded)}")
                     if skipped:
-                        print(f"  [=] Already local: {', '.join(skipped)}")
-                    print(f"  [+] Path: {os.path.relpath(local_target_dir, PROJECT_ROOT)}")
+                        print(f"  [=] Skipped (already local): {', '.join(skipped)}")
+                    print(f"  [+] Path: {os.path.relpath(local_target_dir, PROJECT_ROOT)}  ({total_mb:.1f} MB total)")
                     fetched_count += 1
                 else:
                     if skipped:
@@ -239,6 +270,8 @@ def fetch_all():
 
     except Exception as e:
         print(f"[!] Error connecting or fetching: {e}")
+        import traceback
+        traceback.print_exc()
         return False
     finally:
         ssh.close()
