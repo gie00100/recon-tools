@@ -131,7 +131,7 @@ def main():
         else:
             print("\n[--no-bot-restart] Skipping Discord bot restart.")
 
-        # ── Step 4: Upload clean domain list ─────────────────────────────
+        # ── Step 5: Upload clean domain list ─────────────────────────────
         tmp_file = PROJECT_ROOT / "targets" / ".watchlist_run.txt"
         with open(tmp_file, "w", encoding="utf-8") as f:
             f.write("\n".join(domains) + "\n")
@@ -143,6 +143,26 @@ def main():
         sftp.close()
         tmp_file.unlink()  # Clean up local temp
         print("    Uploaded.")
+
+        # ── Step 5b: Sync targets.txt on VPS with the active domain list ──
+        # IMPORTANT: The Discord bot's !status reads targets/targets.txt on VPS.
+        # After git reset --hard, that file contains the git-committed version
+        # which may be stale (e.g. has old commented domains, or domains added
+        # locally but not yet pushed). We overwrite it with only the active
+        # domains so !status always shows an accurate pending/completed view.
+        remote_targets_txt = f"{remote_path}/targets/targets.txt"
+        print(f"\n[*] Syncing targets/targets.txt on VPS with active domain list...")
+        domain_block = "\\n".join(domains)
+        # Write using printf to avoid shell quoting issues with special chars
+        write_cmd = (
+            f"printf '%s\\n' {' '.join(repr(d) for d in domains)} "
+            f"> {remote_targets_txt}"
+        )
+        run_remote(ssh, write_cmd, silent=True)
+        # Verify
+        count = run_remote(ssh, f"wc -l < {remote_targets_txt}", silent=True).strip()
+        print(f"    Synced — VPS targets.txt now has {count} active domains.")
+
 
         # ── Step 5: Launch sequential scan ───────────────────────────────
         run_remote(ssh, "which screen || apt-get install -y screen", silent=True)
