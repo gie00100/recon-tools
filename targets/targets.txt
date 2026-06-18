@@ -501,3 +501,26 @@ app.blueskytravelvietnam.com
 # Program: https://hackerone.com/hypr-corp/policy_scopes
 hypr.com
 gethypr.com
+
+# === bbpos_limited (HackerOne) ===
+# Program: https://hackerone.com/bbpos_limited/policy_scopes
+*.bbpos.com
+bbpos.com
+*.emms.bbpos.com
+www.emms.bbpos.com
+portal.wisemanager.com
+login.wisemanager.com
+*.wisemanager.com
+tms.bbpos.com
+developer.bbpos.com
+*.bbpos.com.hk
+*.bbpos.com.cn
+
+# === wurl (HackerOne) ===
+# Program: https://hackerone.com/wurl/policy_scopes
+*.wurl.com
+platform.wurl.com
+accelerate.wurl.com
+reporting.wurl.com
+portal.wurl.com
+*.wurl.tv
