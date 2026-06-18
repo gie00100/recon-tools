@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics) — v5.0
+Module: Bounty Scanner (URL Heuristics) — v5.2
 Passively analyzes massive URL collections for high-value bug bounty findings.
 
 ════════════════════════════════════════════════════════════════════════════════
@@ -927,7 +927,17 @@ _AUTH_ACTION_WORDS = {
     'two-factor', 'twofactor', '2fa', 'mfa', 'otp',
     'callback', 'redirect', 'return', 'sso', 'saml', 'oauth',
     'unauthorized', 'forbidden', 'error', 'success', 'complete', 'completed',
+    # Longer auth route names seen as FPs in real scans
+    'verifyandredirect', 'add_generic_auth_credentials', 'clientcertificatelogin',
+    'postacceptinvitation', 'usessoauthnavigation', 'residencecountry',
+    'onboardingforeu', 'onboardingforeustep', 'limitproperties',
 }
+
+# Regex to detect camelCase compound words (e.g. residenceCountry, useSsoAuthNavigation)
+# These are route/function names, never random tokens
+_CAMEL_CASE_WORD_RE = re.compile(r'^[a-z]+(?:[A-Z][a-z0-9]+)+$')
+# Regex for snake_case compound words (e.g. add_generic_auth_credentials)
+_SNAKE_COMPOUND_RE = re.compile(r'^[a-z]+(?:_[a-z]+){2,}$')
 
 
 def _check_password_reset_token(url: str, params: dict) -> str:
@@ -1046,21 +1056,23 @@ HEURISTICS: Dict[str, dict] = {
         'check': lambda url, params: _check_debug_admin(url),
     },
 
-    # ── CRITICAL: Config file exposure ────────────────────────────────────
-    'Config_File_Exposed': {
-        'severity': 'CRITICAL',
-        'description': 'Exposed config/secret file (.env, .git/config, wp-config.php, etc.) — '
-                       'may contain DB credentials, API keys, encryption keys.',
-        'check': lambda url, params: _check_config_file(url),
-    },
-
-    # ── HIGH: Open redirect ────────────────────────────────────────────────
-    'Open_Redirect': {
-        'severity': 'HIGH',
-        'description': 'Open redirect to external domain — phishing amplifier. '
-                       'Programs accept these when the redirect is unvalidated. Verify it works.',
-        'check': _check_open_redirect,
-    },
+    # Config_File_Exposed: REMOVED — v5.2
+    # Rationale: All observed findings (.env, .git/config, .htpasswd) returned
+    # 401/403 (password protected). A URL alone cannot tell us whether the file
+    # is publicly accessible — requires actual HTTP request. Near-100% FP rate
+    # from URL-only passive analysis. Re-enable if active probing is added.
+    #
+    # Open_Redirect: REMOVED — v5.2
+    # Rationale: 138/229 (60%) of all findings were Open_Redirect FPs.
+    # Root causes:
+    #   1. app.adjust.com: 'redirect=' is Adjust's core mobile attribution product
+    #      feature. Every Adjust tracking link has redirect= by design. Not a bug.
+    #   2. mercadolibre.com partner URLs: redirect to affiliate/partner domains
+    #      is expected behavior in marketplace platforms.
+    #   3. bat.bing.net, mgid.com: ad network tracking — not in scope.
+    # Passive URL analysis cannot distinguish "unvalidated redirect" (bug) from
+    # "intentional partner redirect" (product feature) without active testing.
+    # Re-enable with active verification if HTTP probing is added.
 
     # ── HIGH: PII email in URL ─────────────────────────────────────────────
     'PII_Email_Leak': {

@@ -225,11 +225,30 @@ def fetch_all():
                         downloaded.append(fname)
 
                 # ── Large files via chunked SSH ───────────────────────────
+                # Sort waymore_urls.txt on VPS before download:
+                # - Removes duplicate URLs (dedup)
+                # - Makes the file easy to grep/review locally
+                # - Does NOT change file size much (may trigger re-download once)
+                SORT_BEFORE_FETCH = {'waymore_urls.txt', 'unique_urls.txt'}
+
                 for fname in LARGE_FILES:
                     remote_path = f"{rdir}/{fname}"
                     remote_size = _remote_file_size(ssh, remote_path)
                     if remote_size < 0:
                         continue
+
+                    # Sort + dedup on VPS before fetching (if not already sorted)
+                    if fname in SORT_BEFORE_FETCH:
+                        sorted_marker = remote_path + '.sorted'
+                        marker_size = _remote_file_size(ssh, sorted_marker)
+                        if marker_size < 0:  # Not yet sorted
+                            print(f"    [~] Sorting {fname} on VPS (sort -u)...")
+                            sort_cmd = f'sort -u "{remote_path}" -o "{remote_path}" && touch "{sorted_marker}"'
+                            _, _, serr = ssh.exec_command(sort_cmd, timeout=300)
+                            serr.read()  # wait for completion
+                            # Re-check size after sort (may differ after dedup)
+                            remote_size = _remote_file_size(ssh, remote_path)
+                            print(f"    [~] Sorted. New size: {remote_size/(1024*1024):.1f} MB")
 
                     local_path = os.path.join(local_target_dir, fname)
                     mb = remote_size / (1024 * 1024)
