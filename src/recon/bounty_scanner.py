@@ -1032,13 +1032,9 @@ HEURISTICS: Dict[str, dict] = {
         '_get_severity': lambda url, params: _classify_token(url, params)[0] or 'HIGH',
     },
 
-    # ── CRITICAL: Password reset / verify tokens ───────────────────────────
-    'Password_Reset_Token': {
-        'severity': 'CRITICAL',
-        'description': 'Password reset or verification link with real token — '
-                       'account takeover if token still valid.',
-        'check': _check_password_reset_token,
-    },
+    # Password_Reset_Token: REMOVED — v5.3
+    # Zero findings across all real scan outputs. All candidates filtered by
+    # camelCase/snake_case/auth-action-word guards. Removing to reduce overhead.
 
     # ── CRITICAL: SSRF ────────────────────────────────────────────────────
     'SSRF_Param': {
@@ -1048,13 +1044,9 @@ HEURISTICS: Dict[str, dict] = {
         'check': _check_ssrf_param,
     },
 
-    # ── CRITICAL: Debug/admin panels ──────────────────────────────────────
-    'Debug_Admin_Panel': {
-        'severity': 'CRITICAL',
-        'description': 'Exposed debug, admin, or monitoring panel — '
-                       'may disclose env vars, secrets, or allow direct server control.',
-        'check': lambda url, params: _check_debug_admin(url),
-    },
+    # Debug_Admin_Panel: REMOVED — v5.3
+    # Passive URL analysis cannot confirm accessibility. Almost always 403/404.
+    # Zero actionable findings observed.
 
     # Config_File_Exposed: REMOVED — v5.2
     # Rationale: All observed findings (.env, .git/config, .htpasswd) returned
@@ -1148,8 +1140,7 @@ class BountyScanner:
     # Checks where we dedup on path (strip query string) not full URL
     # — avoids N findings for N different query-param variants of the same endpoint
     PATH_DEDUP_CHECKS = {
-        'Password_Reset_Token', 'Debug_Admin_Panel', 'GraphQL_Introspection',
-        'Config_File_Exposed', 'IDOR_Endpoint',
+        'GraphQL_Introspection', 'IDOR_Endpoint',
     }
     # Checks where we dedup on (type, evidence_prefix) — same token value on many paths = 1 finding
     TOKEN_DEDUP_CHECKS = {'Token_Leak', 'JWT_In_URL'}
@@ -1229,7 +1220,7 @@ class BountyScanner:
                 if vuln_id == 'PII_Data_Leak':
                     if _is_noise_domain(url): continue
 
-                if vuln_id in ('Open_Redirect', 'SSRF_Param'):
+                if vuln_id in ('SSRF_Param',):
                     if is_http:     continue       # Real SSRF/redirect vulns are on HTTPS
 
                 # ── Run the check ──────────────────────────────────────────
