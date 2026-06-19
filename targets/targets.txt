@@ -482,63 +482,108 @@
 
 # === Trip.com (HackerOne) ===
 # Program: https://hackerone.com/trip_com/policy_scopes
-trip.com
-travix.com
-travix.io
-trainpal.com
-mytrainpal.com
-cheaptickets.nl
-triplinkintl.com
-tyo-masters.co.jp
-budgetair.com
-flugladen.de
-vayama.com
-vliegwinkel.nl
-trip.biz
-app.blueskytravelvietnam.com
+# trip.com
+# travix.com
+# travix.io
+# trainpal.com
+# mytrainpal.com
+# cheaptickets.nl
+# triplinkintl.com
+# tyo-masters.co.jp
+# budgetair.com
+# flugladen.de
+# vayama.com
+# vliegwinkel.nl
+# trip.biz
+# app.blueskytravelvietnam.com
 
 # === HYPR (HackerOne) ===
 # Program: https://hackerone.com/hypr-corp/policy_scopes
-hypr.com
-gethypr.com
+# hypr.com
+# gethypr.com
 
 # === bbpos_limited (HackerOne) ===
 # Program: https://hackerone.com/bbpos_limited/policy_scopes
-bbpos.com
-emms.bbpos.com
-www.emms.bbpos.com
-portal.wisemanager.com
-login.wisemanager.com
-wisemanager.com
-tms.bbpos.com
-developer.bbpos.com
-bbpos.com.hk
-bbpos.com.cn
+# bbpos.com
+# emms.bbpos.com
+# www.emms.bbpos.com
+# portal.wisemanager.com
+# login.wisemanager.com
+# wisemanager.com
+# tms.bbpos.com
+# developer.bbpos.com
+# bbpos.com.hk
+# bbpos.com.cn
 
 # === wurl (HackerOne) ===
 # Program: https://hackerone.com/wurl/policy_scopes
-wurl.com
-platform.wurl.com
-accelerate.wurl.com
-reporting.wurl.com
-portal.wurl.com
-wurl.tv
+# wurl.com
+# platform.wurl.com
+# accelerate.wurl.com
+# reporting.wurl.com
+# portal.wurl.com
+# wurl.tv
 
 # === gocardless_bbp (HackerOne) ===
 # Program: https://hackerone.com/gocardless_bbp/policy_scopes
-pay-sandbox.gocardless.com
-api-sandbox.gocardless.com
-connect-sandbox.gocardless.com
-oauth-sandbox.gocardless.com
-payer-details-sandbox.gocardless.com
-manage-sandbox.gocardless.com
-ob.gocardless.com
-www.gocardless.com
-developer.gocardless.com
-gocardless.io
-gocardless-banking.io
-gocardless-cicd.io
-gocardless-lab.io
-gocardless.dev
-auth0.gocardless.com
-sso-demo.gocardless-staging.io
+# pay-sandbox.gocardless.com
+# api-sandbox.gocardless.com
+# connect-sandbox.gocardless.com
+# oauth-sandbox.gocardless.com
+# payer-details-sandbox.gocardless.com
+# manage-sandbox.gocardless.com
+# ob.gocardless.com
+# www.gocardless.com
+# developer.gocardless.com
+# gocardless.io
+# gocardless-banking.io
+# gocardless-cicd.io
+# gocardless-lab.io
+# gocardless.dev
+# auth0.gocardless.com
+# sso-demo.gocardless-staging.io
+
+# === REDOX_BBP ===
+testredoxengine.com
+10x.redoxengine.com
+testapp.redoxengine.com
+testapi.redoxengine.com
+docs.redoxengine.com
+fhir.redoxengine.com
+explore.redoxengine.com
+www.redoxengine.com
+help.redoxengine.com
+
+# === RING ===
+immedia-semi.com
+blinkforhome.com
+prd-ring-web-us.prd.rings.solutions
+publicsafety.ring.com
+
+# === NEWEGG ===
+newegg.com
+newegg.ca
+secure.newegg.com
+secure.newegg.ca
+pmtcards.newegg.com
+sellerportal.newegg.com
+
+# === EERO ===
+eero.com
+e2ro.com
+
+# === FLOQAST ===
+eu.floqast.app
+floqast.app
+floqast.engineering
+api-eu.floqast.app
+
+# === HILTON ===
+hilton.com
+hilton.io
+hiltonbusinessonline.com
+hiltonlocalbiz.com
+
+# === OKG ===
+okx.com
+oklink.com
