@@ -587,3 +587,24 @@ hiltonlocalbiz.com
 # === OKG ===
 okx.com
 oklink.com
+
+# === TELIA_EESTI ===
+www.telia.ee
+iseteenindus.telia.ee
+pood.telia.ee
+sso.telia.ee
+digitark.telia.ee
+teliatv.ee
+diil.ee
+teenused.telia.ee
+port.teliahybridcloud.com
+files.teliahybridcloud.com
+tellimus.telia.ee
+super.ee
+signbox.telia.ee
+
+# === DPDGROUP_UK ===
+q2-consumers.dpd.co.uk
+track.dpd.co.uk
+dpdgroup.co.uk
+q2-login.dpd.co.uk
