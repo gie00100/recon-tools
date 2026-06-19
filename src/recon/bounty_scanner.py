@@ -1098,13 +1098,10 @@ HEURISTICS: Dict[str, dict] = {
         'check': _check_idor_endpoint,
     },
 
-    # ── MEDIUM: GraphQL introspection ─────────────────────────────────────
-    'GraphQL_Introspection': {
-        'severity': 'MEDIUM',
-        'description': 'GraphQL introspection query in URL — reveals full schema, '
-                       'helps map attack surface. Report if schema contains sensitive types.',
-        'check': _check_graphql_introspection,
-    },
+    # GraphQL_Introspection: REMOVED — v5.3
+    # Rationale: High FP rate — most /graphql endpoints in URL archives
+    # are just API calls, not actual introspection queries being logged.
+    # Passive URL analysis cannot confirm introspection is enabled.
 }
 
 
@@ -1140,7 +1137,7 @@ class BountyScanner:
     # Checks where we dedup on path (strip query string) not full URL
     # — avoids N findings for N different query-param variants of the same endpoint
     PATH_DEDUP_CHECKS = {
-        'GraphQL_Introspection', 'IDOR_Endpoint',
+        'IDOR_Endpoint',
     }
     # Checks where we dedup on (type, evidence_prefix) — same token value on many paths = 1 finding
     TOKEN_DEDUP_CHECKS = {'Token_Leak', 'JWT_In_URL'}
