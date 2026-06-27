@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics) — v5.4
+Module: Bounty Scanner (URL Heuristics) — v5.5
 Passively analyzes massive URL collections for high-value bug bounty findings.
 
 ════════════════════════════════════════════════════════════════════════════════
