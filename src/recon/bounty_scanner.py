@@ -388,7 +388,7 @@ def _has_template_variable(value: str) -> bool:
     return bool(TEMPLATE_VAR_RE.match(value)) or ('{' in value and '}' in value and len(value) < 50)
 
 
-def _has_real_email(params: dict) -> str:
+def _has_real_email(params: dict, url: str = '') -> str:
     """
     Return the first real email address found in params, or ''.
     Guards against: template variables, retina filenames (@2x/@3x), encoded URL
@@ -400,12 +400,31 @@ def _has_real_email(params: dict) -> str:
         'login', 'username', 'recipient', 'to', 'from', 'sender',
         'login_hint', 'user', 'account', 'upn', 'preferred_username',
         'invited_email', 'filter',
+        'emailaddress', 'cc_email', 'customer_email', 'your_email',
+    }
+    # Analytics/tracking params that may contain binary blobs with embedded emails
+    # These are marketing campaign metadata, not PII leaks
+    analytics_params = {
+        'utm_campaign', 'utm_content', 'utm_term', 'cid', 'mc_cid',
+        'emailblastid', 'mkt_tok', 'trk', 'trkEmail', 'nlf',
     }
     skip_patterns = [
         'noreply', 'no-reply', 'notifications', 'mailer-daemon',
         'postmaster', 'donotreply', 'bounce', 'unsubscribe',
     ]
+    # UTM newsletter tracking URLs
+    url_lower = url.lower() if url else ''
+    is_newsletter_tracking = (
+        'utm_medium=email' in url_lower or
+        'utm_source=newsletter' in url_lower or
+        'utm_source=email' in url_lower or
+        'emailblastid' in url_lower or
+        ('em=' in url_lower and 'utm_' in url_lower)
+    )
     for key, values in params.items():
+        # Skip analytics/tracking metadata params — may have binary blobs with emails
+        if key.lower() in analytics_params:
+            continue
         val = unquote(values[0]) if values else ''
         if not val or val.lower() in JUNK_VALUES:
             continue
@@ -433,6 +452,11 @@ def _has_real_email(params: dict) -> str:
             continue
         # SendGrid internal doc examples
         if 'sendgrid.com' in email:
+            continue
+
+        # Skip newsletter tracking URLs — triage lesson from WF/Amazon:
+        # emails in utm_medium=email URLs are archival artifacts, not active PII leaks
+        if is_newsletter_tracking:
             continue
 
         # Only report if this is a clearly email-typed param OR email was clearly present
@@ -873,33 +897,70 @@ def _check_idor_endpoint(url: str, params: dict) -> str:
     Detect IDOR-prone API endpoints where sequential or predictable IDs appear
     in paths that operate on user-owned objects (accounts, orders, invoices).
 
-    Only flags high-value object types — not generic /items/123 paths.
+    EXPANDED COVERAGE (v5.4):
+    - Invoice, receipt, billing statement endpoints (financial documents)
+    - Order status pages with email param (PII+IDOR combined)
+    - Subscription, shipment, tracking endpoints
+    - Payment confirmation and refund endpoints
+    - Support ticket / case number enumeration
 
     NOISE GUARDS:
-    - UUID-based patterns (/document/UUID, /files/UUID) are restricted to API paths.
-      SaaS platforms expose document viewer URLs (/ui/document/UUID) where each customer
-      has an isolated tenant — these are not cross-tenant IDOR without active exploitation.
-    - Require /api/ prefix for UUID-based findings to avoid SaaS UI URL false positives.
-    - Numeric IDOR only flagged in true REST resource paths, not in pagination or filter params.
+    - UUID-based patterns (/document/UUID) restricted to API paths.
+    - Require /api/ prefix for UUID-based findings only.
+    - Numeric IDOR requires minimum digit count by object type.
+    - Skip CDN, static asset and doc URLs (handled by Layer 1).
+
+    REPORTABILITY LESSONS (from WF/Amazon triage):
+    - /order/UUID/status?email= IS reportable: the email param leaks PII to anyone with order UUID
+    - Historical Wayback archive URLs are N/A: only flag live endpoints
+    - Third-party vendor subdomains (zix, securemail) have low bounty likelihood
     """
     try:
         parsed = urlparse(url)
         path = parsed.path
+        host = parsed.netloc.lower()
     except Exception:
         return ''
     path_lower = path.lower()
 
+    # ── Early exits: paths that are never IDOR-exploitable ──
+    # Community forums, documentation, blog paths look like resource URLs but aren't
+    non_idor_segments = [
+        '/docs/', '/documentation/', '/blog/', '/questions/', '/community/',
+        '/forum/', '/help/', '/support/article', '/learn/', '/guides/',
+        '/reference/', '/tutorials/', '/changelog/', '/faq',
+    ]
+    if any(seg in path_lower for seg in non_idor_segments):
+        return ''
+
+    # ── Pattern 1: REST API user/account objects ──
     idor_patterns = [
-        # User/account objects in REST APIs — require /api/ context
+        # User/account objects in REST APIs
         r'/api/v?\d*/(?:users?|accounts?|customers?|members?|profiles?)/(\d{4,})',
         r'/api/v?\d*/(?:users?|accounts?)/(\d{4,})/(?:edit|settings|details|data|profile)',
-        # Financial objects — require /api/ context or standalone invoice/order path
-        r'/api/v?\d*/(?:orders?|invoices?|receipts?|payments?|transactions?)/(\d{5,})',
-        r'/(?:orders?|invoices?|receipts?)/(\d{6,})(?:/|$)',
+
+        # Financial objects — API context or standalone paths
+        r'/api/v?\d*/(?:orders?|invoices?|receipts?|payments?|transactions?|refunds?)/(\d{5,})',
+        r'/(?:orders?|invoices?|receipts?|statements?)/(\d{6,})(?:/|\?|$)',
+
+        # Billing, subscription, payment endpoints (common in SaaS)
+        r'/(?:billing|subscription|subscriptions?)/(?:invoices?|receipts?|statements?)/(\d{4,})',
+        r'/(?:billing|payments?|checkout)/([a-f0-9-]{32,})(?:/|\?|$)',
+        r'/(?:invoice|receipt)/([a-zA-Z0-9_-]{6,})(?:\.pdf|\.html)?(?:\?|$)',
+
+        # Shipment/tracking/fulfillment — require specific resource ID format
+        # Note: only match uppercase alphanumeric (real tracking IDs) not /tracking/identify doc paths
+        r'/(?:shipments?|fulfillment|parcels?)/([A-Z0-9]{8,})(?:/|\?|$)',
+        r'/(?:orders?|shipments?|deliveries)/(\d{5,})/(?:track|status|details|invoice)',
+
+        # Support tickets / case numbers — enumerable by sequential ID
+        r'/(?:support|helpdesk|tickets?|cases?)/(?:portal/\d+/)?([A-Z]+-\d{4,})(?:/|\?|$)',
+        r'/(?:servicedesk|jira)/.*?/(\w+-\d{4,})/(?!unsubscribe)',
+
         # Admin operations on user objects
         r'/(?:admin|dashboard|manage)/(?:users?|accounts?|customers?)/(\d{4,})',
-        # Download/export links with UUIDs — ONLY in API context, not in UI viewers
-        # Rationale: /api/export/UUID = data access; /ui/document/UUID = product navigation
+
+        # Download/export links with UUIDs — ONLY in API context
         r'/api/(?:v\d+/)?(?:download|export|report)/([a-f0-9-]{30,})(?:\?|$)',
         r'/api/(?:v\d+/)?(?:files?|documents?|attachments?)/([a-f0-9-]{25,})(?:/|$)',
     ]
@@ -909,7 +970,34 @@ def _check_idor_endpoint(url: str, params: dict) -> str:
         if m:
             obj_id = m.group(1)
             return f'ID={obj_id} in {m.group(0)[:60]}'
+
+    # ── Pattern 2: Order/Purchase status page with email param ──
+    # e.g. /order/UUID/status?email=user@corp.com  OR  /orders/UUID?email=
+    # This is a combined IDOR+PII: the email of the ordering customer is exposed
+    # to anyone who obtains the order UUID (from receipt forwarding, search, etc.)
+    # Triage lesson: this IS reportable — the customer email has no business reason
+    # to be in the URL; it serves as a secondary auth factor but exposes PII.
+    order_status_patterns = [
+        r'/(?:order|orders?|purchase|purchases?)/([a-f0-9-]{32,})/(?:status|confirm|details|receipt|invoice)',
+        r'/(?:order|orders?)/([a-f0-9-]{32,})(?:\?|$)',
+    ]
+    has_email_param = any(
+        k.lower() in ('email', 'mail', 'user_email', 'customer_email')
+        for k in params
+    )
+    if has_email_param:
+        for pattern in order_status_patterns:
+            m = re.search(pattern, path, re.I)
+            if m:
+                order_id = m.group(1)
+                email_val = next(
+                    (v[0] for k, v in params.items() if k.lower() in ('email', 'mail', 'user_email', 'customer_email') and v),
+                    ''
+                )
+                return f'ORDER_PII: order={order_id[:20]} email={email_val[:40]}'
+
     return ''
+
 
 
 def _check_cloud_storage(url: str, params: dict) -> str:
@@ -1115,7 +1203,7 @@ HEURISTICS: Dict[str, dict] = {
         'severity': 'HIGH',
         'description': 'Real email address in URL params — privacy violation (GDPR/CCPA). '
                        'Reportable if on a non-email-marketing endpoint and gets logged.',
-        'check': lambda url, params: _has_real_email(params),
+        'check': lambda url, params: _has_real_email(params, url),
     },
 
     # ── HIGH: Cloud storage exposure ──────────────────────────────────────
