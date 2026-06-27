@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics) — v5.2
+Module: Bounty Scanner (URL Heuristics) — v5.4
 Passively analyzes massive URL collections for high-value bug bounty findings.
 
 ════════════════════════════════════════════════════════════════════════════════
@@ -117,6 +117,8 @@ JUNK_VALUES = {
 CDN_PATTERNS = [
     'cloudfront.net', 'akamaized.net', 'fastly.net', 'azureedge.net',
     's3.amazonaws.com', 'googleapis.com/storage', 'gstatic.com',
+    # Google Fonts — CSS/font delivery, never contains app logic or secrets
+    'fonts.googleapis.com', 'fonts.gstatic.com',
     'unpkg.com', 'jsdelivr.net', 'cdnjs.cloudflare.com',
     'ebaystatic.com', 'ebayimg.com',
     # Broad CDN subdomain patterns (check these last — substring match)
@@ -159,6 +161,10 @@ THIRD_PARTY_DOMAINS = [
     # Email marketing infrastructure
     'sendgrid.net', 'mailchimp.com', 'mandrillapp.com',
     'sparkpostmail.com', 'mailgun.org',
+    # SendGrid application domain — login, app, api subdomains
+    # api.sendgrid.com is handled separately (special guard); login.sendgrid.com and
+    # app.sendgrid.com are SendGrid's own product, NOT bug bounty targets
+    'sendgrid.com',
     # Public investor relations platform (Q4 Inc) — API keys are public/embedded in page JS
     'q4inc.com', 'q4cdn.com',
     # Cloudflare Zero Trust / Access — JWTs in /cdn-cgi/access/login callbacks are expected
@@ -264,8 +270,11 @@ def _is_ir_feed_apikey(url: str, params: dict) -> bool:
     Grants read-only access to public press releases and stock quotes. NOT a secret.
     Pattern: ir.*/feed/Event.svc?apiKey=  or  /feed/StockQuote.svc?apiKey=
     """
-    parsed = urlparse(url.lower())
-    host, path = parsed.netloc, parsed.path
+    try:
+        parsed = urlparse(url.lower())
+        host, path = parsed.netloc, parsed.path
+    except Exception:
+        return False
     if not (host.startswith('ir.') or 'investor' in host):
         return False
     if '/feed/' not in path:
@@ -289,8 +298,11 @@ def _is_notification_email_url(url: str) -> bool:
       - OAuth2 /oauth2/auth or /authorize with login_hint param (standard OIDC flow)
     """
     lower = url.lower()
-    parsed = urlparse(lower)
-    host, path = parsed.netloc, parsed.path
+    try:
+        parsed = urlparse(lower)
+        host, path = parsed.netloc, parsed.path
+    except Exception:
+        return False
 
     # Marketing infrastructure subdomains
     infra_prefixes = ('push-notification', 'track.', 'tracking.', 'email.',
@@ -313,6 +325,13 @@ def _is_notification_email_url(url: str) -> bool:
 
     # Email web-view pages (hash-addressed, contain unsubscribeLink in query)
     if '/public/view/' in path or ('/view/' in path and 'unsubscribelink' in lower):
+        return True
+
+    # Marketing subscription/preference centers — JWT in URL is the auth mechanism for
+    # the link (unsubscribe, subscription_center) — expected pattern in ESPs
+    if '/subscription_center' in path or '/subscription-center' in path:
+        return True
+    if '/preference' in path and ('center' in path or 'manage' in path):
         return True
 
     # OAuth2 / OIDC authorization endpoint with login_hint:
@@ -396,6 +415,8 @@ def _has_real_email(params: dict) -> str:
             continue
         if re.search(r'@[0-9A-F]{2}', val):         # URL-encoded hex
             continue
+        if re.search(r'@[0-9]', val.split('@')[-1] if '@' in val else ''):  # CSS font metric e.g. YTDE@8
+            continue
         if _is_safelinks_email(val):                 # MS Defender rewrites
             continue
 
@@ -463,7 +484,11 @@ def _classify_token(url: str, params: dict) -> Tuple[str, str]:
                 return 'CRITICAL', f'{pwd_key}={pwd[:30]}'
 
     # ── CRITICAL: JWT appearing as a param value ──
+    # Skip AppsFlyer attribution params — af_sig/af_token are deep-link JWTs, not session tokens
+    appsflyer_params_lower = {'af_sig', 'af_token', 'af_sub1', 'af_c_id', 'af_adset_id'}
     for key, values in params.items():
+        if key.lower() in appsflyer_params_lower:
+            continue
         val = (values or [''])[0]
         if val and JWT_REGEX.match(val):
             return 'CRITICAL', f'JWT:{key}={val[:50]}...'
@@ -473,6 +498,11 @@ def _classify_token(url: str, params: dict) -> Tuple[str, str]:
         val = (params_lower.get(api_key_name.lower(), []) or [''])[0]
         if val and TOKEN_REGEX.match(val) and len(val) > 15 and val.lower() not in JUNK_VALUES:
             if not _is_ir_feed_apikey(url, params):
+                # Skip Firebase web API keys — format: AIzaSy... (39 chars)
+                # These are public client-side keys embedded in web app JS by design.
+                # They are not secrets; they are required to use Firebase services from a browser.
+                if val.startswith('AIzaSy') and len(val) == 39:
+                    continue
                 return 'HIGH', f'{api_key_name}={val[:40]}'
 
     # ── HIGH: Named auth tokens (access_token, reset_token, etc.) ──
@@ -481,8 +511,13 @@ def _classify_token(url: str, params: dict) -> Tuple[str, str]:
         'reset_token', 'verification_token', 'auth_code', 'sso_token',
         'stoken', 'client_secret', 'secret',
     }
+    # AppsFlyer attribution params — af_sig etc. are mobile attribution SDK JWTs.
+    # These appear in deep-links and are NOT session tokens. Entirely different threat model.
+    appsflyer_params = {'af_sig', 'af_token', 'af_c_id'}
     for key, values in params.items():
         if key.lower() not in high_token_params:
+            continue
+        if key.lower() in appsflyer_params:
             continue
         val = (values or [''])[0]
         if not val or len(val) < 12 or val.lower() in JUNK_VALUES:
@@ -559,7 +594,18 @@ def _check_jwt_in_url(url: str, params: dict) -> str:
     Detect JWTs appearing anywhere in the URL — path, fragment, or query.
     JWTs should NEVER appear in URLs (they get logged in access logs, browser history,
     Referer headers). This is always CRITICAL regardless of where it appears.
+
+    Exclusions:
+    - AppsFlyer attribution params (af_sig, af_token) — deep-link attribution JWTs
+    - OAuth2 callback ?state= param — opaque state values sometimes encoded as JWT, expected
     """
+    # Skip AppsFlyer attribution URLs — they put JWTs in deep-links by design
+    appsflyer_jwt_params = {'af_sig', 'af_token'}
+    if any(k.lower() in appsflyer_jwt_params for k in params):
+        if all(k.lower() in appsflyer_jwt_params or not JWT_REGEX.match((v or [''])[0])
+               for k, v in params.items()):
+            return ''
+
     # Check URL body (path and query string combined)
     decoded = unquote(url)
     m = JWT_REGEX.search(decoded)
@@ -836,8 +882,11 @@ def _check_idor_endpoint(url: str, params: dict) -> str:
     - Require /api/ prefix for UUID-based findings to avoid SaaS UI URL false positives.
     - Numeric IDOR only flagged in true REST resource paths, not in pagination or filter params.
     """
-    parsed = urlparse(url)
-    path = parsed.path
+    try:
+        parsed = urlparse(url)
+        path = parsed.path
+    except Exception:
+        return ''
     path_lower = path.lower()
 
     idor_patterns = [
@@ -1171,6 +1220,9 @@ class BountyScanner:
             # ── Parse once ─────────────────────────────────────────────────
             try:
                 parsed   = urlparse(url)
+                # Skip IPv6 URLs — rarely bounty-relevant, often parse errors
+                if parsed.netloc.startswith('['):
+                    continue
                 params   = parse_qs(parsed.query, keep_blank_values=True)
                 url_path = f'{parsed.netloc}{parsed.path}'
             except Exception:
@@ -1201,6 +1253,7 @@ class BountyScanner:
                     if is_ir_feed:      continue   # public IR platform keys
                     if is_sendgrid:     continue   # SendGrid doc examples
                     if is_zendesk_chat: continue   # Zendesk chat sessions
+                    if is_notif:        continue   # marketing/unsubscribe flows
 
                 if vuln_id == 'JWT_In_URL':
                     if is_http:     continue       # JWTs on http are usually test traffic
@@ -1216,7 +1269,10 @@ class BountyScanner:
                     if is_http:     continue       # Real SSRF/redirect vulns are on HTTPS
 
                 # ── Run the check ──────────────────────────────────────────
-                evidence = cfg['check'](url, params)
+                try:
+                    evidence = cfg['check'](url, params)
+                except Exception:
+                    continue
                 if not evidence:
                     continue
 
