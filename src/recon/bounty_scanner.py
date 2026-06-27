@@ -305,6 +305,12 @@ def _is_notification_email_url(url: str) -> bool:
     if any(seg in path for seg in opt_out_segs):
         return True
 
+    # Auth / Registration / Checkout / Profile endpoints — passing email is expected
+    auth_segs = ['/login', '/signin', '/sign-in', '/signup', '/sign-up', 
+                 '/register', '/welcome', '/verify', '/checkout', '/email_activity']
+    if any(seg in path for seg in auth_segs):
+        return True
+
     # Email web-view pages (hash-addressed, contain unsubscribeLink in query)
     if '/public/view/' in path or ('/view/' in path and 'unsubscribelink' in lower):
         return True
@@ -504,15 +510,13 @@ def _has_real_pii(params: dict) -> str:
             continue
         if _has_template_variable(val):
             continue
-        if key.lower() in pii_params and not val.isalpha():
+        if key.lower() in pii_params and not val.isalpha() and sum(c.isdigit() for c in val) >= 5:
             return f'{key}={val[:25]}'
     return ''
 
 
 # ── Credential-in-URL patterns ────────────────────────────────────────────────
-# Pattern 1: VirusTotal path format — /:user@email.com:P@ssword
-_CRED_PATH_RE = re.compile(r'/:([^:/?#\s]{3,}):([^/?#\s]{4,})(?:[/?#]|$)')
-# Pattern 2: RFC 3986 basic-auth — https://user:pass@host/
+# Pattern 1: RFC 3986 basic-auth — https://user:pass@host/
 _CRED_AUTH_RE = re.compile(r'https?://([^:@/?#\s]{3,}):([^@/?#\s]{4,})@')
 
 _CRED_FP_VALUES = {
@@ -539,16 +543,7 @@ def _check_credential_in_url(url: str) -> str:
     if 'mailto:' in decoded.lower():
         return ''
 
-    # Pattern 1: path-based creds
-    m = _CRED_PATH_RE.search(decoded)
-    if m:
-        username, password = m.group(1), m.group(2)
-        if (username.lower() not in _CRED_FP_VALUES
-                and password.lower() not in _CRED_FP_VALUES
-                and not (password.isalpha() and password.islower())):
-            return f'PATH_CRED: {username}:{password[:30]}'
-
-    # Pattern 2: RFC 3986 basic-auth
+    # Pattern 1: RFC 3986 basic-auth
     m = _CRED_AUTH_RE.search(url)
     if m:
         username, password = m.group(1), m.group(2)
