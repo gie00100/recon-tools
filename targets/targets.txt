@@ -566,7 +566,6 @@ newegg.ca
 secure.newegg.com
 secure.newegg.ca
 pmtcards.newegg.com
-sellerportal.newegg.com
 
 # === EERO ===
 eero.com
