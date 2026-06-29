@@ -174,6 +174,21 @@ THIRD_PARTY_DOMAINS = [
     'geoip-js.com',
 ]
 
+# Email marketing / transactional email platforms where emails-in-URLs are
+# expected (required by CAN-SPAM, GDPR). NOT a PII leak when found here.
+EMAIL_MARKETING_DOMAINS = {
+    'sendgrid.com', 'sendgrid.net', 'api.sendgrid.com', 'app.sendgrid.com',
+    'mc.sendgrid.com', 'hubspot.com', 'hubspotpagebuilder.com', 'hs-sites.com',
+    'hs-sites-eu1.com', 'hs-email.com', 'mailchimp.com', 'mandrillapp.com',
+    'mailgun.org', 'mailgun.net', 'klaviyo.com', 'klaviyo.net',
+    'sparkpostmail.com', 'sparkpost.com', 'postmarkapp.com',
+    'sendwithus.com', 'brevo.com', 'sendinblue.com',
+    # Mobile attribution platforms — campaign links with emails are by design
+    'adjust.com', 'adjust.net', 'branch.io', 'appsflyer.com',
+    'kochava.com', 'singular.net',
+}
+
+
 # Static file extensions — path-based checks skip these
 STATIC_EXTENSIONS = {
     '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico',
@@ -393,8 +408,20 @@ def _has_real_email(params: dict, url: str = '') -> str:
     Return the first real email address found in params, or ''.
     Guards against: template variables, retina filenames (@2x/@3x), encoded URL
     fragments (@2F), Microsoft SafeLinks, system addresses, Apple Private Relay,
-    and known-junk values.
+    known-junk values, and email marketing platform URLs.
+
+    Email marketing platforms (SendGrid, HubSpot, Adjust, etc.) routinely include
+    the recipient's email in URL params by design — required by CAN-SPAM/GDPR.
+    These are NOT PII leaks.
     """
+    # Skip email marketing/transactional platforms — emails in their URLs are expected
+    if url:
+        try:
+            _host = urlparse(url.lower()).netloc.lstrip('www.')
+            if any(_host == d or _host.endswith('.' + d) for d in EMAIL_MARKETING_DOMAINS):
+                return ''
+        except Exception:
+            pass
     email_params = {
         'email', 'mail', 'e-mail', 'user_email', 'useremail',
         'login', 'username', 'recipient', 'to', 'from', 'sender',
@@ -1132,6 +1159,87 @@ def _check_password_reset_token(url: str, params: dict) -> str:
     return ''
 
 
+
+# -- Strict UUID: 8-4-4-4-12 hex. Cannot be a route name. -------------------
+_UUID_FULL_RE = re.compile(
+    r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', re.I
+)
+
+
+def _check_password_reset_uuid(url: str, params: dict) -> str:
+    '''Detect UUID-format tokens in password reset / activation paths.
+
+    UUIDs (8-4-4-4-12 hex) are system-generated -- cannot be confused with
+    route names, page names, or camelCase function names. Zero FP risk.
+    Confirmed real: auth.ripio.com/api/users/reset-password/be1e2273-...'''
+    if _is_static_asset(url) or _is_noise_domain(url):
+        return ''
+    path = urlparse(url).path
+    path_lower = path.lower()
+    if '/_next/static/' in path_lower or '/static/chunks/' in path_lower:
+        return ''
+    reset_uuid_re = re.compile(
+        r'/(?:reset-?password|password-?reset|forgot-?password'
+        r'|confirm|verify|activate|validate|validation|invitation|invite)'
+        r'/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+        re.I
+    )
+    m = reset_uuid_re.search(path)
+    if m:
+        return f'UUID reset token in path: {m.group(1)}'
+    is_reset = bool(re.search(
+        r'/(?:reset|verify|confirm|activate|validate|forgot)', path_lower
+    ))
+    if is_reset:
+        for k in ('token', 'reset_token', 'key', 'code', 't'):
+            v = (params.get(k, params.get(k.capitalize(), ['']))[0])
+            if v and _UUID_FULL_RE.match(v.strip()):
+                return f'{k}={v} (UUID reset token)'
+    return ''
+
+
+def _check_api_spec_exposed(url: str, params: dict) -> str:
+    '''Detect exposed API spec files (openapi.yaml/swagger.json) on production.
+    Confirmed real: trip.com/ai-resource/trip/openapi.yaml'''
+    if _is_noise_domain(url) or _is_static_asset(url):
+        return ''
+    parsed = urlparse(url)
+    host, path = parsed.netloc.lower(), parsed.path.lower()
+    if host.startswith(('docs.', 'developer.', 'dev.', 'swagger.', 'api-docs.')):
+        return ''
+    if any(seg in path for seg in DOC_PATH_SEGMENTS):
+        return ''
+    spec_re = re.compile(
+        r'/(?:openapi|swagger)\.(?:yaml|yml|json)(?:\?|$)'
+        r'|/api-docs(?:/v\d+)?(?:\?|$)'
+        r'|/swagger-ui(?:\.html|/index\.html)?(?:\?|$)',
+        re.I
+    )
+    m = spec_re.search(path)
+    if m:
+        return f'API spec exposed: {m.group(0)}'
+    return ''
+
+
+def _check_metrics_endpoint(url: str, params: dict) -> str:
+    '''Detect Prometheus /metrics or Spring Boot Actuator on production.
+    Leaks topology, error rates, KPIs, possibly env var values.
+    Confirmed real: tripgenie-openclaw-prod.trip.com/metrics'''
+    if _is_noise_domain(url) or _is_static_asset(url):
+        return ''
+    parsed = urlparse(url)
+    host = parsed.netloc.lower()
+    path = parsed.path.lower().rstrip('/')
+    non_prod = ('dev.', 'development.', 'staging.', 'stage.', 'sandbox.',
+                'test.', 'qa.', 'uat.', 'local.', 'preview.', 'canary.')
+    if any(host.startswith(p) or f'.{p[:-1]}.' in host for p in non_prod):
+        return ''
+    if path in ('/metrics', '/metrics/json'):
+        return '/metrics (Prometheus -- may expose topology/secrets)'
+    if re.search(r'/actuator(?:/(?:env|heapdump|configprops|mappings|beans|loggers))?$', path):
+        return f'Spring Boot Actuator: {path}'
+    return ''
+
 # ══════════════════════════════════════════════════════════════════════════════
 # HEURISTIC REGISTRY
 # Each entry: severity, description, check function
@@ -1160,8 +1268,14 @@ HEURISTICS: Dict[str, dict] = {
         'severity': 'CRITICAL',
         'description': 'Authentication token/API key leaked in URL — session hijack or '
                        'API abuse risk. Classified by type: autologin, OAuth, session+expiry.',
-        'check': lambda url, params: _classify_token(url, params)[1],
-        '_get_severity': lambda url, params: _classify_token(url, params)[0] or 'HIGH',
+        # Skip known analytics/ad/noise domains — token findings on b.6sc.co,
+        # googleoptimize.com etc. appear because targets embed 3rd-party scripts.
+        'check': lambda url, params: (
+            '' if _is_noise_domain(url) else _classify_token(url, params)[1]
+        ),
+        '_get_severity': lambda url, params: (
+            '' if _is_noise_domain(url) else (_classify_token(url, params)[0] or 'HIGH')
+        ),
     },
 
     # Password_Reset_Token: REMOVED — v5.3
@@ -1222,6 +1336,31 @@ HEURISTICS: Dict[str, dict] = {
         'check': lambda url, params: _has_real_pii(params),
     },
 
+    # -- CRITICAL: Password reset with UUID token --------------------------------
+    'Password_Reset_UUID': {
+        'severity': 'CRITICAL',
+        'description': 'UUID token in password reset/activation path -- '
+                       'if still valid allows direct account takeover. '
+                       'UUIDs are system-generated; zero FP risk.',
+        'check': _check_password_reset_uuid,
+    },
+
+    # -- HIGH: API spec exposed ---------------------------------------------------
+    'API_Spec_Exposed': {
+        'severity': 'HIGH',
+        'description': 'openapi.yaml/swagger.json on production -- reveals full '
+                       'endpoint surface, parameters, and auth schemes.',
+        'check': _check_api_spec_exposed,
+    },
+
+    # -- HIGH: Prometheus metrics on production -----------------------------------
+    'Metrics_Endpoint': {
+        'severity': 'HIGH',
+        'description': 'Prometheus /metrics or Spring Actuator on production -- '
+                       'leaks topology, error rates, KPIs, possibly secrets.',
+        'check': _check_metrics_endpoint,
+    },
+
     # ── MEDIUM: IDOR endpoints ─────────────────────────────────────────────
     'IDOR_Endpoint': {
         'severity': 'MEDIUM',
@@ -1269,7 +1408,7 @@ class BountyScanner:
     # Checks where we dedup on path (strip query string) not full URL
     # — avoids N findings for N different query-param variants of the same endpoint
     PATH_DEDUP_CHECKS = {
-        'IDOR_Endpoint',
+        'Password_Reset_UUID', 'API_Spec_Exposed', 'Metrics_Endpoint', 'IDOR_Endpoint',
     }
     # Checks where we dedup on (type, evidence_prefix) — same token value on many paths = 1 finding
     TOKEN_DEDUP_CHECKS = {'Token_Leak', 'JWT_In_URL'}
