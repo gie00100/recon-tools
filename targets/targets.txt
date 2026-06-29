@@ -544,69 +544,69 @@
 # sso-demo.gocardless-staging.io
 
 # === REDOX_BBP ===
-testredoxengine.com
-10x.redoxengine.com
-testapp.redoxengine.com
-testapi.redoxengine.com
-docs.redoxengine.com
-fhir.redoxengine.com
-explore.redoxengine.com
-www.redoxengine.com
-help.redoxengine.com
+# testredoxengine.com
+# 10x.redoxengine.com
+# testapp.redoxengine.com
+# testapi.redoxengine.com
+# docs.redoxengine.com
+# fhir.redoxengine.com
+# explore.redoxengine.com
+# www.redoxengine.com
+# help.redoxengine.com
 
 # === RING ===
-immedia-semi.com
-blinkforhome.com
-prd-ring-web-us.prd.rings.solutions
-publicsafety.ring.com
+# immedia-semi.com
+# blinkforhome.com
+# prd-ring-web-us.prd.rings.solutions
+# publicsafety.ring.com
 
 # === NEWEGG ===
-newegg.com
-newegg.ca
-secure.newegg.com
-secure.newegg.ca
-pmtcards.newegg.com
+# newegg.com
+# newegg.ca
+# secure.newegg.com
+# secure.newegg.ca
+# pmtcards.newegg.com
 
 # === EERO ===
-eero.com
-e2ro.com
+# eero.com
+# e2ro.com
 
 # === FLOQAST ===
-eu.floqast.app
-floqast.app
-floqast.engineering
-api-eu.floqast.app
+# eu.floqast.app
+# floqast.app
+# floqast.engineering
+# api-eu.floqast.app
 
 # === HILTON ===
-hilton.com
-hilton.io
-hiltonbusinessonline.com
-hiltonlocalbiz.com
+# hilton.com
+# hilton.io
+# hiltonbusinessonline.com
+# hiltonlocalbiz.com
 
 # === OKG ===
-okx.com
-oklink.com
+# okx.com
+# oklink.com
 
 # === TELIA_EESTI ===
-www.telia.ee
-iseteenindus.telia.ee
-pood.telia.ee
-sso.telia.ee
-digitark.telia.ee
-teliatv.ee
-diil.ee
-teenused.telia.ee
-port.teliahybridcloud.com
-files.teliahybridcloud.com
-tellimus.telia.ee
-super.ee
-signbox.telia.ee
+# www.telia.ee
+# iseteenindus.telia.ee
+# pood.telia.ee
+# sso.telia.ee
+# digitark.telia.ee
+# teliatv.ee
+# diil.ee
+# teenused.telia.ee
+# port.teliahybridcloud.com
+# files.teliahybridcloud.com
+# tellimus.telia.ee
+# super.ee
+# signbox.telia.ee
 
 # === DPDGROUP_UK ===
-q2-consumers.dpd.co.uk
-track.dpd.co.uk
-dpdgroup.co.uk
-q2-login.dpd.co.uk
+# q2-consumers.dpd.co.uk
+# track.dpd.co.uk
+# dpdgroup.co.uk
+# q2-login.dpd.co.uk
 
 # === inDrive (HackerOne) ===
 # Program: https://hackerone.com/indrive/policy_scopes
