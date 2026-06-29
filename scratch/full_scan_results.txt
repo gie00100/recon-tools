@@ -1,0 +1,97 @@
+=== FULL SCAN RESULTS ===
+Total findings: 35
+
+By Type:
+  PII_Email_Leak: 15
+  IDOR_Endpoint: 9
+  Token_Leak: 8
+  JWT_In_URL: 3
+
+
+=== DETAILS PER TYPE ===
+
+
+[PII_Email_Leak] - 15 findings
+--------------------------------------------------------------------------------
+  1. [HIGH] https://surveys.twilio.com/jfe/form/SV_6ApcHDyDHys7d4x?Helpful=Yes&advisory=COMM-4421&customer_email=agarza@highlandsclerkfl.gov&customer_type=&email_
+     Evidence: agarza@highlandsclerkfl.gov
+  2. [HIGH] https://interactive.twilio.com/us-guide-sms-atd?emailaddress=DONEL.PORTILLO@COGNEX.COM
+     Evidence: DONEL.PORTILLO@COGNEX.COM
+  3. [HIGH] https://interactive.twilio.com/retail-customer-experience-cookbook-atd?emailaddress=ryan_marzec@toyota.com
+     Evidence: ryan_marzec@toyota.com
+  4. [HIGH] https://ro.stripchat.com/?params[email]=saferadu@gmail.com&realDomain=go.stripcash.com&stripbotVariation=NullWidget
+     Evidence: saferadu@gmail.com
+  5. [HIGH] https://playwsop.com/play?wsopData=resetOneConnectPassword&email=jwgra25@hotmail.com&validationToken=T==gN3cDNxgzM1UDN0UTM6AjYzYjMkZ2M3gTY3I2YmhDNxEGN
+     Evidence: jwgra25@hotmail.com
+  6. [HIGH] https://learn.segment.com/sql-traits-demo/?your_email=alexander.pedersen@servicenow.com
+     Evidence: alexander.pedersen@servicenow.com
+  7. [HIGH] https://ca.store.ui.com/ca/en/order/e10835ad-ef99-4c70-a2e3-a6ab03a25c48/status?email=jean.vincent%40troududiable.com&orderNumber=CA1135830
+     Evidence: jean.vincent@troududiable.com
+  8. [HIGH] https://securemail.wf.com/s/e?m=ABA1Jxq3VARNIDdEV6HFKw7p&em=kirsten@ctclosingattorneys.com
+     Evidence: kirsten@ctclosingattorneys.com
+  9. [HIGH] https://localization-lucid.netflix.com/?states=NEW&states=INPROGRESS&currentAssignees=dhoni-setiawan@to-in.co.jp
+     Evidence: dhoni-setiawan@to-in.co.jp
+  10. [HIGH] https://segment.com/contact/clearbit?email=hao.li%40wellsfargo.com
+     Evidence: hao.li@wellsfargo.com
+  11. [HIGH] https://store.ui.com/us/en/order/4d6c77c5-d053-44dd-9f9f-95301c52dc9f/status?email=jcamacci%40leprinofoods.com&orderNumber=US1138129
+     Evidence: jcamacci@leprinofoods.com
+  12. [HIGH] https://signal.twilio.com/2025/begin?reg_type_id=759500&code=SalesTeam25&cc_email=lvandivier@twilio.com&c_5304638=Lisa+Larayne+Vandivier
+     Evidence: lvandivier@twilio.com
+  13. [HIGH] https://account.ui.com/security?email=Chris.tristan%40protonmail.com
+     Evidence: Chris.tristan@protonmail.com
+  14. [HIGH] https://flex.twilio.com/agent-desktop?Expiration=2023-07-12T11:05:52Z&Identity=lorrainehernandez.igt@tripactions.tech&Roles=supervisor&Token=eyJ6aXAiO
+     Evidence: lorrainehernandez.igt@tripactions.tech
+  15. [HIGH] https://eu.store.ui.com/eu/en/order/6577b068-6874-48e3-9780-15a01133c810/status?email=bjarke.henriksen%40watts.dk&orderNumber=EU128383
+     Evidence: bjarke.henriksen@watts.dk
+
+
+[IDOR_Endpoint] - 9 findings
+--------------------------------------------------------------------------------
+  1. [MEDIUM] https://store.ui.com/us/en/checkout/6b476eb6-09d0-46ba-ad2b-01c075597bb0/payment
+     Evidence: ID=6b476eb6-09d0-46ba-ad2b-01c075597bb0 in /checkout/6b476eb6-09d0-46ba-ad2b-01c075597bb0/
+  2. [MEDIUM] https://ca.store.ui.com/ca/en/order/e10835ad-ef99-4c70-a2e3-a6ab03a25c48/status?email=jean.vincent%40troududiable.com&orderNumber=CA1135830
+     Evidence: ORDER_PII: order=e10835ad-ef99-4c70-a email=jean.vincent@troududiable.com
+  3. [MEDIUM] https://p2p.deriv.com/orders/7861554
+     Evidence: ID=7861554 in /orders/7861554
+  4. [MEDIUM] https://me.store.ui.com/me/en/checkout/060177e7-1a18-48a1-91bb-d8a006cc585d/payment?key=e77962ca0718080fbf8325f41a93e524671cd425fd3d7d05
+     Evidence: ID=060177e7-1a18-48a1-91bb-d8a006cc585d in /checkout/060177e7-1a18-48a1-91bb-d8a006cc585d/
+  5. [MEDIUM] https://sg.store.ui.com/sg/en/checkout/b9fee483-7884-4baa-ab15-4ede1a0e4406/payment?key=011bfd8d73bf264556c412d2f78206fa725482561b65567c
+     Evidence: ID=b9fee483-7884-4baa-ab15-4ede1a0e4406 in /checkout/b9fee483-7884-4baa-ab15-4ede1a0e4406/
+  6. [MEDIUM] https://ext.stripchat.com/api/v1/users/33224402/config
+     Evidence: ID=33224402 in /api/v1/users/33224402
+  7. [MEDIUM] https://mx.store.ui.com/mx/en/checkout/53f7e3b5-485d-4622-b4e4-e90b19d761b4?key=b9912dcb889884932bc650b95e244b0281cdbd21f37dd455
+     Evidence: ID=53f7e3b5-485d-4622-b4e4-e90b19d761b4 in /checkout/53f7e3b5-485d-4622-b4e4-e90b19d761b4
+  8. [MEDIUM] https://eu.store.ui.com/eu/en/order/6577b068-6874-48e3-9780-15a01133c810/status?email=bjarke.henriksen%40watts.dk&orderNumber=EU128383
+     Evidence: ORDER_PII: order=6577b068-6874-48e3-9 email=bjarke.henriksen@watts.dk
+  9. [MEDIUM] https://p2p.deriv.com/orders/9935400
+     Evidence: ID=9935400 in /orders/9935400
+
+
+[Token_Leak] - 8 findings
+--------------------------------------------------------------------------------
+  1. [CRITICAL] https://idpay.unico.io/notify?id=fc4f0692-4d20-4157-823b-57474580d0bd&token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhZjYzOGU0Yi02ZTRmLTQ5MzItY
+     Evidence: JWT:token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhZ...
+  2. [CRITICAL] https://login.twilio.com/continue?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJnb29nbGUtb2F1dGgyfDExNTkwNDE0NjY0MzIyMjE3NjA2OSIsImlzcyI6ImxvZ
+     Evidence: JWT:token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJnb...
+  3. [CRITICAL] https://console.twilio.com/auth0/callback?code=tbUr5bn-Ma62MEco8i5Maa1_woBQ7iBb7g3oyeWxikCyg&state=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJvbmVfY29uc2
+     Evidence: JWT:state=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJvbmVfY29uc...
+  4. [CRITICAL] https://signup.netflix.com/autologin?token=BQAbAAEBEO8h97b%2FYis2Fw9%2FilxYnBSAgPgTDDo3%2BIdugnHFy06M6hXwqffZ9utTRNKpgq7jlZ4ieQ8%2FN5cRPPWyjVwtmwrvfv%
+     Evidence: autologin_token=BQAbAAEBEO8h97b/Yis2Fw9/ilxYnBSAgPgTDDo3
+  5. [CRITICAL] https://web-live.gop3.nl/?session_id=94abf76fd684e8217ace87ee4e9be44b9a5f7201&expire=900&remember=0&auth_action=loginhttps://web-live.gop3.nl/?session
+     Evidence: session_id=94abf76fd684e8217ace87ee4e9be44b9a5f7201 expire=900
+  6. [CRITICAL] https://sm-api-dsa.playtika.com/redirector/?invite=eyJhbGciOiJIUzI1NiJ9.eyJpbnZpdGVySWQiOjE1MTMyNjAzMjIzMjUyMywiaW52aXRlZUlkIjoxNTEzMjYwMjkyOTc5NDEsIn
+     Evidence: JWT:invite=eyJhbGciOiJIUzI1NiJ9.eyJpbnZpdGVySWQiOjE1MTMyNjAzM...
+  7. [CRITICAL] https://unifi.ui.com/invitations/organizations?orgId=019e4f70-7575-7005-a6d7-47030fb34e8c&inviteCode=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsib3JnLW1hbmFnZXIi
+     Evidence: JWT:inviteCode=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsib3JnLW1hbmFnZXIiL...
+  8. [CRITICAL] https://console.twilio.com/unified-mfa?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3Nzk4OTk5MDcsImlzcyI6ImxvZ2luLnR3aWxpby5jb20iLCJzdWIiOiJn
+     Evidence: JWT:token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3N...
+
+
+[JWT_In_URL] - 3 findings
+--------------------------------------------------------------------------------
+  1. [CRITICAL] https://idpay.unico.io/notify?id=fc4f0692-4d20-4157-823b-57474580d0bd&token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhZjYzOGU0Yi02ZTRmLTQ5MzItY
+     Evidence: JWT in URL: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhZjYzOGU0Yi0...
+  2. [CRITICAL] https://login.twilio.com/continue?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJnb29nbGUtb2F1dGgyfDExNTkwNDE0NjY0MzIyMjE3NjA2OSIsImlzcyI6ImxvZ
+     Evidence: JWT in URL: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJnb29nbGUtb2F...
+  3. [CRITICAL] https://account.ui.com/login?redirect=https://unifi.ui.com/invitations/organizations?orgId=019e4f70-7575-7005-a6d7-47030fb34e8c&inviteCode=eyJhbGciOiJ
+     Evidence: JWT in URL: eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsib3JnLW1hbmFnZXIiLCJ1c2VyIl0...
