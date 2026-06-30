@@ -257,7 +257,17 @@ class ReconMaster:
         
         log_info(f"Resolving {len(hostnames)} hostnames to IPs...")
         # resolve_hostnames v2 returns (ips, ip_to_domains)
-        ips, ip_to_domains = resolve_hostnames(hostnames)
+        try:
+            result = resolve_hostnames(hostnames)
+            if isinstance(result, tuple) and len(result) == 2:
+                ips, ip_to_domains = result
+            else:
+                # Fallback for older single-return version
+                ips = list(result) if result else []
+                ip_to_domains = {ip: [ip] for ip in ips}
+        except Exception as e:
+            log_warning(f"resolve_hostnames failed: {e}")
+            return
         
         if not ips:
             log_warning("Failed to resolve any IPs.")
