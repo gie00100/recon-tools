@@ -59,7 +59,7 @@ echo.
 echo  Steps performed:
 echo    1. Kill existing scan sessions on VPS
 echo    2. Clean VPS output directory
-echo    3. Git pull latest code + targets on VPS
+echo    3. Upload latest code + targets to VPS via SFTP
 echo    4. Restart Discord bot (systemctl - avoids duplicate processes)
 echo    5. Upload active domains + sync targets.txt on VPS
 echo    6. Launch sequential scan in detached screen session
@@ -137,35 +137,7 @@ if /i not "%CONFIRM%"=="YES" (
     goto :DONE
 )
 echo.
-venv\Scripts\python.exe -c "
-import sys, time
-sys.path.insert(0, 'scripts/vps')
-from vps_helper import connect_vps, run_remote
-
-ssh, cfg = connect_vps()
-print()
-print('[*] Current screen sessions:')
-out = run_remote(ssh, 'screen -ls', silent=True)
-print(out or '  (none)')
-
-print()
-print('[*] Killing all screen sessions...')
-run_remote(ssh, 'screen -ls | grep -oP \"\\d+\\.\\S+\" | xargs -I{} screen -X -S {} quit 2>&1 || true', silent=True)
-time.sleep(1)
-
-print('[*] Killing scan processes...')
-run_remote(ssh, 'pkill -f bulk_runner.py 2>/dev/null; pkill -f run_bulk.sh 2>/dev/null; pkill -f recon_master.py 2>/dev/null; true', silent=True)
-time.sleep(1)
-
-print()
-print('[*] Remaining sessions:')
-out = run_remote(ssh, 'screen -ls 2>/dev/null || echo \"(none)\"', silent=True)
-print(out)
-
-ssh.close()
-print()
-print('[+] All scan sessions stopped.')
-"
+venv\Scripts\python.exe scripts\vps\stop_all_sessions.py
 goto :DONE
 
 

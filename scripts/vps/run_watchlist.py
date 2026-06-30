@@ -4,7 +4,7 @@ Run Watchlist Scan — Sequential recon on all watchlist domains via VPS.
 Steps performed automatically:
   1. Kill old watchlist scan sessions (NOT the discord bot)
   2. Clean old VPS output directory (rm -rf output/*)
-  3. Git pull latest code + targets on VPS
+  3. Upload latest src/ files to VPS via SFTP (VPS has no git repo)
   4. Restart Discord bot via systemctl (safe — avoids duplicate processes)
   5. Upload clean domain list to VPS
   6. Launch one-by-one sequential scan in a detached screen session
@@ -106,14 +106,27 @@ def main():
         else:
             print("\n[--no-clean] Skipping VPS output cleanup.")
 
-        # ── Step 3: Git pull latest code + targets ────────────────────────
-        print(f"\n[*] Pulling latest code from git on VPS...")
-        git_out = run_remote(
-            ssh,
-            f"cd {remote_path} && git fetch origin && git reset --hard origin/main 2>&1",
-            silent=True
-        )
-        print(f"    {git_out.splitlines()[-1] if git_out else 'Done.'}")
+        # ── Step 3: Upload latest src/ files via SFTP ─────────────────────
+        # NOTE: VPS was set up via manual copy, not git clone — git commands
+        # do not work there. We upload key files directly via SFTP instead.
+        print(f"\n[*] Uploading latest code to VPS via SFTP...")
+        files_to_deploy = [
+            (PROJECT_ROOT / "src" / "recon" / "port_scanner.py",  f"{remote_path}/src/recon/port_scanner.py"),
+            (PROJECT_ROOT / "src" / "recon" / "bounty_scanner.py", f"{remote_path}/src/recon/bounty_scanner.py"),
+            (PROJECT_ROOT / "src" / "recon_master.py",              f"{remote_path}/src/recon_master.py"),
+            (PROJECT_ROOT / "run_sequential.sh",                    f"{remote_path}/run_sequential.sh"),
+        ]
+        deploy_sftp = ssh.open_sftp()
+        for local, remote_file in files_to_deploy:
+            try:
+                deploy_sftp.put(str(local), remote_file)
+                print(f"    [OK] {local.name}")
+            except Exception as e:
+                print(f"    [ERR] {local.name}: {e}")
+        deploy_sftp.close()
+        # Fix line endings on shell scripts
+        run_remote(ssh, f'sed -i "s/\r//" {remote_path}/run_sequential.sh && chmod +x {remote_path}/run_sequential.sh', silent=True)
+        print("    Done.")
 
         # ── Step 4: Restart Discord bot via systemctl ─────────────────────
         # Always use systemctl — NEVER pkill + nohup.
@@ -164,14 +177,15 @@ def main():
         print(f"    Synced — VPS targets.txt now has {count} active domains.")
 
 
-        # ── Step 5: Launch sequential scan ───────────────────────────────
+        # ── Step 6: Launch sequential scan ───────────────────────────────
         run_remote(ssh, "which screen || apt-get install -y screen", silent=True)
 
+        # Rotate scan.log before starting fresh
+        run_remote(ssh, f"mv {remote_path}/scan.log {remote_path}/scan.log.bak 2>/dev/null; touch {remote_path}/scan.log", silent=True)
+
         cmd = (
-            f"cd {remote_path} && "
-            f'screen -dmS watchlist_recon bash -c "'
-            f"./run_bulk.sh watchlist_run.txt; "
-            f'echo WATCHLIST_SCAN_COMPLETE; sleep 3600"'
+            f"screen -dmS watchlist_recon bash -c "
+            f"'cd {remote_path} && bash run_sequential.sh'"
         )
         print(f"\n[*] Launching sequential scan on VPS (screen session: watchlist_recon)...")
         run_remote(ssh, cmd, silent=True)
