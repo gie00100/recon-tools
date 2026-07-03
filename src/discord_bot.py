@@ -8,6 +8,7 @@ Commands:
   !status               - Show running screen sessions
   !results [domain]     - Show latest results for a domain (or all)
   !stop                 - Stop all running recon sessions
+  !dork <domain>        - Generate clickable dork URLs for Google/Bing/DDG/URLScan/Shodan/GitHub/VT
   !help                 - Show available commands
 """
 
@@ -467,6 +468,136 @@ async def cmd_stop():
     await send_embed("🛑 All Stopped", f"Killed {killed} active recon session(s).", 0xFF0000)
 
 
+async def cmd_dork(domain):
+    """
+    Generate clickable dork URLs for a domain across multiple search engines.
+    The user clicks from their phone — no crawling, no captcha.
+    Covers: Google, Bing, DuckDuckGo, URLScan.io, VirusTotal, Shodan, GitHub, Wayback.
+    """
+    import urllib.parse
+
+    domain = domain.strip().lower()
+    if not domain or '.' not in domain:
+        await send_embed('❌ Invalid Domain', f'`{domain}` is not a valid domain.', 0xFF0000)
+        return
+
+    # Strip scheme if user passed a full URL
+    if domain.startswith('http'):
+        from urllib.parse import urlparse as _up
+        domain = _up(domain).netloc or domain
+
+    d = domain  # short alias
+
+    def g(q):  # Google URL builder
+        return f'https://www.google.com/search?q={urllib.parse.quote_plus(q)}'
+
+    def bing(q):  # Bing URL builder
+        return f'https://www.bing.com/search?q={urllib.parse.quote_plus(q)}'
+
+    def ddg(q):   # DuckDuckGo URL builder
+        return f'https://duckduckgo.com/?q={urllib.parse.quote_plus(q)}'
+
+    # ── Dork categories ─────────────────────────────────────────────────────
+
+    # 1. Exposed sensitive files
+    exposed_files = [
+        (f'Google: .env/.git/.bak files', g(f'site:{d} ext:env OR ext:bak OR ext:sql OR ext:json "password" OR "secret" OR "key"')),
+        (f'Google: config/backup files',   g(f'site:{d} ("config.php" OR "wp-config.php" OR "settings.py" OR "database.yml" OR ".htpasswd")')),
+        (f'Google: log files',             g(f'site:{d} ext:log ("error" OR "exception" OR "password" OR "token")')),
+        (f'Bing: .env exposed',            bing(f'site:{d} ".env" OR "DB_PASSWORD" OR "APP_SECRET"')),
+    ]
+
+    # 2. Login/admin panels
+    admin_panels = [
+        (f'Google: Admin/login panels',    g(f'site:{d} inurl:(admin|login|dashboard|panel|manage|signin|console)')),
+        (f'Google: phpMyAdmin',            g(f'site:{d} inurl:phpmyadmin OR inurl:pma')),
+        (f'Bing: Admin endpoints',         bing(f'site:{d} inurl:admin OR inurl:cp OR inurl:dashboard')),
+        (f'DDG: Login panels',             ddg(f'site:{d} (login OR signin OR admin OR dashboard)')),
+    ]
+
+    # 3. API keys / tokens in indexed pages
+    secrets_in_pages = [
+        (f'Google: API keys/tokens',       g(f'site:{d} ("api_key" OR "apikey" OR "access_token" OR "secret_key" OR "client_secret")')),
+        (f'Google: AWS keys',              g(f'site:{d} ("AKIA" OR "aws_access_key" OR "aws_secret")')),
+        (f'Google: Bearer tokens',         g(f'site:{d} "Authorization: Bearer" OR "bearer token" OR "jwt"')),
+        (f'Bing: Internal tokens',         bing(f'site:{d} "password" OR "token" OR "secret" filetype:txt OR filetype:xml OR filetype:json')),
+    ]
+
+    # 4. Exposed documents / PII
+    exposed_docs = [
+        (f'Google: PDFs/invoices',         g(f'site:{d} ext:pdf ("invoice" OR "receipt" OR "statement" OR "contract")')),
+        (f'Google: XLS/CSV data',          g(f'site:{d} ext:xlsx OR ext:csv OR ext:xls')),
+        (f'Google: Internal docs',         g(f'site:{d} ("internal" OR "confidential" OR "private") ext:pdf OR ext:docx')),
+    ]
+
+    # 5. Error pages / debug info
+    error_debug = [
+        (f'Google: Error pages',           g(f'site:{d} ("stack trace" OR "exception" OR "Error 500" OR "debug" OR "traceback")')),
+        (f'Google: DB errors',             g(f'site:{d} ("SQL syntax" OR "mysql_fetch" OR "ORA-" OR "PostgreSQL" OR "MongoDB")')),
+        (f'Bing: Debug info',              bing(f'site:{d} "debug=true" OR "XDEBUG" OR "phpinfo()"')),
+    ]
+
+    # 6. Open redirect / SSRF params
+    redirect_ssrf = [
+        (f'Google: Open redirect params',  g(f'site:{d} inurl:(redirect|return|next|url|dest|destination|continue|goto)=')),
+        (f'Google: SSRF params',           g(f'site:{d} inurl:(fetch|load|proxy|request|uri|src|path|service)=')),
+    ]
+
+    # 7. Subdomain/infra discovery
+    infra = [
+        (f'URLScan: Indexed URLs',         f'https://urlscan.io/search/#page.domain%3A{d}'),
+        (f'URLScan: Subdomains',           f'https://urlscan.io/search/#domain%3A{d}'),
+        (f'VirusTotal: Domain report',     f'https://www.virustotal.com/gui/domain/{d}/relations'),
+        (f'VirusTotal: URLs indexed',      f'https://www.virustotal.com/gui/domain/{d}/urls'),
+        (f'Shodan: Subdomains/services',   f'https://www.shodan.io/search?query=hostname%3A{d}'),
+        (f'Wayback Machine',               f'https://web.archive.org/web/*/{d}/*'),
+        (f'crt.sh: SSL certs (subdomains)',f'https://crt.sh/?q=%25.{d}&output=json'),
+    ]
+
+    # 8. GitHub code leaks
+    github = [
+        (f'GitHub: "{d}" code',           f'https://github.com/search?q=%22{urllib.parse.quote(d)}%22&type=code'),
+        (f'GitHub: API keys for {d}',      f'https://github.com/search?q=%22{urllib.parse.quote(d)}%22+%22api_key%22+OR+%22secret%22&type=code'),
+        (f'GitHub: Commits for {d}',       f'https://github.com/search?q=%22{urllib.parse.quote(d)}%22&type=commits'),
+    ]
+
+    # 9. Pastebin / leaks
+    leaks = [
+        (f'Google: Pastebin leaks',        g(f'site:pastebin.com OR site:paste.ee OR site:hastebin.com "{d}" password OR email OR token')),
+        (f'DDG: Exposed data',             ddg(f'"{d}" ("password" OR "credentials" OR "token") site:pastebin.com')),
+    ]
+
+    # ── Build embed fields ───────────────────────────────────────────────────
+    def make_field(name, dorks):
+        # Each dork: [label](url) on its own line — all clickable in Discord
+        lines = [f'[{label}]({url})' for label, url in dorks]
+        return {'name': name, 'value': '\n'.join(lines), 'inline': False}
+
+    fields = [
+        make_field('📁 Exposed Sensitive Files',       exposed_files),
+        make_field('🔐 Admin / Login Panels',           admin_panels),
+        make_field('🔑 API Keys & Tokens in Pages',     secrets_in_pages),
+        make_field('📄 Exposed Documents & PII',        exposed_docs),
+        make_field('💥 Error Pages & Debug Info',       error_debug),
+        make_field('↩️ Open Redirect & SSRF Params',    redirect_ssrf),
+        make_field('🌐 Infra Discovery (URLScan/VT/Shodan)', infra),
+        make_field('🐙 GitHub Code Leaks',              github),
+        make_field('📋 Pastebin & Data Leaks',          leaks),
+    ]
+
+    total_dorks = sum(len(f) for f in [exposed_files, admin_panels, secrets_in_pages,
+                                        exposed_docs, error_debug, redirect_ssrf,
+                                        infra, github, leaks])
+
+    await send_embed(
+        f'🔎 Dorks for `{d}`',
+        f'**{total_dorks} clickable dork links** across Google, Bing, DuckDuckGo, URLScan, VirusTotal, Shodan, GitHub & Pastebin.\n'
+        f'Click any link to open directly in your browser — no captcha on your phone.\n\u200b',
+        0x7289DA,
+        fields,
+    )
+
+
 async def cmd_help():
     """Show available commands."""
     help_text = (
@@ -475,11 +606,14 @@ async def cmd_help():
         "📊 `!status` — Show active recon sessions\n"
         "📁 `!results [domain]` — View results (optional: filter by domain)\n"
         "🛑 `!stop` — Kill all running recon sessions\n"
+        "🔎 `!dork <domain>` — Generate 30+ clickable dork URLs for a domain\n"
+        "  *Covers: Google, Bing, DuckDuckGo, URLScan, VirusTotal, Shodan, GitHub, Wayback, Pastebin*\n"
         "❓ `!help` — Show this help message\n\n"
         "**Examples:**\n"
         "```\n"
         "!recon hackerone.com\n"
         "!results ui.com\n"
+        "!dork shein.com\n"
         "!status\n"
         "```"
     )
@@ -493,11 +627,12 @@ async def cmd_help():
 # For a proper bot with real-time responses, set DISCORD_BOT_TOKEN.
 
 COMMAND_MAP = {
-    "!recon": cmd_recon,
-    "!status": cmd_status,
+    "!recon":   cmd_recon,
+    "!status":  cmd_status,
     "!results": cmd_results,
-    "!stop": cmd_stop,
-    "!help": cmd_help,
+    "!stop":    cmd_stop,
+    "!dork":    cmd_dork,
+    "!help":    cmd_help,
 }
 
 
@@ -564,12 +699,14 @@ async def run_gateway_bot():
             _reply_channel = message.channel
             handler = COMMAND_MAP[command]
             try:
-                if arg and command in ("!recon", "!results"):
+                if arg and command in ("!recon", "!results", "!dork"):
                     await handler(arg)
                 elif command in ("!status", "!stop", "!help"):
                     await handler()
                 elif command == "!results" and not arg:
                     await handler()
+                elif command == "!dork" and not arg:
+                    await send_embed("❌ Usage", "Usage: `!dork <domain>` e.g. `!dork shein.com`", 0xFF0000)
                 else:
                     await send_embed("❌ Usage Error", f"Usage: `{command} <argument>`", 0xFF0000)
             finally:
