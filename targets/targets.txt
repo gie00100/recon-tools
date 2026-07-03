@@ -611,136 +611,278 @@
 # === inDrive (HackerOne) ===
 # Program: https://hackerone.com/indrive/policy_scopes
 # Scope: 37 domains (37 bounty-eligible)
-# STATUS: PENDING
-indrive.com
-indriver.com
-indriverapp.com
-ab-platform-api.eu-east-1.indriverapp.com
-alternativa.film
-api.ryadom.kz
-auroratechaward.com
-blog.indrive.com
-careers.indrive.com
-cargo.indrive.com
-couriers.indrive.com
-debug.clairvoyance.indrive.tech
-delivery-webview.indrive.com
-external.indrive.dev
-file-storage-front.eu-east-1.indriverapp.com
-cas-cf.euce1.indriverapp.com
-ingest.clairvoyance.indrive.tech
-intercity.indrive.com
-invisionu.education
-job.ryadom.kz
-landing.ryadom.kz
-media.indrive.com
-messenger.eu-east-1.indriverapp.com
-movie.indrive.com
-new-order.eu-east-1.indriverapp.com
-oymyakon.indriver.io
-priority.eu-east-1.indriverapp.com
-profile-api.eu-east-1.indriverapp.com
-ryadom.kz
-sso.ryadom.kz
-teammate.indriver.io
-truck-api.eu-east-1.indriverapp.com
-url-checker.indrive.com
-volans.tech
-watchdocs.indriverapp.com
-web.ryadom.kz
-wga.volans.tech
+# STATUS: SCANNED ✓
+# indrive.com
+# indriver.com
+# indriverapp.com
+# ab-platform-api.eu-east-1.indriverapp.com
+# alternativa.film
+# api.ryadom.kz
+# auroratechaward.com
+# blog.indrive.com
+# careers.indrive.com
+# cargo.indrive.com
+# couriers.indrive.com
+# debug.clairvoyance.indrive.tech
+# delivery-webview.indrive.com
+# external.indrive.dev
+# file-storage-front.eu-east-1.indriverapp.com
+# cas-cf.euce1.indriverapp.com
+# ingest.clairvoyance.indrive.tech
+# intercity.indrive.com
+# invisionu.education
+# job.ryadom.kz
+# landing.ryadom.kz
+# media.indrive.com
+# messenger.eu-east-1.indriverapp.com
+# movie.indrive.com
+# new-order.eu-east-1.indriverapp.com
+# oymyakon.indriver.io
+# priority.eu-east-1.indriverapp.com
+# profile-api.eu-east-1.indriverapp.com
+# ryadom.kz
+# sso.ryadom.kz
+# teammate.indriver.io
+# truck-api.eu-east-1.indriverapp.com
+# url-checker.indrive.com
+# volans.tech
+# watchdocs.indriverapp.com
+# web.ryadom.kz
+# wga.volans.tech
 
 # === Grindr (HackerOne) ===
 # Program: https://hackerone.com/grindr/policy_scopes
 # Scope: 8 domains (5 bounty-eligible)
 # STATUS: PENDING
-grindr.com
-grindr.io
-grindr.mobi
+# grindr.com
+# grindr.io
+# grindr.mobi
 com.grindrapp.android
-web.grindr.com
+# web.grindr.com
 
 # === Malwarebytes (HackerOne) ===
 # Program: https://hackerone.com/malwarebytes/policy_scopes
 # Scope: 18 domains (15 bounty-eligible)
 # STATUS: PENDING
-cloud.malwarebytes.com
-cyrus-security.com
-malwarebytes.com
-mb-cosmos.com
-mbamupdates.com
-mwb-threatintel.com
-mwbsys.com
-threatdown.com
-cloud.threatdown.com
+# cloud.malwarebytes.com
+# cyrus-security.com
+# malwarebytes.com
+# mb-cosmos.com
+# mbamupdates.com
+# mwb-threatintel.com
+# mwbsys.com
+# threatdown.com
+# cloud.threatdown.com
 com.malwarebytes.malwarebytes
-oneview.threatdownstage.com
-my.malwarebytes.com
-oneview.threatdown.com
+# oneview.threatdownstage.com
+# my.malwarebytes.com
+# oneview.threatdown.com
 org.malwarebytes.antimalware
-www.malwarebytes.com
+# www.malwarebytes.com
 
 # === 8x8 (HackerOne) ===
 # Program: https://hackerone.com/8x8-bounty/policy_scopes
 # Scope: 74 domains (24 bounty-eligible)
-# STATUS: PENDING
-8x8.vc
-8x8cloud.net
-8x8staging.com
-chalet.8x8.com
-jit.si
-jitsi.net
-p8t.us
-wavecell.com
-admin.8x8.com
-apps.8x8.com
-cloud8.8x8.com
-connect.8x8.com
-webrtc.8x8.com
-pay.8x8.com
-platform.8x8.com
-platform.8x8pilot.com
-sso.8x8.com
-sso.8x8pilot.com
-uc.8x8pilot.com
-user-profile-staging.8x8.com
-user-profile.8x8.com
-voapi.8x8.com
-work-staging.8x8.com
-work.8x8.com
+# STATUS: SCANNED ✓
+# 8x8.vc
+# 8x8cloud.net
+# 8x8staging.com
+# chalet.8x8.com
+# jit.si
+# jitsi.net
+# p8t.us
+# wavecell.com
+# admin.8x8.com
+# apps.8x8.com
+# cloud8.8x8.com
+# connect.8x8.com
+# webrtc.8x8.com
+# pay.8x8.com
+# platform.8x8.com
+# platform.8x8pilot.com
+# sso.8x8.com
+# sso.8x8pilot.com
+# uc.8x8pilot.com
+# user-profile-staging.8x8.com
+# user-profile.8x8.com
+# voapi.8x8.com
+# work-staging.8x8.com
+# work.8x8.com
 
 # === Superbet (HackerOne) ===
 # Program: https://hackerone.com/superbet/policy_scopes
 # Scope: 16 domains (16 bounty-eligible)
-# STATUS: PENDING
-happening.dev
-luckydays.ca
-luckydays.com
-napoleoncasino.be
-napoleondice.be
-napoleongames.be
-napoleonsports.be
-spinaway.com
-superbet.com
-superbet.gr
-superbet.pl
-superbet.ro
-superbet.rs
-ro.superbet.games
-ro.superbet.sport
-superbet.bet.br
+# STATUS: SCANNED ✓
+# happening.dev
+# luckydays.ca
+# luckydays.com
+# napoleoncasino.be
+# napoleondice.be
+# napoleongames.be
+# napoleonsports.be
+# spinaway.com
+# superbet.com
+# superbet.gr
+# superbet.pl
+# superbet.ro
+# superbet.rs
+# ro.superbet.games
+# ro.superbet.sport
+# superbet.bet.br
 
 # === MoonPay  (HackerOne) ===
 # Program: https://hackerone.com/moonpay/policy_scopes
 # Scope: 9 domains (9 bounty-eligible)
-# STATUS: PENDING
-hypermint.com
-moonpay.com
-moonpaycloud.com
-api.moonpay.com
-app.moonpay.com
-auth.moonpay.com
-buy.moonpay.com
-sell.moonpay.com
-web3.moonpay.com
+# STATUS: SCANNED ✓
+# hypermint.com
+# moonpay.com
+# moonpaycloud.com
+# api.moonpay.com
+# app.moonpay.com
+# auth.moonpay.com
+# buy.moonpay.com
+# sell.moonpay.com
+# web3.moonpay.com
 
+
+# === kiwicom (HackerOne) ===
+# Program: https://hackerone.com/kiwicom/policy_scopes
+# Scope: 7 domains
+# STATUS: PENDING
+kiwi.com
+skypicker.com
+www.kiwi.com
+auth.skypicker.com
+tequila.kiwi.com
+jobs.kiwi.com
+
+# === yuga_labs (HackerOne) ===
+# Program: https://hackerone.com/yuga_labs/policy_scopes
+# Scope: 4 domains
+# STATUS: PENDING
+boredapeyachtclub.com
+yuga.com
+yugalabs.io
+otherside.xyz
+
+# === expediagroup_bbp (HackerOne) ===
+# Program: https://hackerone.com/expediagroup_bbp/policy_scopes
+# Scope: 33 domains
+# STATUS: PENDING
+vrbo.com
+carrentals.com
+wotif.com
+cheaptickets.com
+lastminute.co.nz
+lastminute.com.au
+travelocity.com
+travelocity.ca
+expediapartnercentral.com
+www.hotels.com
+www.expedia.com
+www.vrbo.com
+www.hotwirepartnercentral.com
+www.orbitz.com
+www.ebookers.com
+www.ebookers.fi
+www.mrjet.se
+www.carrentals.com
+www.wotif.com
+www.cheaptickets.com
+www.lastminute.co.nz
+www.lastminute.com.au
+www.travelocity.com
+www.travelocity.ca
+www.abritel.fr
+www.bookabach.co.nz
+www.fewo-direkt.de
+www.stayz.com.au
+www.expediagroup.com
+www.flights.com
+www.expedia-aarp.com
+www.expediataap.com
+www.hotwire.com
+
+# === deribit (HackerOne) ===
+# Program: https://hackerone.com/deribit/policy_scopes
+# Scope: 4 domains
+# STATUS: PENDING
+deribit.com
+test.deribit.com
+insights.deribit.com
+pb.deribit.com
+
+# === mongodb (HackerOne) ===
+# Program: https://hackerone.com/mongodb/policy_scopes
+# Scope: 1 domains
+# STATUS: PENDING
+mongodb.com
+
+# === sidefx (HackerOne) ===
+# Program: https://hackerone.com/sidefx/policy_scopes
+# Scope: 1 domains
+# STATUS: PENDING
+sidefx.com
+
+# === metamask (HackerOne) ===
+# Program: https://hackerone.com/metamask/policy_scopes
+# Scope: 6 domains
+# STATUS: PENDING
+metamask.io | metamask
+api.cx.metamask.io | metamask
+snaps.metamask.io | metamask
+signature-insights.api.cx.metamask.io | metamask
+wallet.web3auth.io | metamask
+api-wallet.web3auth.io | metamask
+
+# === wealthsimple (HackerOne) ===
+# Program: https://hackerone.com/wealthsimple/policy_scopes
+# Scope: 2 domains
+# STATUS: PENDING
+wealthsimple.com | wealthsimple
+simpletax.ca | wealthsimple
+
+# === kayak (HackerOne) ===
+# Program: https://hackerone.com/kayak/policy_scopes
+# Scope: 10 domains
+# STATUS: PENDING
+kayak.com | kayak
+www.kayak.com | kayak
+www.swoodoo.com | kayak
+www.checkfelix.com | kayak
+www.momondo.com | kayak
+www.cheapflights.com | kayak
+www.hotelscombined.com | kayak
+www.mundi.com.br | kayak
+business.kayak.com | kayak
+kayak.ai | kayak
+
+# === shein (HackerOne) ===
+# Program: https://hackerone.com/shein/policy_scopes
+# Scope: 3 domains
+# STATUS: PENDING
+shein.com | shein
+romwe.com | shein
+sheingsp.com | shein
+
+# === instacart (HackerOne) ===
+# Program: https://hackerone.com/instacart/policy_scopes
+# Scope: 7 domains
+# STATUS: PENDING
+instacart.com | instacart
+instacart.tools | instacart
+api.instacart.com | instacart
+www.instacart.com | instacart
+admin.instacart.com | instacart
+shoppers.instacart.com | instacart
+template.uat.foodstorm.com | instacart
+
+# === weber-grills (HackerOne) ===
+# Program: https://hackerone.com/weber-grills/policy_scopes
+# Scope: 5 domains
+# STATUS: PENDING
+junelife.com | weber-grills
+juneoven.com | weber-grills
+weber.com | weber-grills
+walker-cloud.com | weber-grills
+api.walker-cloud.com | weber-grills
