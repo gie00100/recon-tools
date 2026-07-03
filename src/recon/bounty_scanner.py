@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics) — v5.5
+Module: Bounty Scanner (URL Heuristics) — v6.0
 Passively analyzes massive URL collections for high-value bug bounty findings.
 
 ════════════════════════════════════════════════════════════════════════════════
@@ -92,6 +92,8 @@ PRIVATE_IP_REGEX = re.compile(
     r'|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}'
     r'|192\.168\.\d{1,3}\.\d{1,3})'
 )
+# Unix epoch: 10-digit number (seconds since 1970, ~year 2001-2286)
+_EPOCH_10_RE     = re.compile(r'^\d{10}$')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -544,6 +546,38 @@ def _classify_token(url: str, params: dict) -> Tuple[str, str]:
         if val and JWT_REGEX.match(val):
             return 'CRITICAL', f'JWT:{key}={val[:50]}...'
 
+    # ── CRITICAL: Service-specific high-value API keys ──────────────────────
+    # These prefixes uniquely identify live secret credentials for specific services.
+    # Unlike generic 'api_key=' params, these are unambiguous secrets with known impact.
+    for api_key_name in ('api_key', 'apikey', 'apiKey', 'api-key', 'key', 'token', 'secret'):
+        val = (params_lower.get(api_key_name.lower(), []) or [''])[0]
+        if not val or len(val) < 15:
+            continue
+        # Stripe live secret keys — full account access
+        if val.startswith('sk_live_'):
+            return 'CRITICAL', f'Stripe live secret key: {api_key_name}={val[:50]}'
+        # Stripe restricted keys — scoped but still live
+        if val.startswith('rk_live_'):
+            return 'HIGH', f'Stripe restricted key: {api_key_name}={val[:50]}'
+        # MoonPay live publishable key — crypto payment processor
+        if val.startswith('pk_live_') and len(val) > 20:
+            return 'CRITICAL', f'Live payment API key (pk_live_): {api_key_name}={val[:50]}'
+        # GitHub personal access token
+        if val.startswith('ghp_') and len(val) >= 36:
+            return 'CRITICAL', f'GitHub PAT: {api_key_name}={val[:50]}'
+        # GitLab personal access token
+        if val.startswith('glpat-') and len(val) >= 20:
+            return 'CRITICAL', f'GitLab PAT: {api_key_name}={val[:50]}'
+        # Slack API token
+        if val.startswith('xoxb-') or val.startswith('xoxp-') or val.startswith('xoxa-'):
+            return 'CRITICAL', f'Slack token: {api_key_name}={val[:50]}'
+        # SendGrid API key format: SG.<22 chars>.<43 chars>
+        if val.startswith('SG.') and len(val) > 50:
+            return 'CRITICAL', f'SendGrid API key: {api_key_name}={val[:50]}'
+        # Twilio Account SID + Auth Token
+        if val.startswith('AC') and len(val) == 34 and val[2:].isalnum():
+            return 'HIGH', f'Twilio Account SID: {api_key_name}={val[:50]}'
+
     # ── HIGH: Real API key on an in-scope endpoint (not a public IR feed) ──
     for api_key_name in ('api_key', 'apikey', 'apiKey', 'api-key'):
         val = (params_lower.get(api_key_name.lower(), []) or [''])[0]
@@ -614,16 +648,27 @@ _CRED_FP_VALUES = {
 }
 
 
+# Pattern for phone/credential in URL path: /:+countrycode+phone:password
+# Common in VirusTotal submissions from booking.com, mercadolibre, registration portals
+_PHONE_CRED_PATH_RE = re.compile(
+    r'/:((?:\+\d{1,3})?\d{7,15}):([^/?#\s]{4,})',
+)
+# Pattern for email:password in path: /:email@domain.com:password
+_EMAIL_CRED_PATH_RE = re.compile(
+    r'/:([\w.+%-]+@[\w.-]+\.[\w]{2,}):([^/?#\s]{4,})',
+)
+
+
 def _check_credential_in_url(url: str) -> str:
     """
     Detect plaintext credentials embedded in URLs — always CRITICAL.
 
-    Two patterns:
-    1. Path-based (VirusTotal): https://auth.example.com/:user@gmail.com:P@ssw0rd
-    2. RFC 3986 basic-auth:     https://user:password@dashboard.example.com/
+    Three patterns:
+    1. RFC 3986 basic-auth:          https://user:password@dashboard.example.com/
+    2. Email:password in path:       https://join.booking.com/:email@gmail.com:P@ssw0rd
+    3. Phone:password in path:       https://registration.site.com/:+15551234567:password
 
     Guards: skip mailto:, known placeholder values, pure-lowercase-alpha passwords.
-    The email@domain:password pattern is the strongest signal (real leaked creds).
     """
     decoded = unquote(url)
     if 'mailto:' in decoded.lower():
@@ -636,6 +681,20 @@ def _check_credential_in_url(url: str) -> str:
         if (username.lower() not in _CRED_FP_VALUES
                 and password.lower() not in _CRED_FP_VALUES):
             return f'BASIC_AUTH: {username}:{password[:30]}'
+
+    # Pattern 2: Email:password in URL path (VirusTotal pattern)
+    m = _EMAIL_CRED_PATH_RE.search(decoded)
+    if m:
+        email_part, pwd = m.group(1), m.group(2)
+        if pwd.lower() not in _CRED_FP_VALUES and not pwd.isalpha():
+            return f'EMAIL_CRED_IN_PATH: {email_part}:{pwd[:30]}'
+
+    # Pattern 3: Phone:password in URL path
+    m = _PHONE_CRED_PATH_RE.search(decoded)
+    if m:
+        phone, pwd = m.group(1), m.group(2)
+        if pwd.lower() not in _CRED_FP_VALUES and not pwd.isalpha():
+            return f'PHONE_CRED_IN_PATH: {phone}:{pwd[:30]}'
 
     return ''
 
@@ -1027,6 +1086,181 @@ def _check_idor_endpoint(url: str, params: dict) -> str:
 
 
 
+def _check_keycloak_action_token(url: str, params: dict) -> str:
+    """
+    Detect Keycloak SSO action tokens — password reset and account linking tokens
+    that appear in VirusTotal/Wayback when users click reset links while their
+    browser/email client sends the URL to URL scanners.
+
+    Two forms:
+    1. action-token?key=eyJ...  — JWT-encoded token (5-min TTL, ATO if valid)
+    2. reset-credentials?client_id=...&tab_id=...  — full reset flow URL
+
+    These are CRITICAL — confirmed reportable against malwarebytes.com.
+    Skip: known third-party IdP domains (okta, auth0) where the target IS the SSO.
+    """
+    lower = url.lower()
+    # Must be on a login-actions path
+    if 'login-actions/' not in lower:
+        return ''
+    # Skip noise: known SSO platform domains are expected to have these
+    sso_platforms = ('okta.com', 'auth0.com', 'onelogin.com', 'pingidentity.com',
+                     'idp.ssocircle.com', 'login.microsoftonline.com', 'accounts.google.com')
+    try:
+        host = urlparse(url).netloc.lower()
+    except Exception:
+        return ''
+    if any(host == p or host.endswith('.' + p) for p in sso_platforms):
+        return ''
+
+    # Pattern 1: action-token with JWT key param
+    if 'login-actions/action-token' in lower:
+        key_val = (params.get('key', params.get('Key', ['']))[0])
+        if key_val and JWT_REGEX.match(key_val):
+            # Try to extract expiry from JWT (base64 decode middle segment)
+            try:
+                import base64
+                payload_b64 = key_val.split('.')[1]
+                payload_b64 += '=' * (-len(payload_b64) % 4)  # fix padding
+                payload = json.loads(base64.b64decode(payload_b64).decode('utf-8', errors='ignore'))
+                exp = payload.get('exp', 0)
+                import time as _time
+                if exp and exp > _time.time():
+                    return f'Keycloak action-token JWT (STILL VALID until {exp}): key={key_val[:60]}'
+                return f'Keycloak action-token JWT (expired): key={key_val[:60]}'
+            except Exception:
+                return f'Keycloak action-token JWT: key={key_val[:60]}'
+        elif key_val and len(key_val) > 20:
+            return f'Keycloak action-token: key={key_val[:60]}'
+
+    # Pattern 2: reset-credentials with tab_id (full reset flow link)
+    if 'login-actions/reset-credentials' in lower or 'login-actions/idp-verify' in lower:
+        tab_id = (params.get('tab_id', [''])[0])
+        client_id = (params.get('client_id', [''])[0])
+        client_data = (params.get('client_data', [''])[0])
+        if tab_id and (client_id or client_data):
+            action = 'reset-credentials' if 'reset-credentials' in lower else 'idp-verify'
+            return f'Keycloak {action} link (tab_id={tab_id[:20]} client_id={client_id[:40]})'
+
+    return ''
+
+
+def _check_signed_document_url(url: str, params: dict) -> str:
+    """
+    Detect signed invoice/document URLs with time-based expiry.
+    These appear when email security scanners follow signed links in transactional
+    emails, indexing the URL on VirusTotal/Wayback Machine.
+
+    Pattern: path ends with .pdf (or /invoice/) + s=<epoch>&e=<epoch>&c=<hmac>
+    When e > now() → CRITICAL (still valid, PII accessible right now)
+    When e < now() → HIGH (was valid, confirms the pattern — report for token duration)
+
+    Confirmed: store.malwarebytes.com/invoice/*.pdf?s=...&e=...&c=...
+    """
+    import time as _time
+
+    lower = url.lower()
+    path = urlparse(url).path.lower()
+
+    # Must look like an invoice/document path
+    is_doc_path = (
+        path.endswith('.pdf') or
+        '/invoice' in path or
+        '/receipt' in path or
+        '/statement' in path or
+        '/document' in path or
+        '/order-confirmation' in path
+    )
+    if not is_doc_path:
+        return ''
+
+    # Must have s= (issued) and e= (expiry) unix epoch params
+    s_val = (params.get('s', params.get('S', ['']))[0])
+    e_val = (params.get('e', params.get('E', ['']))[0])
+    c_val = (params.get('c', params.get('C', ['']))[0])
+
+    if not (_EPOCH_10_RE.match(s_val or '') and _EPOCH_10_RE.match(e_val or '')):
+        return ''
+
+    issued  = int(s_val)
+    expires = int(e_val)
+    now     = int(_time.time())
+
+    # Sanity: expiry must be after issue, and issue must be plausible (after 2020)
+    if expires <= issued or issued < 1577836800:  # 2020-01-01
+        return ''
+
+    from datetime import datetime, timezone
+    exp_dt = datetime.fromtimestamp(expires, tz=timezone.utc).strftime('%Y-%m-%d')
+    iss_dt = datetime.fromtimestamp(issued,  tz=timezone.utc).strftime('%Y-%m-%d')
+    c_short = (c_val or 'N/A')[:16]
+
+    if expires > now:
+        days_left = (expires - now) // 86400
+        return (f'STILL VALID ({days_left}d left, expires {exp_dt}) '
+                f'signed document URL — s={iss_dt} c={c_short}')
+    else:
+        return (f'Expired signed document URL (was valid {iss_dt}→{exp_dt}) '
+                f'confirms pattern — c={c_short}')
+
+
+def _check_password_reset_token_params(url: str, params: dict) -> str:
+    """
+    Detect password reset token params on reset/password/account endpoints.
+    Targets patterns like:
+      /v3/user/password/reset?resetToken=<long_opaque_token>
+      /api/users/password?reset_token=<token>
+      /account/password/change?token=<token>&email=<email>
+
+    Separated from _check_password_reset_uuid (UUID-specific) and
+    _check_password_reset_token (path-segment token).
+    This targets QUERY PARAM tokens on explicit password/account reset endpoints.
+
+    Confirmed real: neo-account.grindr.com/v3/user/password/reset?resetToken=...
+    """
+    path = urlparse(url).path.lower()
+
+    # Skip static assets
+    if path.endswith(('.js', '.css', '.map', '.ts')):
+        return ''
+    if '/_next/static/' in path or '/static/chunks/' in path:
+        return ''
+
+    # Must be on a password/account/auth reset endpoint
+    is_reset_endpoint = bool(re.search(
+        r'/(?:password|account|user|auth)/(?:.*?/)?(?:reset|forgot|recover|change)',
+        path, re.I
+    )) or bool(re.search(
+        r'/(?:reset-?password|password-?reset|forgot-?password)',
+        path, re.I
+    ))
+    if not is_reset_endpoint:
+        return ''
+
+    # Look for token params — broader list including resetToken, t, k
+    reset_token_params = {
+        'resettoken', 'reset_token', 'resetpasswordtoken', 'reset_password_token',
+        'token', 'verification_token', 'verificationtoken', 'authtoken', 'auth_token',
+        'key', 'k', 't', 'code', 'otp', 'pin',
+    }
+    params_lower = {k.lower(): v for k, v in params.items()}
+    for param_name, param_key in [(k, k) for k in params_lower if k in reset_token_params]:
+        val = (params_lower.get(param_name, [''])[0])
+        if not val or len(val) < 16 or val.lower() in JUNK_VALUES:
+            continue
+        if _has_template_variable(val):
+            continue
+        # Must have real entropy — not pure lowercase alpha (route name)
+        if val.isalpha() and val.islower():
+            continue
+        # UUID format = handled by Password_Reset_UUID heuristic already
+        if UUID_REGEX.fullmatch(val):
+            continue
+        return f'{param_name}={val[:50]}'
+
+    return ''
+
+
 def _check_cloud_storage(url: str, params: dict) -> str:
     """
     Detect cloud storage exposure:
@@ -1245,7 +1479,57 @@ def _check_metrics_endpoint(url: str, params: dict) -> str:
 # Each entry: severity, description, check function
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _is_8x8_meeting_jwt(url: str) -> bool:
+    """
+    Return True for 8x8/Jitsi public video conference room guest JWTs.
+    Pattern: *.8x8.vc/vpaas-magic-cookie-<hex>/<RoomName>?jwt=...
+    These are short-lived PUBLIC GUEST TOKENS for anyone to join a meeting room.
+    They are intentionally embedded in meeting invite URLs. Not a secret.
+    Found: 1030 false positive Token_Leak / JWT_In_URL hits in real scans.
+    """
+    lower = url.lower()
+    return 'vpaas-magic-cookie' in lower and ('8x8.vc' in lower or '.vc/' in lower)
+
+
 HEURISTICS: Dict[str, dict] = {
+
+    # ── CRITICAL: Keycloak SSO action tokens (CONFIRMED REPORTABLE) ────────
+    'Keycloak_Action_Token': {
+        'severity': 'CRITICAL',
+        'description': (
+            'Keycloak SSO action token (password reset or account linking) indexed on '
+            'VirusTotal/Wayback Machine. If still valid (5-min TTL), allows direct '
+            'account takeover. Confirmed reportable against Keycloak-based SSO portals.'
+        ),
+        'check': _check_keycloak_action_token,
+    },
+
+    # ── CRITICAL/HIGH: Signed document URLs with time-limited tokens ────────
+    'Signed_Document_URL': {
+        'severity': 'HIGH',  # overridden to CRITICAL when still valid
+        'description': (
+            'Signed invoice/document URL (s=issued, e=expiry, c=HMAC) indexed by a URL scanner. '
+            'When still valid, grants direct unauthenticated access to the document — '
+            'exposing customer name, address, and financial data. '
+            'Confirmed reportable: store.malwarebytes.com invoice PDFs on VirusTotal.'
+        ),
+        'check': _check_signed_document_url,
+        '_get_severity': lambda url, params: (
+            'CRITICAL' if 'STILL VALID' in (_check_signed_document_url(url, params) or '')
+            else 'HIGH'
+        ),
+    },
+
+    # ── CRITICAL: Password reset token in query params ──────────────────────
+    'Password_Reset_Param': {
+        'severity': 'CRITICAL',
+        'description': (
+            'Password reset token in query param on a reset/forgot-password endpoint. '
+            'If still valid, allows direct account takeover without knowing the password. '
+            'Confirmed real: neo-account.grindr.com/v3/user/password/reset?resetToken=...'
+        ),
+        'check': _check_password_reset_token_params,
+    },
 
     # ── CRITICAL: Credentials ──────────────────────────────────────────────
     'Credential_In_URL': {
@@ -1260,21 +1544,26 @@ HEURISTICS: Dict[str, dict] = {
         'severity': 'CRITICAL',
         'description': 'JWT token found in URL path/query — gets logged in access logs, '
                        'browser history, and Referer headers. Extract claims for user context.',
-        'check': _check_jwt_in_url,
+        # Skip 8x8 vpaas-magic-cookie: public meeting room guest tokens (not secrets)
+        'check': lambda url, params: (
+            '' if _is_8x8_meeting_jwt(url) else _check_jwt_in_url(url, params)
+        ),
     },
 
     # ── CRITICAL: Auth token leaks ─────────────────────────────────────────
     'Token_Leak': {
         'severity': 'CRITICAL',
         'description': 'Authentication token/API key leaked in URL — session hijack or '
-                       'API abuse risk. Classified by type: autologin, OAuth, session+expiry.',
-        # Skip known analytics/ad/noise domains — token findings on b.6sc.co,
-        # googleoptimize.com etc. appear because targets embed 3rd-party scripts.
+                       'API abuse risk. Classified by type: autologin, OAuth, session+expiry, '
+                       'service-specific (Stripe sk_live_, GitHub ghp_, GitLab glpat-, etc.).',
+        # Skip known analytics/ad/noise domains, and 8x8 public meeting room JWTs
         'check': lambda url, params: (
-            '' if _is_noise_domain(url) else _classify_token(url, params)[1]
+            '' if (_is_noise_domain(url) or _is_8x8_meeting_jwt(url))
+            else _classify_token(url, params)[1]
         ),
         '_get_severity': lambda url, params: (
-            '' if _is_noise_domain(url) else (_classify_token(url, params)[0] or 'HIGH')
+            '' if (_is_noise_domain(url) or _is_8x8_meeting_jwt(url))
+            else (_classify_token(url, params)[0] or 'HIGH')
         ),
     },
 
@@ -1409,9 +1698,10 @@ class BountyScanner:
     # — avoids N findings for N different query-param variants of the same endpoint
     PATH_DEDUP_CHECKS = {
         'Password_Reset_UUID', 'API_Spec_Exposed', 'Metrics_Endpoint', 'IDOR_Endpoint',
+        'Password_Reset_Param', 'Keycloak_Action_Token',
     }
     # Checks where we dedup on (type, evidence_prefix) — same token value on many paths = 1 finding
-    TOKEN_DEDUP_CHECKS = {'Token_Leak', 'JWT_In_URL'}
+    TOKEN_DEDUP_CHECKS = {'Token_Leak', 'JWT_In_URL', 'Signed_Document_URL'}
 
     def __init__(self, urls: List[str]):
         self.urls = urls
@@ -1426,7 +1716,7 @@ class BountyScanner:
 
     def scan(self) -> Dict:
         start = time.time()
-        banner('Passive Bounty Scanner v5.0')
+        banner('Passive Bounty Scanner v6.0')
         log_info(f'Scanning {len(self.urls)} unique URLs against {len(HEURISTICS)} heuristics...')
 
         for raw_url in self.urls:
@@ -1484,6 +1774,15 @@ class BountyScanner:
 
                 if vuln_id == 'JWT_In_URL':
                     if is_http:     continue       # JWTs on http are usually test traffic
+
+                if vuln_id == 'Keycloak_Action_Token':
+                    if is_http:     continue       # Keycloak always uses HTTPS in prod
+
+                if vuln_id == 'Signed_Document_URL':
+                    if _is_noise_domain(url): continue
+
+                if vuln_id == 'Password_Reset_Param':
+                    if is_http:     continue       # Reset links always sent over HTTPS
 
                 if vuln_id == 'PII_Email_Leak':
                     if is_sendgrid: continue
@@ -1570,7 +1869,7 @@ class BountyScanner:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Passive Bounty URL Scanner v5.0')
+    parser = argparse.ArgumentParser(description='Passive Bounty URL Scanner v6.0')
     parser.add_argument('-l', '--list',   required=True, help='File of URLs to scan (unique_urls.txt)')
     parser.add_argument('-o', '--output', help='Output JSON file for findings')
     args = parser.parse_args()
