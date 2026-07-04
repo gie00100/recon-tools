@@ -748,53 +748,82 @@ org.malwarebytes.antimalware
 # === kiwicom (HackerOne) ===
 # Program: https://hackerone.com/kiwicom/policy_scopes
 # Scope: 7 domains
-# STATUS: PENDING
-kiwi.com
-skypicker.com
-www.kiwi.com
-auth.skypicker.com
-tequila.kiwi.com
-jobs.kiwi.com
+# STATUS: SCANNED ✓
+# kiwi.com
+
+# skypicker.com
+
+# www.kiwi.com
+
+# auth.skypicker.com
+
+# tequila.kiwi.com
+
+# jobs.kiwi.com
+
 
 # === yuga_labs (HackerOne) ===
 # Program: https://hackerone.com/yuga_labs/policy_scopes
 # Scope: 4 domains
-# STATUS: PENDING
-boredapeyachtclub.com
+# STATUS: SCANNED +
+# boredapeyachtclub.com
+
 yuga.com
 yugalabs.io
-otherside.xyz
+# otherside.xyz
+
 
 # === expediagroup_bbp (HackerOne) ===
 # Program: https://hackerone.com/expediagroup_bbp/policy_scopes
 # Scope: 33 domains
-# STATUS: PENDING
-vrbo.com
-carrentals.com
-wotif.com
-cheaptickets.com
-lastminute.co.nz
-lastminute.com.au
-travelocity.com
-travelocity.ca
-expediapartnercentral.com
+# STATUS: SCANNED +
+# vrbo.com
+
+# carrentals.com
+
+# wotif.com
+
+# cheaptickets.com
+
+# lastminute.co.nz
+
+# lastminute.com.au
+
+# travelocity.com
+
+# travelocity.ca
+
+# expediapartnercentral.com
+
 www.hotels.com
 www.expedia.com
-www.vrbo.com
+# www.vrbo.com
+
 www.hotwirepartnercentral.com
 www.orbitz.com
-www.ebookers.com
-www.ebookers.fi
+# www.ebookers.com
+
+# www.ebookers.fi
+
 www.mrjet.se
-www.carrentals.com
-www.wotif.com
-www.cheaptickets.com
-www.lastminute.co.nz
-www.lastminute.com.au
-www.travelocity.com
-www.travelocity.ca
-www.abritel.fr
-www.bookabach.co.nz
+# www.carrentals.com
+
+# www.wotif.com
+
+# www.cheaptickets.com
+
+# www.lastminute.co.nz
+
+# www.lastminute.com.au
+
+# www.travelocity.com
+
+# www.travelocity.ca
+
+# www.abritel.fr
+
+# www.bookabach.co.nz
+
 www.fewo-direkt.de
 www.stayz.com.au
 www.expediagroup.com
@@ -806,83 +835,118 @@ www.hotwire.com
 # === deribit (HackerOne) ===
 # Program: https://hackerone.com/deribit/policy_scopes
 # Scope: 4 domains
-# STATUS: PENDING
-deribit.com
-test.deribit.com
-insights.deribit.com
-pb.deribit.com
+# STATUS: SCANNED ✓
+# deribit.com
+
+# test.deribit.com
+
+# insights.deribit.com
+
+# pb.deribit.com
+
 
 # === mongodb (HackerOne) ===
 # Program: https://hackerone.com/mongodb/policy_scopes
 # Scope: 1 domains
-# STATUS: PENDING
-mongodb.com
+# STATUS: SCANNED ✓
+# mongodb.com
+
 
 # === sidefx (HackerOne) ===
 # Program: https://hackerone.com/sidefx/policy_scopes
 # Scope: 1 domains
-# STATUS: PENDING
-sidefx.com
+# STATUS: SCANNED ✓
+# sidefx.com
+
 
 # === metamask (HackerOne) ===
 # Program: https://hackerone.com/metamask/policy_scopes
 # Scope: 6 domains
-# STATUS: PENDING
-metamask.io | metamask
-api.cx.metamask.io | metamask
-snaps.metamask.io | metamask
-signature-insights.api.cx.metamask.io | metamask
-wallet.web3auth.io | metamask
-api-wallet.web3auth.io | metamask
+# STATUS: SCANNED ✓
+# metamask.io | metamask
+
+# api.cx.metamask.io | metamask
+
+# snaps.metamask.io | metamask
+
+# signature-insights.api.cx.metamask.io | metamask
+
+# wallet.web3auth.io | metamask
+
+# api-wallet.web3auth.io | metamask
+
 
 # === wealthsimple (HackerOne) ===
 # Program: https://hackerone.com/wealthsimple/policy_scopes
 # Scope: 2 domains
-# STATUS: PENDING
-wealthsimple.com | wealthsimple
-simpletax.ca | wealthsimple
+# STATUS: SCANNED ✓
+# wealthsimple.com | wealthsimple
+
+# simpletax.ca | wealthsimple
+
 
 # === kayak (HackerOne) ===
 # Program: https://hackerone.com/kayak/policy_scopes
 # Scope: 10 domains
-# STATUS: PENDING
-kayak.com | kayak
-www.kayak.com | kayak
+# STATUS: SCANNED +
+# kayak.com | kayak
+
+# www.kayak.com | kayak
+
 www.swoodoo.com | kayak
-www.checkfelix.com | kayak
+# www.checkfelix.com | kayak
+
 www.momondo.com | kayak
-www.cheapflights.com | kayak
+# www.cheapflights.com | kayak
+
 www.hotelscombined.com | kayak
 www.mundi.com.br | kayak
-business.kayak.com | kayak
-kayak.ai | kayak
+# business.kayak.com | kayak
+
+# kayak.ai | kayak
+
 
 # === shein (HackerOne) ===
 # Program: https://hackerone.com/shein/policy_scopes
 # Scope: 3 domains
-# STATUS: PENDING
-shein.com | shein
-romwe.com | shein
-sheingsp.com | shein
+# STATUS: SCANNED ✓
+# shein.com | shein
+
+# romwe.com | shein
+
+# sheingsp.com | shein
+
 
 # === instacart (HackerOne) ===
 # Program: https://hackerone.com/instacart/policy_scopes
 # Scope: 7 domains
-# STATUS: PENDING
-instacart.com | instacart
-instacart.tools | instacart
-api.instacart.com | instacart
-www.instacart.com | instacart
-admin.instacart.com | instacart
-shoppers.instacart.com | instacart
-template.uat.foodstorm.com | instacart
+# STATUS: SCANNED ✓
+# instacart.com | instacart
+
+# instacart.tools | instacart
+
+# api.instacart.com | instacart
+
+# www.instacart.com | instacart
+
+# admin.instacart.com | instacart
+
+# shoppers.instacart.com | instacart
+
+# template.uat.foodstorm.com | instacart
+
 
 # === weber-grills (HackerOne) ===
 # Program: https://hackerone.com/weber-grills/policy_scopes
 # Scope: 5 domains
-# STATUS: PENDING
-junelife.com | weber-grills
-juneoven.com | weber-grills
-weber.com | weber-grills
-walker-cloud.com | weber-grills
-api.walker-cloud.com | weber-grills
+# STATUS: SCANNED ✓
+# junelife.com | weber-grills
+
+# juneoven.com | weber-grills
+
+# weber.com | weber-grills
+
+# walker-cloud.com | weber-grills
+
+# api.walker-cloud.com | weber-grills
+
