@@ -765,7 +765,7 @@ org.malwarebytes.antimalware
 # === yuga_labs (HackerOne) ===
 # Program: https://hackerone.com/yuga_labs/policy_scopes
 # Scope: 4 domains
-# STATUS: SCANNED +
+# STATUS: PENDING
 # boredapeyachtclub.com
 
 yuga.com
@@ -776,7 +776,7 @@ yugalabs.io
 # === expediagroup_bbp (HackerOne) ===
 # Program: https://hackerone.com/expediagroup_bbp/policy_scopes
 # Scope: 33 domains
-# STATUS: SCANNED +
+# STATUS: PENDING
 # vrbo.com
 
 # carrentals.com
@@ -888,7 +888,7 @@ www.hotwire.com
 # === kayak (HackerOne) ===
 # Program: https://hackerone.com/kayak/policy_scopes
 # Scope: 10 domains
-# STATUS: SCANNED +
+# STATUS: PENDING
 # kayak.com | kayak
 
 # www.kayak.com | kayak
