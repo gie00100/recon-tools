@@ -40,13 +40,15 @@ LARGE_FILES = [
 # Threshold above which chunked transfer is used (50 MB)
 SIZE_THRESHOLD = 50 * 1024 * 1024
 
-# ── Chunked transfer settings ─────────────────────────────────────────────────
-# Use 1 MB blocks (dd bs=1M) — massively faster than bs=1 (byte-by-byte).
-# Each chunk uses a NEW ssh.exec_command() call so the channel is fresh;
-# this sidesteps paramiko's key-renegotiation timeout on long-lived channels.
-CHUNK_MB   = 8            # MB per chunk (8 MB = 8 exec_command calls per 64MB file)
+# ── Chunked transfer settings ───────────────────────────────────────────────
+CHUNK_MB   = 8            # MB per chunk
 CHUNK_SIZE = CHUNK_MB * 1024 * 1024
 
+MAX_RETRIES   = 4   # retry attempts on connection drop
+RETRY_DELAY   = 5   # seconds between reconnect attempts
+
+
+# ── Connection helpers ───────────────────────────────────────────────────
 
 def _make_ssh() -> paramiko.SSHClient:
     """Create a fresh SSH connection with keepalive to prevent idle timeouts."""
@@ -56,132 +58,137 @@ def _make_ssh() -> paramiko.SSHClient:
         IP, username=USER, password=PASS,
         timeout=30, look_for_keys=False, allow_agent=False,
     )
-    # Send keepalive every 30 s — prevents key-renegotiation timeout
     ssh.get_transport().set_keepalive(30)
     return ssh
 
 
+def _make_ssh_with_retry() -> paramiko.SSHClient:
+    """Connect with up to MAX_RETRIES attempts on failure."""
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            return _make_ssh()
+        except Exception as e:
+            if attempt < MAX_RETRIES:
+                print(f"    [!] Connect failed (attempt {attempt}/{MAX_RETRIES}): {e} — retrying in {RETRY_DELAY}s...")
+                time.sleep(RETRY_DELAY)
+            else:
+                raise
+
+
+def _is_connection_error(e: Exception) -> bool:
+    """Return True if e is a network/transport error that warrants a reconnect."""
+    msg = str(e).lower()
+    return any(kw in msg for kw in [
+        'connection reset', 'connection forcibly closed', 'broken pipe',
+        'eof', 'transport', 'socket', 'winError 10054', '10054', '10053',
+        'connection refused', 'timed out', 'no existing session',
+    ])
+
+
 def _remote_file_size(ssh, remote_path: str) -> int:
-    """Return file size in bytes, or -1 if file doesn't exist."""
-    _, stdout, _ = ssh.exec_command(f'stat -c%s "{remote_path}" 2>/dev/null || echo -1')
-    result = stdout.read().decode().strip()
-    try:
-        return int(result)
-    except ValueError:
-        return -1
+    """Return file size in bytes, or -1 if file doesn't exist. Retries on connection error."""
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            _, stdout, _ = ssh.exec_command(f'stat -c%s "{remote_path}" 2>/dev/null || echo -1')
+            result = stdout.read().decode().strip()
+            try:
+                return int(result)
+            except ValueError:
+                return -1
+        except Exception as e:
+            if attempt < MAX_RETRIES and _is_connection_error(e):
+                print(f"    [!] stat failed (attempt {attempt}), reconnecting...")
+                time.sleep(RETRY_DELAY)
+                try: ssh.close()
+                except: pass
+                ssh = _make_ssh_with_retry()
+            else:
+                return -1
+    return -1
 
 
-def _fetch_small(scp, remote_path: str, local_dir: str, fname: str) -> bool:
-    """Download a file via SCP. Returns True on success."""
-    try:
-        scp.get(remote_path, local_path=local_dir)
-        return True
-    except Exception as e:
-        print(f"    [!] SCP failed for {fname}: {e}")
-        return False
+def _fetch_small(ssh, remote_path: str, local_dir: str, fname: str) -> bool:
+    """Download a file via SCP with reconnect-retry. Returns True on success."""
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            with SCPClient(ssh.get_transport()) as scp:
+                scp.get(remote_path, local_path=local_dir)
+            return True
+        except Exception as e:
+            if attempt < MAX_RETRIES and _is_connection_error(e):
+                print(f"    [!] SCP failed for {fname} (attempt {attempt}), reconnecting: {e}")
+                time.sleep(RETRY_DELAY)
+                try: ssh.close()
+                except: pass
+                ssh = _make_ssh_with_retry()
+            else:
+                print(f"    [!] SCP failed for {fname}: {e}")
+                return False
+    return False
 
 
 def _fetch_large_chunked(ssh, remote_path: str, local_path: str, fname: str, file_size: int) -> bool:
-    """
-    Stream a large file from the VPS in chunks.
-
-    Uses dd with bs=1M (megabyte blocks) and block-level skip/count
-    instead of bs=1 (byte-level). This is ~1000x faster and each
-    chunk opens a NEW exec_command channel, avoiding the paramiko
-    key-renegotiation timeout that kills long-lived channels.
-
-    Transfer rate: ~8-20 MB/s over typical VPS connections.
-    """
+    """Stream a large file from the VPS in chunks with full reconnect-and-resume."""
     mb = file_size / (1024 * 1024)
-    block_size_mb = CHUNK_MB
     total_blocks = (file_size + CHUNK_SIZE - 1) // CHUNK_SIZE
-
-    print(f"    [~] {fname}: {mb:.1f} MB — chunked transfer ({block_size_mb}MB/chunk, {total_blocks} chunks)...")
-
     local_tmp = local_path + ".part"
+    written = os.path.getsize(local_tmp) if os.path.exists(local_tmp) else 0
+    if written > 0:
+        print(f"    [~] Resuming from {written/(1024*1024):.1f} MB (partial download found)")
+
+    chunk_num = written // CHUNK_SIZE
+    consecutive_errors = 0
+
     try:
-        written = 0
-        chunk_num = 0
-        with open(local_tmp, 'wb') as f:
+        with open(local_tmp, 'ab') as f:
             while written < file_size:
-                # Block-level offset (skip N complete blocks)
                 skip_blocks = written // CHUNK_SIZE
                 remaining = file_size - written
-                count_mb = min(block_size_mb, (remaining + 1024*1024 - 1) // (1024*1024))
+                count_mb = min(CHUNK_MB, (remaining + 1024*1024 - 1) // (1024*1024))
+                cmd = f'dd if="{remote_path}" bs=1M skip={skip_blocks} count={count_mb} 2>/dev/null'
 
-                # dd bs=1M skip=N count=M — skips N full megabytes, reads M megabytes
-                # Much faster than bs=1 which reads byte-by-byte from start
-                cmd = (
-                    f'dd if="{remote_path}" bs={block_size_mb}M '
-                    f'skip={skip_blocks} count={count_mb} 2>/dev/null'
-                )
+                try:
+                    _, stdout, _ = ssh.exec_command(cmd, timeout=120)
+                    chunk_data = stdout.read()
+                    consecutive_errors = 0
+                except Exception as e:
+                    consecutive_errors += 1
+                    if consecutive_errors <= MAX_RETRIES and _is_connection_error(e):
+                        print(f"    [!] Connection dropped at {written/(1024*1024):.1f} MB — reconnecting...")
+                        time.sleep(RETRY_DELAY)
+                        try: ssh.close()
+                        except: pass
+                        ssh = _make_ssh_with_retry()
+                        continue
+                    else: raise
 
-                # Each chunk gets a FRESH exec_command — no key-renegotiation timeout
-                _, stdout, _ = ssh.exec_command(cmd, timeout=120)
-                chunk_data = stdout.read()
-
-                if not chunk_data:
-                    print(f"    [!] Empty chunk at block {skip_blocks} — stopping.")
-                    break
-
+                if not chunk_data: break
                 f.write(chunk_data)
+                f.flush()
                 written += len(chunk_data)
                 chunk_num += 1
-                pct = (written / file_size) * 100
-                speed_mb = (written / (1024*1024)) / max(chunk_num * 0.5, 1)
-                print(f"    [~] Chunk {chunk_num}/{total_blocks}: "
-                      f"{written/(1024*1024):.1f}/{mb:.1f} MB ({pct:.0f}%)")
+                print(f"    [~] Chunk {chunk_num}/{total_blocks}: {written/(1024*1024):.1f}/{mb:.1f} MB")
 
-        if written >= file_size * 0.99:  # 1% tolerance for block boundary rounding
+        if written >= file_size * 0.99:
             os.replace(local_tmp, local_path)
             print(f"    [+] Done: {fname} ({written/(1024*1024):.1f} MB)")
             return True
-        else:
-            print(f"    [!] Incomplete: got {written/(1024*1024):.1f} / {mb:.1f} MB")
-            if os.path.exists(local_tmp):
-                os.remove(local_tmp)
-            return False
-
+        return False
     except Exception as e:
         print(f"    [!] Chunked transfer failed for {fname}: {e}")
-        if os.path.exists(local_tmp):
-            os.remove(local_tmp)
         return False
 
 
-def _fetch_file(ssh, scp, remote_dir: str, local_dir: str, fname: str) -> bool:
-    """
-    Fetch a single file from the VPS.
-    - Checks remote existence
-    - Skips if already downloaded locally with matching size
-    - Routes to SCP (small) or chunked SSH (large)
-    """
-    remote_path = f"{remote_dir}/{fname}"
-    local_path  = os.path.join(local_dir, fname)
-
-    remote_size = _remote_file_size(ssh, remote_path)
-    if remote_size < 0:
-        return False  # File doesn't exist on VPS
-
-    # Skip if already fully downloaded
-    if os.path.exists(local_path) and os.path.getsize(local_path) == remote_size:
-        return True  # Already have it
-
-    if remote_size > SIZE_THRESHOLD:
-        return _fetch_large_chunked(ssh, remote_path, local_path, fname, remote_size)
-    else:
-        return _fetch_small(scp, remote_path, local_dir, fname)
-
-
 def fetch_all():
-    ssh = _make_ssh()
+    print(f"[*] Connecting to VPS ({IP})...")
     try:
-        print(f"[*] Connecting to VPS ({IP})...")
+        ssh = _make_ssh_with_retry()
+    except Exception as e:
+        print(f"[!] Could not connect to VPS: {e}")
+        return False
 
-        # Get all scan output folders
-        _, stdout, _ = ssh.exec_command(
-            'find /root/recon-tools/output/ -maxdepth 1 -mindepth 1 -type d | sort'
-        )
+    try:
+        _, stdout, _ = ssh.exec_command('find /root/recon-tools/output/ -maxdepth 1 -mindepth 1 -type d | sort')
         remote_dirs = [d.strip() for d in stdout.read().decode().split('\n') if d.strip()]
 
         if not remote_dirs:
@@ -191,109 +198,67 @@ def fetch_all():
         print(f"[*] Found {len(remote_dirs)} scan dir(s) on VPS.")
         fetched_count = 0
 
-        with SCPClient(ssh.get_transport()) as scp:
-            for rdir in remote_dirs:
-                dir_name = os.path.basename(rdir.rstrip('/'))
+        for rdir in remote_dirs:
+            dir_name = os.path.basename(rdir.rstrip('/'))
+            match = re.match(r'^(.+)_(\d{8}_\d{6})$', dir_name)
+            domain, timestamp = (match.group(1), match.group(2)) if match else (dir_name, "historical")
 
-                # Parse domain_YYYYMMDD_HHMMSS pattern
-                match = re.match(r'^(.+)_(\d{8}_\d{6})$', dir_name)
-                if match:
-                    domain    = match.group(1)
-                    timestamp = match.group(2)
-                else:
-                    domain    = dir_name
-                    timestamp = "historical"
+            local_target_dir = os.path.join(LOCAL_OUT, domain, timestamp)
+            os.makedirs(local_target_dir, exist_ok=True)
+            print(f"\n[*] Syncing [{domain}] (Run: {timestamp})...")
 
-                local_target_dir = os.path.join(LOCAL_OUT, domain, timestamp)
-                os.makedirs(local_target_dir, exist_ok=True)
-                print(f"\n[*] Syncing [{domain}] (Run: {timestamp})...")
+            downloaded, skipped = [], []
 
-                downloaded = []
-                skipped    = []
+            # ── Small files via SCP ──────────────────────────────────────
+            for fname in SMALL_FILES:
+                remote_path = f"{rdir}/{fname}"
+                local_path  = os.path.join(local_target_dir, fname)
+                remote_size = _remote_file_size(ssh, remote_path)
+                if remote_size < 0: continue
+                if os.path.exists(local_path) and os.path.getsize(local_path) == remote_size:
+                    skipped.append(fname)
+                    continue
+                if _fetch_small(ssh, remote_path, local_target_dir, fname):
+                    downloaded.append(fname)
 
-                # ── Small files via SCP ───────────────────────────────────
-                for fname in SMALL_FILES:
-                    remote_path = f"{rdir}/{fname}"
-                    local_path  = os.path.join(local_target_dir, fname)
-                    remote_size = _remote_file_size(ssh, remote_path)
-                    if remote_size < 0:
-                        continue
-                    if os.path.exists(local_path) and os.path.getsize(local_path) == remote_size:
-                        skipped.append(fname)
-                        continue
-                    if _fetch_small(scp, remote_path, local_target_dir, fname):
-                        downloaded.append(fname)
+            # ── Large files via chunked SSH ────────────────────────────────
+            SORT_BEFORE_FETCH = {'waymore_urls.txt', 'unique_urls.txt'}
+            for fname in LARGE_FILES:
+                remote_path = f"{rdir}/{fname}"
+                remote_size = _remote_file_size(ssh, remote_path)
+                if remote_size < 0: continue
 
-                # ── Large files via chunked SSH ───────────────────────────
-                # Sort waymore_urls.txt on VPS before download:
-                # - Removes duplicate URLs (dedup)
-                # - Makes the file easy to grep/review locally
-                # - Does NOT change file size much (may trigger re-download once)
-                SORT_BEFORE_FETCH = {'waymore_urls.txt', 'unique_urls.txt'}
+                if fname in SORT_BEFORE_FETCH:
+                    sorted_marker = remote_path + '.sorted'
+                    if _remote_file_size(ssh, sorted_marker) < 0:
+                        print(f"    [~] Sorting {fname} on VPS (sort -u)...")
+                        sort_cmd = f'sort -u "{remote_path}" -o "{remote_path}" && touch "{sorted_marker}"'
+                        ssh.exec_command(sort_cmd, timeout=300).recv_exit_status()
+                        remote_size = _remote_file_size(ssh, remote_path)
 
-                for fname in LARGE_FILES:
-                    remote_path = f"{rdir}/{fname}"
-                    remote_size = _remote_file_size(ssh, remote_path)
-                    if remote_size < 0:
-                        continue
+                local_path = os.path.join(local_target_dir, fname)
+                mb = remote_size / (1024 * 1024)
 
-                    # Sort + dedup on VPS before fetching (if not already sorted)
-                    if fname in SORT_BEFORE_FETCH:
-                        sorted_marker = remote_path + '.sorted'
-                        marker_size = _remote_file_size(ssh, sorted_marker)
-                        if marker_size < 0:  # Not yet sorted
-                            print(f"    [~] Sorting {fname} on VPS (sort -u)...")
-                            sort_cmd = f'sort -u "{remote_path}" -o "{remote_path}" && touch "{sorted_marker}"'
-                            _, _, serr = ssh.exec_command(sort_cmd, timeout=300)
-                            serr.read()  # wait for completion
-                            # Re-check size after sort (may differ after dedup)
-                            remote_size = _remote_file_size(ssh, remote_path)
-                            print(f"    [~] Sorted. New size: {remote_size/(1024*1024):.1f} MB")
+                if os.path.exists(local_path) and os.path.getsize(local_path) == remote_size:
+                    skipped.append(f"{fname} ({mb:.1f}MB, already local)")
+                    continue
 
-                    local_path = os.path.join(local_target_dir, fname)
-                    mb = remote_size / (1024 * 1024)
+                print(f"  [>] Fetching {fname} ({mb:.1f} MB)...")
+                if _fetch_large_chunked(ssh, remote_path, local_path, fname, remote_size):
+                    downloaded.append(f"{fname} ({mb:.1f}MB)")
 
-                    if os.path.exists(local_path) and os.path.getsize(local_path) == remote_size:
-                        skipped.append(f"{fname} ({mb:.1f}MB, already local)")
-                        continue
-
-                    print(f"  [>] Fetching {fname} ({mb:.1f} MB)...")
-                    if remote_size > SIZE_THRESHOLD:
-                        success = _fetch_large_chunked(ssh, remote_path, local_path, fname, remote_size)
-                    else:
-                        success = _fetch_small(scp, remote_path, local_target_dir, fname)
-
-                    if success:
-                        downloaded.append(f"{fname} ({mb:.1f}MB)")
-
-                if downloaded:
-                    # Show size of entire local dir
-                    total_mb = sum(
-                        os.path.getsize(os.path.join(local_target_dir, f))
-                        for f in os.listdir(local_target_dir)
-                        if os.path.isfile(os.path.join(local_target_dir, f))
-                    ) / (1024 * 1024)
-                    print(f"  [+] Downloaded: {', '.join(downloaded)}")
-                    if skipped:
-                        print(f"  [=] Skipped (already local): {', '.join(skipped)}")
-                    print(f"  [+] Path: {os.path.relpath(local_target_dir, PROJECT_ROOT)}  ({total_mb:.1f} MB total)")
-                    fetched_count += 1
-                else:
-                    if skipped:
-                        print(f"  [=] All files already local: {', '.join(skipped)}")
-                        fetched_count += 1
-                    else:
-                        print("  [-] No files found or scan still starting.")
+            if downloaded or skipped:
+                fetched_count += 1
+                print(f"  [+] Status: {len(downloaded)} new, {len(skipped)} skipped.")
 
         return fetched_count > 0
 
     except Exception as e:
         print(f"[!] Error connecting or fetching: {e}")
-        import traceback
-        traceback.print_exc()
         return False
     finally:
-        ssh.close()
+        try: ssh.close()
+        except: pass
         print("\n[*] Connection closed.")
 
 
