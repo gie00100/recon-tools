@@ -888,19 +888,19 @@ www.hotwire.com
 # === kayak (HackerOne) ===
 # Program: https://hackerone.com/kayak/policy_scopes
 # Scope: 10 domains
-# STATUS: PENDING
+# STATUS: SCANNED ✓
 # kayak.com | kayak
 
 # www.kayak.com | kayak
 
-www.swoodoo.com | kayak
+# www.swoodoo.com | kayak
 # www.checkfelix.com | kayak
 
-www.momondo.com | kayak
+# www.momondo.com | kayak
 # www.cheapflights.com | kayak
 
-www.hotelscombined.com | kayak
-www.mundi.com.br | kayak
+# www.hotelscombined.com | kayak
+# www.mundi.com.br | kayak
 # business.kayak.com | kayak
 
 # kayak.ai | kayak
