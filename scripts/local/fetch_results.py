@@ -233,7 +233,9 @@ def fetch_all():
                     if _remote_file_size(ssh, sorted_marker) < 0:
                         print(f"    [~] Sorting {fname} on VPS (sort -u)...")
                         sort_cmd = f'sort -u "{remote_path}" -o "{remote_path}" && touch "{sorted_marker}"'
-                        ssh.exec_command(sort_cmd, timeout=300).recv_exit_status()
+                        _, _sout, _serr = ssh.exec_command(sort_cmd, timeout=300)
+                        _serr.read()  # wait for sort to finish
+                        print(f'    [~] Sorted. New size: {_remote_file_size(ssh, remote_path)/(1024*1024):.1f} MB')
                         remote_size = _remote_file_size(ssh, remote_path)
 
                 local_path = os.path.join(local_target_dir, fname)
