@@ -40,6 +40,14 @@ LARGE_FILES = [
 # Threshold above which chunked transfer is used (50 MB)
 SIZE_THRESHOLD = 50 * 1024 * 1024
 
+# Files considered "complete" when checking if a dir is already local.
+# If ALL of these exist locally and are non-empty, we skip the whole dir.
+COMPLETE_MARKERS = [
+    "subdomains.txt",
+    "live_urls.txt",
+    "report.json",
+]
+
 # ── Chunked transfer settings ───────────────────────────────────────────────
 CHUNK_MB   = 8            # MB per chunk
 CHUNK_SIZE = CHUNK_MB * 1024 * 1024
@@ -47,6 +55,24 @@ CHUNK_SIZE = CHUNK_MB * 1024 * 1024
 MAX_RETRIES   = 4   # retry attempts on connection drop
 RETRY_DELAY   = 5   # seconds between reconnect attempts
 
+
+def _local_dir_complete(local_dir: str) -> bool:
+    """
+    Fast local-only check: returns True if the directory already has all
+    COMPLETE_MARKERS present and non-empty — meaning this run is already
+    fully downloaded. No SSH calls made.
+    """
+    if not os.path.isdir(local_dir):
+        return False
+    local_files = {f.lower() for f in os.listdir(local_dir)
+                   if os.path.isfile(os.path.join(local_dir, f))}
+    for marker in COMPLETE_MARKERS:
+        fpath = os.path.join(local_dir, marker)
+        if marker.lower() not in local_files:
+            return False
+        if os.path.getsize(fpath) == 0:
+            return False
+    return True
 
 # ── Connection helpers ───────────────────────────────────────────────────
 
@@ -205,7 +231,16 @@ def fetch_all():
 
             local_target_dir = os.path.join(LOCAL_OUT, domain, timestamp)
             os.makedirs(local_target_dir, exist_ok=True)
+
+            # ── Fast local pre-check: skip entire dir if already complete ──
+            if _local_dir_complete(local_target_dir):
+                local_files = os.listdir(local_target_dir)
+                print(f"[=] Already local [{domain}] ({len(local_files)} files) — skipping.")
+                fetched_count += 1
+                continue
+
             print(f"\n[*] Syncing [{domain}] (Run: {timestamp})...")
+
 
             downloaded, skipped = [], []
 
