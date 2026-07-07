@@ -816,9 +816,9 @@ async def run_gateway_bot():
                 can_send = perms.send_messages
                 print(f"    #{ch.name}: read={can_read} send={can_send}")
         await send_embed("🤖 Recon Bot Online", "Ready to accept commands! Type `!help` to get started.", 0x00FF00)
-        # Start auto-dork background watcher
-        asyncio.ensure_future(auto_dork_watcher())
-        print("[+] Auto-dork watcher scheduled.")
+        # Auto-dork watcher — DISABLED (uncomment to re-enable)
+        # asyncio.ensure_future(auto_dork_watcher())
+        # print("[+] Auto-dork watcher scheduled.")
 
     # Track processed message IDs to prevent duplicate responses
     _processed_msgs = set()
