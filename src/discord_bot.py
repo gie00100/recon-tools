@@ -10,6 +10,7 @@ Commands:
   !stop                 - Stop all running recon sessions
   !dork <domain>        - Generate clickable dork URLs for Google/Bing/DDG/URLScan/Shodan/GitHub/VT
   !help                 - Show available commands
+  [AUTO]                - Auto-dorks posted when scanner finds bounty_targets/credentials/js_findings
 """
 
 import asyncio
@@ -620,6 +621,158 @@ async def cmd_help():
     await send_embed("🤖 Recon Bot Help", help_text, 0x7289DA)
 
 
+# ── Auto-Dork Watcher ─────────────────────────────────────────
+
+def _get_scan_findings(scan_dir: Path) -> dict:
+    """
+    Check a completed scan dir for meaningful findings.
+    Returns a dict: {category: count} for each category that has data.
+    Returns empty dict if no findings.
+    """
+    findings = {}
+
+    # bounty_targets.json — subdomains/URLs flagged by scanner
+    bt = scan_dir / "bounty_targets.json"
+    if bt.exists():
+        try:
+            data = json.loads(bt.read_text(encoding="utf-8", errors="replace"))
+            count = len(data) if isinstance(data, list) else (
+                sum(len(v) for v in data.values() if isinstance(v, list))
+                if isinstance(data, dict) else 0
+            )
+            if count > 0:
+                findings["🎯 Bounty Targets"] = count
+        except Exception:
+            pass
+
+    # credentials_found.json — leaked creds
+    cf = scan_dir / "credentials_found.json"
+    if cf.exists():
+        try:
+            data = json.loads(cf.read_text(encoding="utf-8", errors="replace"))
+            count = len(data) if isinstance(data, list) else len(data.get("credentials", []))
+            if count > 0:
+                findings["🔑 Credentials Found"] = count
+        except Exception:
+            pass
+
+    # js_findings.json — secrets in JS files
+    jf = scan_dir / "js_findings.json"
+    if jf.exists():
+        try:
+            data = json.loads(jf.read_text(encoding="utf-8", errors="replace"))
+            count = len(data) if isinstance(data, list) else len(data.get("findings", []))
+            if count > 0:
+                findings["📜 JS Secrets"] = count
+        except Exception:
+            pass
+
+    # js_endpoints.txt — endpoints found in JS
+    je = scan_dir / "js_endpoints.txt"
+    if je.exists():
+        try:
+            lines = [l for l in je.read_text(encoding="utf-8", errors="replace").splitlines() if l.strip()]
+            if len(lines) > 10:  # only interesting if substantial
+                findings["🔗 JS Endpoints"] = len(lines)
+        except Exception:
+            pass
+
+    # live_urls.txt — live attack surface
+    lu = scan_dir / "live_urls.txt"
+    if lu.exists():
+        try:
+            lines = [l for l in lu.read_text(encoding="utf-8", errors="replace").splitlines() if l.strip()]
+            if len(lines) > 0:
+                findings["🌐 Live URLs"] = len(lines)
+        except Exception:
+            pass
+
+    return findings
+
+
+async def auto_dork_watcher():
+    """
+    Background task: watches output/ for newly-completed scans with findings.
+    When a scan dir has bounty_targets / credentials / js_findings, auto-posts
+    dork links to Discord so you can investigate from your phone immediately.
+    Skips dirs where .dork_sent sentinel already exists.
+    """
+    WATCH_INTERVAL = 60  # seconds between checks
+    print("[*] Auto-dork watcher started (checking every 60s)...")
+
+    while True:
+        await asyncio.sleep(WATCH_INTERVAL)
+        try:
+            if not OUTPUT_DIR.exists():
+                continue
+
+            for domain_dir in sorted(OUTPUT_DIR.iterdir()):
+                if not domain_dir.is_dir():
+                    continue
+
+                # Each domain dir may have multiple timestamped run subdirs
+                run_dirs = sorted(
+                    [d for d in domain_dir.iterdir() if d.is_dir()],
+                    key=lambda d: d.name, reverse=True  # newest first
+                )
+                # Also check flat structure (domain dir itself contains files)
+                candidates = run_dirs if run_dirs else [domain_dir]
+
+                for scan_dir in candidates:
+                    sentinel = scan_dir / ".dork_sent"
+                    if sentinel.exists():
+                        continue  # already auto-dorked this run
+
+                    # Must have report.json to be considered complete
+                    if not (scan_dir / "report.json").exists():
+                        continue
+
+                    findings = _get_scan_findings(scan_dir)
+                    if not findings:
+                        # No interesting data — mark as checked anyway to skip next time
+                        try:
+                            sentinel.touch()
+                        except Exception:
+                            pass
+                        continue
+
+                    # Has findings — auto-post dorks
+                    domain = domain_dir.name
+                    run_id = scan_dir.name
+
+                    finding_summary = "\n".join(
+                        f"**{cat}**: {cnt}" for cat, cnt in findings.items()
+                    )
+
+                    print(f"[AUTO-DORK] {domain} ({run_id}) — {len(findings)} finding categories")
+
+                    # Post findings alert first
+                    await send_embed(
+                        f"🚨 Findings Detected — Auto-Dorking `{domain}`",
+                        f"Bounty scanner found data for `{domain}` — auto-generating dork links.\n\n"
+                        f"{finding_summary}\n\n"
+                        f"🔎 Dork links follow — click to investigate from your phone:",
+                        0xFF6600,  # orange alert color
+                    )
+
+                    # Small delay so Discord doesn't rate-limit
+                    await asyncio.sleep(1)
+
+                    # Post the dork links (reuse cmd_dork logic)
+                    await cmd_dork(domain)
+
+                    # Mark as sent
+                    try:
+                        sentinel.touch()
+                    except Exception:
+                        pass
+
+                    await asyncio.sleep(2)  # rate limit between domains
+
+        except Exception as e:
+            print(f"[AUTO-DORK] Watcher error: {e}")
+
+
 # ── Webhook Polling Bot (No Bot Token Needed!) ───────────────
 # Uses a simple webhook-based approach: polls a Discord channel via
 # the webhook's "wait" parameter to read messages.
@@ -663,6 +816,9 @@ async def run_gateway_bot():
                 can_send = perms.send_messages
                 print(f"    #{ch.name}: read={can_read} send={can_send}")
         await send_embed("🤖 Recon Bot Online", "Ready to accept commands! Type `!help` to get started.", 0x00FF00)
+        # Start auto-dork background watcher
+        asyncio.ensure_future(auto_dork_watcher())
+        print("[+] Auto-dork watcher scheduled.")
 
     # Track processed message IDs to prevent duplicate responses
     _processed_msgs = set()
