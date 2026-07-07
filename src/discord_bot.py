@@ -28,6 +28,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 from recon.config import Config
 
 WEBHOOK_URL = Config.DISCORD_WEBHOOK_URL
+# Dedicated channel for all dork output (both !dork command and auto-dork watcher)
+DORK_WEBHOOK_URL = "https://discord.com/api/webhooks/1522544980084916224/iisUny3tQ4dFYg3nE3PhulWz43cQnWLlG98pCEMgj9NTcPS6heNy3tI0V2vNlTqZE7N5"
 DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN", "")
 DISCORD_CHANNEL_ID = os.getenv("DISCORD_CHANNEL_ID", "")
 RECON_DIR = Path(__file__).parent.parent
@@ -99,6 +101,30 @@ async def send_message(content):
         return
     async with aiohttp.ClientSession() as session:
         await session.post(WEBHOOK_URL, json={"content": content})
+
+
+async def send_dork_embed(title, description, color=0x7289DA, fields=None):
+    """
+    Send a dork embed ALWAYS to the dedicated dork webhook channel.
+    Never goes to the main channel — dork spam stays separate.
+    """
+    embed_dict = {
+        "title": title,
+        "description": description[:4000],
+        "color": color,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    if fields:
+        embed_dict["fields"] = [
+            {
+                "name": f.get("name", ""),
+                "value": (f.get("value") or "\u200b")[:1024],
+                "inline": f.get("inline", False),
+            }
+            for f in fields[:25]
+        ]
+    async with aiohttp.ClientSession() as session:
+        await session.post(DORK_WEBHOOK_URL, json={"embeds": [embed_dict]})
 
 
 # ── Command Handlers ─────────────────────────────────────────
@@ -590,7 +616,7 @@ async def cmd_dork(domain):
                                         exposed_docs, error_debug, redirect_ssrf,
                                         infra, github, leaks])
 
-    await send_embed(
+    await send_dork_embed(
         f'🔎 Dorks for `{d}`',
         f'**{total_dorks} clickable dork links** across Google, Bing, DuckDuckGo, URLScan, VirusTotal, Shodan, GitHub & Pastebin.\n'
         f'Click any link to open directly in your browser — no captcha on your phone.\n\u200b',
@@ -746,13 +772,13 @@ async def auto_dork_watcher():
 
                     print(f"[AUTO-DORK] {domain} ({run_id}) — {len(findings)} finding categories")
 
-                    # Post findings alert first
-                    await send_embed(
+                    # Post findings alert to dork channel
+                    await send_dork_embed(
                         f"🚨 Findings Detected — Auto-Dorking `{domain}`",
                         f"Bounty scanner found data for `{domain}` — auto-generating dork links.\n\n"
                         f"{finding_summary}\n\n"
                         f"🔎 Dork links follow — click to investigate from your phone:",
-                        0xFF6600,  # orange alert color
+                        0xFF6600,
                     )
 
                     # Small delay so Discord doesn't rate-limit
