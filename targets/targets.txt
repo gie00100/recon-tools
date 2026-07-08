@@ -57,7 +57,6 @@
 # platacard.mx
 # bancoplata.mx
 
-
 # === Stripchat (HackerOne) ===
 # Program: https://hackerone.com/stripchat/policy_scopes
 # Scope: *.stripchat.com
@@ -657,7 +656,6 @@
 # grindr.com
 # grindr.io
 # grindr.mobi
-com.grindrapp.android
 # web.grindr.com
 
 # === Malwarebytes (HackerOne) ===
@@ -673,7 +671,6 @@ com.grindrapp.android
 # mwbsys.com
 # threatdown.com
 # cloud.threatdown.com
-com.malwarebytes.malwarebytes
 # oneview.threatdownstage.com
 # my.malwarebytes.com
 # oneview.threatdown.com
@@ -744,86 +741,56 @@ org.malwarebytes.antimalware
 # sell.moonpay.com
 # web3.moonpay.com
 
-
 # === kiwicom (HackerOne) ===
 # Program: https://hackerone.com/kiwicom/policy_scopes
 # Scope: 7 domains
 # STATUS: SCANNED ✓
 # kiwi.com
-
 # skypicker.com
-
 # www.kiwi.com
-
 # auth.skypicker.com
-
 # tequila.kiwi.com
-
 # jobs.kiwi.com
-
 
 # === yuga_labs (HackerOne) ===
 # Program: https://hackerone.com/yuga_labs/policy_scopes
 # Scope: 4 domains
 # STATUS: PENDING
 # boredapeyachtclub.com
-
 yuga.com
 yugalabs.io
 # otherside.xyz
-
 
 # === expediagroup_bbp (HackerOne) ===
 # Program: https://hackerone.com/expediagroup_bbp/policy_scopes
 # Scope: 33 domains
 # STATUS: PENDING
 # vrbo.com
-
 # carrentals.com
-
 # wotif.com
-
 # cheaptickets.com
-
 # lastminute.co.nz
-
 # lastminute.com.au
-
 # travelocity.com
-
 # travelocity.ca
-
 # expediapartnercentral.com
-
 www.hotels.com
 www.expedia.com
 # www.vrbo.com
-
 www.hotwirepartnercentral.com
 www.orbitz.com
 # www.ebookers.com
-
 # www.ebookers.fi
-
 www.mrjet.se
 # www.carrentals.com
-
 # www.wotif.com
-
 # www.cheaptickets.com
-
 # www.lastminute.co.nz
-
 # www.lastminute.com.au
-
 # www.travelocity.com
-
 # www.travelocity.ca
-
 # www.abritel.fr
-
 # www.bookabach.co.nz
-
 www.fewo-direkt.de
 www.stayz.com.au
 www.expediagroup.com
@@ -837,13 +804,9 @@ www.hotwire.com
 # Scope: 4 domains
 # STATUS: SCANNED ✓
 # deribit.com
-
 # test.deribit.com
-
 # insights.deribit.com
-
 # pb.deribit.com
-
 
 # === mongodb (HackerOne) ===
 # Program: https://hackerone.com/mongodb/policy_scopes
@@ -851,102 +814,234 @@ www.hotwire.com
 # STATUS: SCANNED ✓
 # mongodb.com
 
-
 # === sidefx (HackerOne) ===
 # Program: https://hackerone.com/sidefx/policy_scopes
 # Scope: 1 domains
 # STATUS: SCANNED ✓
 # sidefx.com
 
-
 # === metamask (HackerOne) ===
 # Program: https://hackerone.com/metamask/policy_scopes
 # Scope: 6 domains
 # STATUS: SCANNED ✓
 # metamask.io | metamask
-
 # api.cx.metamask.io | metamask
-
 # snaps.metamask.io | metamask
-
 # signature-insights.api.cx.metamask.io | metamask
-
 # wallet.web3auth.io | metamask
-
 # api-wallet.web3auth.io | metamask
-
 
 # === wealthsimple (HackerOne) ===
 # Program: https://hackerone.com/wealthsimple/policy_scopes
 # Scope: 2 domains
 # STATUS: SCANNED ✓
 # wealthsimple.com | wealthsimple
-
 # simpletax.ca | wealthsimple
-
 
 # === kayak (HackerOne) ===
 # Program: https://hackerone.com/kayak/policy_scopes
 # Scope: 10 domains
 # STATUS: SCANNED ✓
 # kayak.com | kayak
-
 # www.kayak.com | kayak
-
 # www.swoodoo.com | kayak
 # www.checkfelix.com | kayak
-
 # www.momondo.com | kayak
 # www.cheapflights.com | kayak
-
 # www.hotelscombined.com | kayak
 # www.mundi.com.br | kayak
 # business.kayak.com | kayak
-
 # kayak.ai | kayak
-
 
 # === shein (HackerOne) ===
 # Program: https://hackerone.com/shein/policy_scopes
 # Scope: 3 domains
 # STATUS: SCANNED ✓
 # shein.com | shein
-
 # romwe.com | shein
-
 # sheingsp.com | shein
-
 
 # === instacart (HackerOne) ===
 # Program: https://hackerone.com/instacart/policy_scopes
 # Scope: 7 domains
 # STATUS: SCANNED ✓
 # instacart.com | instacart
-
 # instacart.tools | instacart
-
 # api.instacart.com | instacart
-
 # www.instacart.com | instacart
-
 # admin.instacart.com | instacart
-
 # shoppers.instacart.com | instacart
-
 # template.uat.foodstorm.com | instacart
-
 
 # === weber-grills (HackerOne) ===
 # Program: https://hackerone.com/weber-grills/policy_scopes
 # Scope: 5 domains
 # STATUS: SCANNED ✓
 # junelife.com | weber-grills
-
 # juneoven.com | weber-grills
-
 # weber.com | weber-grills
-
 # walker-cloud.com | weber-grills
-
 # api.walker-cloud.com | weber-grills
+
+# === Exodus (HackerOne) ===
+# Program: https://hackerone.com/exodus/policy_scopes
+# Scope: 4 domains (4 bounty-eligible)
+# STATUS: PENDING
+a.exodus.io
+exodus.com
+exodus.io
+exodus-movement.exodus
+
+# === Netlify (HackerOne) ===
+# Program: https://hackerone.com/netlify/policy_scopes
+# Scope: 14 domains (14 bounty-eligible)
+# STATUS: PENDING
+infra-prod.nsvcs.net
+onegraph.com
+ops.netlify.com
+services-prod.nsvcs.net
+services.netlify.com
+api.netlify.com
+app.netlify.com
+internal-docs.netlify.com
+internal.netlify.com
+list-v2--netlify-plugins.netlify.app
+netlify-cdp-loader.netlify.app
+netlify-rum.netlify.app
+screenshot-proxy.netlify.app
+supportal.netlify.app
+
+# === Basecamp (HackerOne) ===
+# Program: https://hackerone.com/basecamp/policy_scopes
+# Scope: 13 domains (12 bounty-eligible)
+# STATUS: PENDING
+hey.com
+basecamp.app
+hey.app
+hey.exe
+app.basecamp.com
+basecamp-setup.exe
+launchpad.37signals.com
+world.hey.com
+
+# === TikTok (HackerOne) ===
+# Program: https://hackerone.com/tiktok/policy_scopes
+# Scope: 29 domains (29 bounty-eligible)
+# STATUS: PENDING
+pipopay.com
+soundon.global
+tiktok.com
+tiktokcdn.com
+tiktokpublishers.com
+tiktokv.com
+academy-outbound-ads.tiktok.com
+ads.tiktok.com
+affiliate-id.tokopedia.com
+business.tiktok.com
+careers.tiktok.com
+creatormarketplace.tiktok.com
+developers.tiktok.com
+effecthouse.tiktok.com
+fp-sg.tiktokv.com
+live-backstage.tiktok.com
+partner.tiktokshop.com
+pay.tokopediax.com
+seller-id.tokopedia.com
+shop-id.tokopedia.com
+shop.tiktok.com
+www.pangleglobal.com
+www.soundon.global
+
+# === Logitech (HackerOne) ===
+# Program: https://hackerone.com/logitech/policy_scopes
+# Scope: 62 domains (19 bounty-eligible)
+# STATUS: PENDING
+streamlabs.com
+*vc.logitech.com
+accounts.logi.com
+circle.logi.com
+gaming.logicool.co.jp
+id.logi.com
+logiq.logitech.io
+logitechg.com.cn
+sync.logitech.com
+www.astrogaming.com
+www.logicool.co.jp
+www.logitech.com.cn
+www.logitechg.com
+www.ultimateears.com
+
+# === Enjin (HackerOne) ===
+# Program: https://hackerone.com/enjin/policy_scopes
+# Scope: 3 domains (2 bounty-eligible)
+# STATUS: PENDING
+nft.io
+
+# === Acronis (HackerOne) ===
+# Program: https://hackerone.com/acronis/policy_scopes
+# Scope: 8 domains (8 bounty-eligible)
+# STATUS: PENDING
+5nine.com
+acronis.com
+acronis.work
+devicelock.com
+account.acronis.com
+beta-cloud.acronis.com
+
+# === Callsign (HackerOne) ===
+# Program: https://hackerone.com/callsign-bbp/policy_scopes
+# Scope: 10 domains (10 bounty-eligible)
+# STATUS: PENDING
+app.s02.callsign.com
+s02.callsign.com
+b2b.s02.callsign.com
+a2develop.com
+a2verify.com
+dashboard.callsign.com
+portal.a2verify.com
+dashboard.a2verify.com
+dashboard-a.callsign.com
+portal.callsign.com
+
+# === Moon Active (HackerOne) ===
+# Program: https://hackerone.com/moon-active/policy_scopes
+# Scope: 4 domains (4 bounty-eligible)
+# STATUS: PENDING
+vik-game.moonactive.net
+moonactive.com
+moonactive.net
+
+# === Mux (HackerOne) ===
+# Program: https://hackerone.com/mux/policy_scopes
+# Scope: 8 domains (8 bounty-eligible)
+# STATUS: PENDING
+dashboard.mux.com
+api.mux.com
+stream.mux.com
+image.mux.com
+live.mux.com
+global-live.mux.com
+litix.io
+player.mux.com
+
+# === Wonder (HackerOne) ===
+# Program: https://hackerone.com/wonder-bbp/policy_scopes
+# Scope: 19 domains (19 bounty-eligible)
+# STATUS: PENDING
+www.blueapron.com
+wonder.com
+order.wonder.com
+grubhub.com
+seamless.com
+www.grubhub.com
+www.menupages.com
+www.seamless.com
+restaurant.grubhub.com
+www.jo30.com
+www.tapingo.com
+jo30.com
+tapingo.com
+auth.grubhub.com
+sensor.grubhub.com
+tastemade.com
 

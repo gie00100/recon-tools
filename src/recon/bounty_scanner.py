@@ -185,6 +185,16 @@ EMAIL_MARKETING_DOMAINS = {
     'mailgun.org', 'mailgun.net', 'klaviyo.com', 'klaviyo.net',
     'sparkpostmail.com', 'sparkpost.com', 'postmarkapp.com',
     'sendwithus.com', 'brevo.com', 'sendinblue.com',
+    # Additional ESP / CRM platforms (v6.1 — reduce PII_Email_Leak FP rate)
+    'braze.com', 'iterable.com', 'sailthru.com', 'responsys.com',
+    'exacttarget.com', 'customer.io', 'intercom.io', 'drift.com',
+    'drip.com', 'activecampaign.com', 'constantcontact.com',
+    'campaignmonitor.com', 'getresponse.com', 'aweber.com',
+    'convertkit.com', 'moosend.com', 'mailerlite.com', 'omnisend.com',
+    'emarsys.com', 'emarsys.net', 'adobe.com',  # Adobe Campaign
+    'pardot.com', 'marketo.com', 'act-on.com', 'zoho.com',
+    # Transactional email services
+    'amazonses.com', 'ses.amazonaws.com', 'mailtrap.io', 'mailjet.com',
     # Mobile attribution platforms — campaign links with emails are by design
     'adjust.com', 'adjust.net', 'branch.io', 'appsflyer.com',
     'kochava.com', 'singular.net',
@@ -440,6 +450,11 @@ def _has_real_email(params: dict, url: str = '') -> str:
     skip_patterns = [
         'noreply', 'no-reply', 'notifications', 'mailer-daemon',
         'postmaster', 'donotreply', 'bounce', 'unsubscribe',
+        # System / functional addresses — not PII, these are role accounts (v6.1)
+        'commerce@', 'info@', 'support@', 'admin@', 'billing@',
+        'sales@', 'hello@', 'contact@', 'team@', 'help@',
+        'feedback@', 'service@', 'marketing@', 'press@', 'legal@',
+        'security@', 'abuse@', 'webmaster@', 'hostmaster@', 'ops@',
     ]
     # UTM newsletter tracking URLs
     url_lower = url.lower() if url else ''
@@ -450,6 +465,14 @@ def _has_real_email(params: dict, url: str = '') -> str:
         'emailblastid' in url_lower or
         ('em=' in url_lower and 'utm_' in url_lower)
     )
+    # Click/open tracking pixel URLs — emails here are delivery metadata, not PII (v6.1)
+    tracking_path_segs = ['/wf/', '/open?', '/click?', '/track/', '/tracking/',
+                          '/t/', '/c/', '/pixel/', '/beacon/', '/e/o/', '/e/c/']
+    try:
+        _path = urlparse(url_lower).path
+    except Exception:
+        _path = ''
+    is_tracking_url = any(seg in _path for seg in tracking_path_segs)
     for key, values in params.items():
         # Skip analytics/tracking metadata params — may have binary blobs with emails
         if key.lower() in analytics_params:
@@ -486,6 +509,9 @@ def _has_real_email(params: dict, url: str = '') -> str:
         # Skip newsletter tracking URLs — triage lesson from WF/Amazon:
         # emails in utm_medium=email URLs are archival artifacts, not active PII leaks
         if is_newsletter_tracking:
+            continue
+        # Skip click/open tracking pixel URLs (v6.1)
+        if is_tracking_url:
             continue
 
         # Only report if this is a clearly email-typed param OR email was clearly present

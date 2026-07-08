@@ -382,6 +382,78 @@ async def _verify_consul(ip: str, port: int, timeout: float) -> Optional[str]:
         return None
 
 
+async def _verify_postgresql(ip: str, port: int, timeout: float) -> Optional[str]:
+    """
+    Verify PostgreSQL by sending a real protocol 3.0 startup message.
+    Parses the response to determine:
+      - 'R' (AuthenticationRequest): user reaches auth layer = internet-exposed
+      - 'E' (ErrorResponse): pg_hba.conf rejects = still confirms real Postgres
+    Returns detailed banner or None if not PostgreSQL.
+    """
+    import struct
+
+    # Try two usernames: 'postgres' (common DBA) and target-hinted user
+    test_users = [('postgres', 'postgres')]
+
+    for db_user, db_name in test_users:
+        try:
+            reader, writer = await asyncio.wait_for(
+                asyncio.open_connection(ip, port), timeout=timeout
+            )
+            # Build startup message (Protocol 3.0)
+            params = f'user\x00{db_user}\x00database\x00{db_name}\x00\x00'.encode()
+            msg = struct.pack('!I', 196608) + params  # 196608 = 3.0 protocol version
+            startup = struct.pack('!I', len(msg) + 4) + msg
+            writer.write(startup)
+            await writer.drain()
+
+            data = await asyncio.wait_for(reader.read(512), timeout=timeout)
+            writer.close()
+            try:
+                await writer.wait_closed()
+            except Exception:
+                pass
+
+            if not data:
+                continue
+
+            msg_type = chr(data[0]) if data else ''
+
+            if msg_type == 'R':  # AuthenticationRequest
+                # Parse auth method: bytes 5-8 = auth type (big-endian int32)
+                if len(data) >= 9:
+                    auth_type = struct.unpack('!I', data[5:9])[0]
+                    auth_methods = {
+                        0: 'AuthOk (NO PASSWORD REQUIRED!)',
+                        2: 'KerberosV5',
+                        3: 'CleartextPassword',
+                        5: 'MD5Password',
+                        10: 'SCRAM-SHA-256',
+                    }
+                    method = auth_methods.get(auth_type, f'type={auth_type}')
+                    if auth_type == 0:
+                        return f'PostgreSQL UNAUTHENTICATED (user={db_user}) — CRITICAL'
+                    return f'PostgreSQL — Auth reachable: {method} (user={db_user})'
+                return f'PostgreSQL — Auth reachable (user={db_user})'
+
+            elif msg_type == 'E':  # ErrorResponse
+                # Parse error fields: S=severity, M=message
+                error_text = data[5:].split(b'\x00')
+                error_parts = [p.decode(errors='ignore') for p in error_text if p]
+                msg_text = ' '.join(error_parts[:3])[:120]
+                return f'PostgreSQL (pg_hba reject: {msg_text})'
+
+            elif msg_type == 'N':  # NoticeResponse — still PostgreSQL
+                return f'PostgreSQL (notice response)'
+
+        except (asyncio.TimeoutError, ConnectionRefusedError, OSError):
+            continue
+        except Exception:
+            continue
+
+    return None
+
+
 async def _verify_web_alt(ip: str, port: int, timeout: float, domain: str = "") -> Optional[str]:
     """
     Verify alt-HTTP/HTTPS ports (8080, 8443).
@@ -451,6 +523,7 @@ async def _verify_web_alt(ip: str, port: int, timeout: float, domain: str = "") 
 # Map port → verifier function
 _VERIFIERS = {
     2375:  _verify_docker,
+    5432:  _verify_postgresql,
     6379:  _verify_redis,
     9200:  _verify_elasticsearch,
     9090:  _verify_prometheus,
@@ -461,7 +534,6 @@ _VERIFIERS = {
     8500:  _verify_consul,
     3306:  _verify_mysql,
     # 8080/8443 are handled specially with domain context
-    # 5432 (PostgreSQL): TCP handshake is enough (binary protocol, port-open = real)
 }
 
 
@@ -526,15 +598,18 @@ class PortScanner:
                     return None  # TCP open but protocol not confirmed → discard
 
             elif port == 5432:
-                # PostgreSQL: TCP open on this port from a real IP is real enough
-                # (not proxied by CDNs), but skip if CDN
+                # PostgreSQL: now handled by _VERIFIERS above
+                # This branch is a fallback only if verifier was skipped somehow
                 if cdn:
                     self._cdn_skipped += 1
                     return None
-                banner_text = "PostgreSQL (TCP open)"
+                banner_text = "PostgreSQL (TCP open — verifier bypassed)"
 
             else:
                 banner_text = ""
+
+            # Add verified field based on whether protocol was confirmed
+            verified = bool(banner_text and port in _VERIFIERS)
 
             result = {
                 "ip": ip,
@@ -542,6 +617,7 @@ class PortScanner:
                 "service": service,
                 "banner": banner_text,
                 "cdn": cdn,
+                "verified": verified,
                 "domains": domains[:3],  # Include up to 3 domains for context
             }
             self.results.append(result)

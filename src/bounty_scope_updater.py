@@ -122,9 +122,9 @@ def parse_csv_scope(csv_path: Path) -> dict:
     with open(csv_path, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            asset_type  = row.get('Type', row.get('Asset Type', ''))
-            identifier  = row.get('Identifier', row.get('Asset', row.get('URL', '')))
-            eligible    = str(row.get('Eligible for bounty', row.get('Bounty', 'true'))).lower() in ('true', 'yes', '1')
+            asset_type  = row.get('Type', row.get('Asset Type', row.get('asset_type', '')))
+            identifier  = row.get('Identifier', row.get('Asset', row.get('URL', row.get('identifier', ''))))
+            eligible    = str(row.get('Eligible for bounty', row.get('Bounty', row.get('eligible_for_bounty', 'true')))).lower() in ('true', 'yes', '1')
 
             if not identifier:
                 continue

@@ -35,6 +35,38 @@ if RICH_AVAILABLE:
     from rich.table import Table
     from rich import box
 
+# ── v6.1: Noise endpoint filter — common library/test URLs ───
+import math
+
+_JS_NOISE_ENDPOINTS = {
+    'http://a', 'http://a#',  'http://b', 'http://n',
+    'http://domain.com', 'http://example.com', 'http://www.example.com',
+    'https://example.com', 'https://www.example.com',
+    'http://test.com', 'https://test.com',
+    'http://foo.com', 'http://bar.com',
+    'http://localhost', 'http://localhost:3000', 'http://localhost:8080',
+    'https://localhost', 'https://localhost:3000',
+    'http://127.0.0.1', 'https://127.0.0.1',
+    'http://0.0.0.0', 'https://0.0.0.0',
+    'http://svgjs.com/svgjs',
+    'http://www.w3.org/1999/xhtml', 'http://www.w3.org/1999/xlink',
+    'http://www.w3.org/2000/svg', 'http://www.w3.org/2000/xmlns/',
+    'http://www.w3.org/1998/Math/MathML',
+    'http://www.w3.org/XML/1998/namespace',
+}
+
+
+def _shannon_entropy(data: str) -> float:
+    """Calculate Shannon entropy of a string. Higher = more random (real secret)."""
+    if not data:
+        return 0.0
+    freq = {}
+    for c in data:
+        freq[c] = freq.get(c, 0) + 1
+    length = len(data)
+    return -sum((count / length) * math.log2(count / length)
+                for count in freq.values())
+
 
 # ── Secret Patterns with Severity ────────────────────────────
 SECRET_PATTERNS = {
@@ -225,6 +257,19 @@ class JSExtractor:
             if any(ep.endswith(ext) for ext in [".png", ".jpg", ".gif", ".svg", ".ico", ".woff", ".woff2", ".ttf", ".eot"]):
                 continue
 
+            # v6.1: Filter out noise endpoints from JS libraries
+            ep_lower = ep.lower().strip('"\'')
+            if ep_lower in _JS_NOISE_ENDPOINTS:
+                continue
+            # Skip any endpoint starting with these test/doc prefixes
+            if any(ep_lower.startswith(p) for p in ('http://localhost', 'http://127.0.0.1',
+                                                      'http://0.0.0.0', 'https://localhost',
+                                                      'chrome://', 'chrome-extension://')):
+                continue
+            # Skip TODO/FIXME comment fragments captured as endpoints
+            if ep_lower.startswith('todo') or ep_lower.startswith('fixme'):
+                continue
+
             if ep.startswith("//"):
                 ep = "https:" + ep
             elif not ep.startswith("http://") and not ep.startswith("https://"):
@@ -253,6 +298,14 @@ class JSExtractor:
                     if len(match) < 8:
                         continue
                     if match.lower() in ("password", "secret", "apikey", "token", "your_api_key", "api_key_here"):
+                        continue
+
+                    # v6.1: Entropy check for generic matches to reduce FPs
+                    if secret_name in ('Generic API Key', 'Generic Secret', 'Bearer Token', 'Basic Auth'):
+                        if _shannon_entropy(match) < 3.0:
+                            continue
+                    # Skip Firebase public API keys (AIzaSy prefix) — these are client-side by design
+                    if secret_name == 'Google API Key' and match.startswith('AIzaSy'):
                         continue
 
                     # Find context (line containing the match)
