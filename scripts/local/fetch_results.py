@@ -229,7 +229,15 @@ def fetch_all():
             match = re.match(r'^(.+)_(\d{8}_\d{6})$', dir_name)
             domain, timestamp = (match.group(1), match.group(2)) if match else (dir_name, "historical")
 
-            local_target_dir = os.path.join(LOCAL_OUT, domain, timestamp)
+            # Sanitize domain for Windows filesystem (strip *, ?, <, >, |, etc.)
+            safe_domain = re.sub(r'[*?<>|"\\:]', '', domain).strip('.')
+            if not safe_domain:
+                print(f"[!] Skipping dir with invalid name: {dir_name}")
+                continue
+            if safe_domain != domain:
+                print(f"[~] Sanitized domain: {domain} -> {safe_domain}")
+
+            local_target_dir = os.path.join(LOCAL_OUT, safe_domain, timestamp)
             os.makedirs(local_target_dir, exist_ok=True)
 
             # ── Fast local pre-check: skip entire dir if already complete ──
