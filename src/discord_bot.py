@@ -525,52 +525,81 @@ async def cmd_dork(domain):
         return f'https://duckduckgo.com/?q={urllib.parse.quote_plus(q)}'
 
     # ── Dork categories ─────────────────────────────────────────────────────
+    # Focused on HIGH-YIELD findings for bug bounty: leaked docs, cloud storage,
+    # financial data, secrets. Low-yield generic admin panel dorks removed.
 
-    # 1. Exposed sensitive files
+    # 1. Cloud storage leaks (S3, GCS, Azure, etc.)
+    cloud_leaks = [
+        (f'Google: S3 buckets',            g(f'site:.s3.amazonaws.com "{d}"')),
+        (f'Google: S3 open listing',       g(f'site:s3.amazonaws.com "{d}" OR "{d.split(".")[0]}"')),
+        (f'Google: GCS buckets',           g(f'site:storage.googleapis.com "{d}"')),
+        (f'Google: Azure blobs',           g(f'site:.blob.core.windows.net "{d}"')),
+        (f'Google: Firebase data',         g(f'site:.firebaseio.com "{d.split(".")[0]}"')),
+        (f'Bing: S3 + domain',            bing(f'site:.s3.amazonaws.com "{d}"')),
+    ]
+
+    # 2. Invoices, receipts, financial documents (HIGH VALUE for bounty)
+    financial_docs = [
+        (f'Google: Invoices (PDF)',        g(f'site:{d} (filetype:pdf OR filetype:xlsx OR filetype:doc) "invoice"')),
+        (f'Google: Receipts',              g(f'site:{d} (filetype:pdf OR filetype:xlsx OR filetype:doc) "receipt"')),
+        (f'Google: Billing/statements',    g(f'site:{d} (filetype:pdf OR filetype:xlsx) ("billing" OR "statement" OR "payment")')),
+        (f'Google: Purchase orders',       g(f'site:{d} (filetype:pdf OR filetype:docx) ("purchase order" OR "PO number" OR "quotation")')),
+        (f'Google: Tax documents',         g(f'site:{d} filetype:pdf ("W-2" OR "W-9" OR "1099" OR "tax return" OR "tax invoice")')),
+        (f'Google: Salary/payroll',        g(f'site:{d} filetype:pdf OR filetype:xlsx ("salary" OR "payroll" OR "compensation")')),
+        (f'Bing: Financial docs',          bing(f'site:{d} (filetype:pdf OR filetype:xlsx) "invoice" OR "receipt" OR "bill"')),
+    ]
+
+    # 3. Exposed sensitive files & configs
     exposed_files = [
-        (f'Google: .env/.git/.bak files', g(f'site:{d} ext:env OR ext:bak OR ext:sql OR ext:json "password" OR "secret" OR "key"')),
+        (f'Google: .env/.git/.bak files',  g(f'site:{d} ext:env OR ext:bak OR ext:sql OR ext:json "password" OR "secret" OR "key"')),
         (f'Google: config/backup files',   g(f'site:{d} ("config.php" OR "wp-config.php" OR "settings.py" OR "database.yml" OR ".htpasswd")')),
-        (f'Google: log files',             g(f'site:{d} ext:log ("error" OR "exception" OR "password" OR "token")')),
+        (f'Google: log files w/ secrets',  g(f'site:{d} ext:log ("password" OR "token" OR "Authorization")')),
+        (f'Google: SQL dumps',             g(f'site:{d} ext:sql ("INSERT INTO" OR "CREATE TABLE" OR "password")')),
         (f'Bing: .env exposed',            bing(f'site:{d} ".env" OR "DB_PASSWORD" OR "APP_SECRET"')),
     ]
 
-    # 2. Login/admin panels
-    admin_panels = [
-        (f'Google: Admin/login panels',    g(f'site:{d} inurl:(admin|login|dashboard|panel|manage|signin|console)')),
-        (f'Google: phpMyAdmin',            g(f'site:{d} inurl:phpmyadmin OR inurl:pma')),
-        (f'Bing: Admin endpoints',         bing(f'site:{d} inurl:admin OR inurl:cp OR inurl:dashboard')),
-        (f'DDG: Login panels',             ddg(f'site:{d} (login OR signin OR admin OR dashboard)')),
-    ]
-
-    # 3. API keys / tokens in indexed pages
+    # 4. API keys / tokens / credentials in indexed pages
     secrets_in_pages = [
         (f'Google: API keys/tokens',       g(f'site:{d} ("api_key" OR "apikey" OR "access_token" OR "secret_key" OR "client_secret")')),
         (f'Google: AWS keys',              g(f'site:{d} ("AKIA" OR "aws_access_key" OR "aws_secret")')),
-        (f'Google: Bearer tokens',         g(f'site:{d} "Authorization: Bearer" OR "bearer token" OR "jwt"')),
-        (f'Bing: Internal tokens',         bing(f'site:{d} "password" OR "token" OR "secret" filetype:txt OR filetype:xml OR filetype:json')),
+        (f'Google: Private keys',          g(f'site:{d} ("BEGIN RSA PRIVATE KEY" OR "BEGIN PRIVATE KEY" OR "BEGIN EC PRIVATE KEY")')),
+        (f'Google: Connection strings',    g(f'site:{d} ("mongodb://" OR "postgres://" OR "mysql://" OR "redis://") "password"')),
+        (f'Bing: Tokens in files',         bing(f'site:{d} "password" OR "token" OR "secret" filetype:txt OR filetype:xml OR filetype:json')),
     ]
 
-    # 4. Exposed documents / PII
-    exposed_docs = [
-        (f'Google: PDFs/invoices',         g(f'site:{d} ext:pdf ("invoice" OR "receipt" OR "statement" OR "contract")')),
-        (f'Google: XLS/CSV data',          g(f'site:{d} ext:xlsx OR ext:csv OR ext:xls')),
-        (f'Google: Internal docs',         g(f'site:{d} ("internal" OR "confidential" OR "private") ext:pdf OR ext:docx')),
+    # 5. PII / user data exposure
+    pii_exposure = [
+        (f'Google: Spreadsheets w/ PII',   g(f'site:{d} ext:xlsx OR ext:csv ("email" OR "phone" OR "SSN" OR "DOB" OR "address")')),
+        (f'Google: User data in docs',     g(f'site:{d} ("internal" OR "confidential" OR "private" OR "restricted") ext:pdf OR ext:docx')),
+        (f'Google: Customer lists',        g(f'site:{d} (filetype:csv OR filetype:xlsx) ("customer" OR "user" OR "member" OR "subscriber")')),
+        (f'Google: Medical/health data',   g(f'site:{d} filetype:pdf ("patient" OR "diagnosis" OR "medical record" OR "HIPAA")')),
     ]
 
-    # 5. Error pages / debug info
+    # 6. Third-party service data leaks (check if target data leaked on other platforms)
+    third_party_leaks = [
+        (f'Google: Trello boards',         g(f'site:trello.com "{d}"')),
+        (f'Google: Notion pages',          g(f'site:notion.so "{d}"')),
+        (f'Google: Google Docs',           g(f'site:docs.google.com "{d}"')),
+        (f'Google: Google Sheets',         g(f'site:docs.google.com/spreadsheets "{d}"')),
+        (f'Google: Jira/Confluence',       g(f'site:atlassian.net "{d}"')),
+        (f'Google: Postman collections',   g(f'site:getpostman.com "{d}" OR site:postman.com "{d}"')),
+        (f'Google: Pastebin leaks',        g(f'site:pastebin.com OR site:paste.ee "{d}" password OR email OR token')),
+    ]
+
+    # 7. Error pages / debug info / stack traces
     error_debug = [
-        (f'Google: Error pages',           g(f'site:{d} ("stack trace" OR "exception" OR "Error 500" OR "debug" OR "traceback")')),
-        (f'Google: DB errors',             g(f'site:{d} ("SQL syntax" OR "mysql_fetch" OR "ORA-" OR "PostgreSQL" OR "MongoDB")')),
-        (f'Bing: Debug info',              bing(f'site:{d} "debug=true" OR "XDEBUG" OR "phpinfo()"')),
+        (f'Google: Stack traces',          g(f'site:{d} ("stack trace" OR "traceback" OR "Exception in" OR "at com." OR "at org.")')),
+        (f'Google: DB errors',             g(f'site:{d} ("SQL syntax" OR "mysql_fetch" OR "ORA-" OR "SQLSTATE" OR "pg_query")')),
+        (f'Google: Debug/phpinfo',         g(f'site:{d} "phpinfo()" OR "debug=true" OR "XDEBUG_SESSION" OR "Symfony Profiler"')),
     ]
 
-    # 6. Open redirect / SSRF params
+    # 8. Open redirect / SSRF params
     redirect_ssrf = [
         (f'Google: Open redirect params',  g(f'site:{d} inurl:(redirect|return|next|url|dest|destination|continue|goto)=')),
         (f'Google: SSRF params',           g(f'site:{d} inurl:(fetch|load|proxy|request|uri|src|path|service)=')),
     ]
 
-    # 7. Subdomain/infra discovery
+    # 9. Subdomain/infra discovery
     infra = [
         (f'URLScan: Indexed URLs',         f'https://urlscan.io/search/#page.domain%3A{d}'),
         (f'URLScan: Subdomains',           f'https://urlscan.io/search/#domain%3A{d}'),
@@ -581,17 +610,12 @@ async def cmd_dork(domain):
         (f'crt.sh: SSL certs (subdomains)',f'https://crt.sh/?q=%25.{d}&output=json'),
     ]
 
-    # 8. GitHub code leaks
+    # 10. GitHub code leaks
     github = [
         (f'GitHub: "{d}" code',           f'https://github.com/search?q=%22{urllib.parse.quote(d)}%22&type=code'),
-        (f'GitHub: API keys for {d}',      f'https://github.com/search?q=%22{urllib.parse.quote(d)}%22+%22api_key%22+OR+%22secret%22&type=code'),
+        (f'GitHub: API keys for {d}',      f'https://github.com/search?q=%22{urllib.parse.quote(d)}%22+%22api_key%22+OR+%22secret%22+OR+%22password%22&type=code'),
+        (f'GitHub: .env for {d}',          f'https://github.com/search?q=%22{urllib.parse.quote(d)}%22+filename%3A.env&type=code'),
         (f'GitHub: Commits for {d}',       f'https://github.com/search?q=%22{urllib.parse.quote(d)}%22&type=commits'),
-    ]
-
-    # 9. Pastebin / leaks
-    leaks = [
-        (f'Google: Pastebin leaks',        g(f'site:pastebin.com OR site:paste.ee OR site:hastebin.com "{d}" password OR email OR token')),
-        (f'DDG: Exposed data',             ddg(f'"{d}" ("password" OR "credentials" OR "token") site:pastebin.com')),
     ]
 
     # ── Build embed fields ───────────────────────────────────────────────────
@@ -601,25 +625,26 @@ async def cmd_dork(domain):
         return {'name': name, 'value': '\n'.join(lines), 'inline': False}
 
     fields = [
-        make_field('📁 Exposed Sensitive Files',       exposed_files),
-        make_field('🔐 Admin / Login Panels',           admin_panels),
-        make_field('🔑 API Keys & Tokens in Pages',     secrets_in_pages),
-        make_field('📄 Exposed Documents & PII',        exposed_docs),
-        make_field('💥 Error Pages & Debug Info',       error_debug),
-        make_field('↩️ Open Redirect & SSRF Params',    redirect_ssrf),
+        make_field('☁️ Cloud Storage Leaks (S3/GCS/Azure)', cloud_leaks),
+        make_field('💰 Invoices / Receipts / Financial',    financial_docs),
+        make_field('📁 Exposed Sensitive Files',             exposed_files),
+        make_field('🔑 API Keys & Secrets in Pages',        secrets_in_pages),
+        make_field('👤 PII / User Data Exposure',            pii_exposure),
+        make_field('🔗 Third-Party Service Leaks',           third_party_leaks),
+        make_field('💥 Error Pages & Debug Info',            error_debug),
+        make_field('↩️ Open Redirect & SSRF Params',         redirect_ssrf),
         make_field('🌐 Infra Discovery (URLScan/VT/Shodan)', infra),
-        make_field('🐙 GitHub Code Leaks',              github),
-        make_field('📋 Pastebin & Data Leaks',          leaks),
+        make_field('🐙 GitHub Code Leaks',                   github),
     ]
 
-    total_dorks = sum(len(f) for f in [exposed_files, admin_panels, secrets_in_pages,
-                                        exposed_docs, error_debug, redirect_ssrf,
-                                        infra, github, leaks])
+    total_dorks = sum(len(f) for f in [cloud_leaks, financial_docs, exposed_files,
+                                        secrets_in_pages, pii_exposure, third_party_leaks,
+                                        error_debug, redirect_ssrf, infra, github])
 
     await send_dork_embed(
         f'🔎 Dorks for `{d}`',
-        f'**{total_dorks} clickable dork links** across Google, Bing, DuckDuckGo, URLScan, VirusTotal, Shodan, GitHub & Pastebin.\n'
-        f'Click any link to open directly in your browser — no captcha on your phone.\n\u200b',
+        f'**{total_dorks} clickable dork links** across Google, Bing, URLScan, VirusTotal, Shodan & GitHub.\n'
+        f'Focus: cloud leaks, financial docs, secrets, PII, third-party exposure.\n\u200b',
         0x7289DA,
         fields,
     )
