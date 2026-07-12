@@ -556,23 +556,14 @@ async def cmd_dork(domain):
         (f'Bing: Exposed secrets/tokens',   bing(f'site:{d} "password" OR "token" OR "secret" (filetype:txt OR filetype:xml OR filetype:json OR ".env")')),
     ]
 
-    # 5. PII / user data exposure
+    # 5. PII / user data exposure (and external docs)
     pii_exposure = [
         (f'Google: Spreadsheets w/ PII',   g(f'site:{d} ext:xlsx OR ext:csv ("email" OR "phone" OR "SSN" OR "DOB" OR "address")')),
         (f'Google: User data in docs',     g(f'site:{d} ("internal" OR "confidential" OR "private" OR "restricted") ext:pdf OR ext:docx')),
         (f'Google: Customer lists',        g(f'site:{d} (filetype:csv OR filetype:xlsx) ("customer" OR "user" OR "member" OR "subscriber")')),
         (f'Google: Medical/health data',   g(f'site:{d} filetype:pdf ("patient" OR "diagnosis" OR "medical record" OR "HIPAA")')),
-    ]
-
-    # 6. Third-party service data leaks (check if target data leaked on other platforms)
-    third_party_leaks = [
-        (f'Google: Trello boards',         g(f'site:trello.com "{d}"')),
-        (f'Google: Notion pages',          g(f'site:notion.so "{d}"')),
         (f'Google: Google Docs',           g(f'site:docs.google.com "{d}"')),
         (f'Google: Google Sheets',         g(f'site:docs.google.com/spreadsheets "{d}"')),
-        (f'Google: Jira/Confluence',       g(f'site:atlassian.net "{d}"')),
-        (f'Google: Postman collections',   g(f'site:getpostman.com "{d}" OR site:postman.com "{d}"')),
-        (f'Google: Pastebin leaks',        g(f'site:pastebin.com OR site:paste.ee "{d}" password OR email OR token')),
     ]
 
 
@@ -596,12 +587,11 @@ async def cmd_dork(domain):
         make_field('💰 Financial Docs (Pt. 2)',             financial_docs_2),
         make_field('📁 Exposed Files & Secrets',             exposed_files_and_secrets),
         make_field('👤 PII / User Data Exposure',            pii_exposure),
-        make_field('🔗 Third-Party Service Leaks',           third_party_leaks),
         make_field('🐙 GitHub Code Leaks',                   github),
     ]
 
     total_dorks = sum(len(f) for f in [cloud_leaks, financial_docs_1, financial_docs_2, exposed_files_and_secrets,
-                                        pii_exposure, third_party_leaks, github])
+                                        pii_exposure, github])
 
     await send_dork_embed(
         f'🔎 Dorks for `{d}`',
