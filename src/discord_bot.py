@@ -538,15 +538,10 @@ async def cmd_dork(domain):
         (f'Bing: S3 + domain',            bing(f'site:.s3.amazonaws.com "{d}"')),
     ]
 
-    # 2. Invoices, receipts, financial documents (HIGH VALUE for bounty)
+    # 2. Invoices, receipts, financial documents (Combined)
     financial_docs = [
-        (f'Google: Invoices (PDF)',        g(f'site:{d} (filetype:pdf OR filetype:xlsx OR filetype:doc) "invoice"')),
-        (f'Google: Receipts',              g(f'site:{d} (filetype:pdf OR filetype:xlsx OR filetype:doc) "receipt"')),
-        (f'Google: Billing/statements',    g(f'site:{d} (filetype:pdf OR filetype:xlsx) ("billing" OR "statement" OR "payment")')),
-        (f'Google: Purchase orders',       g(f'site:{d} (filetype:pdf OR filetype:docx) ("purchase order" OR "PO number" OR "quotation")')),
-        (f'Google: Tax documents',         g(f'site:{d} filetype:pdf ("W-2" OR "W-9" OR "1099" OR "tax return" OR "tax invoice")')),
-        (f'Google: Salary/payroll',        g(f'site:{d} filetype:pdf OR filetype:xlsx ("salary" OR "payroll" OR "compensation")')),
-        (f'Bing: Financial docs',          bing(f'site:{d} (filetype:pdf OR filetype:xlsx) "invoice" OR "receipt" OR "bill"')),
+        (f'Google: Financial docs',        g(f'site:{d} (ext:pdf OR ext:xlsx OR ext:doc OR ext:docx) ("invoice" OR "receipt" OR "billing" OR "statement" OR "payment" OR "purchase order" OR "W-2" OR "1099" OR "tax return" OR "salary" OR "payroll")')),
+        (f'Bing: Financial docs',          bing(f'site:{d} "invoice" OR "receipt" OR "bill" OR "salary" OR "tax" (filetype:pdf OR filetype:xlsx)')),
     ]
 
     # 3. Exposed files & secrets in pages (Combined)
@@ -583,14 +578,13 @@ async def cmd_dork(domain):
 
     fields = [
         make_field('☁️ Cloud Storage Leaks (S3/GCS/Azure)', cloud_leaks),
-        make_field('💰 Financial Docs (Pt. 1)',             financial_docs_1),
-        make_field('💰 Financial Docs (Pt. 2)',             financial_docs_2),
+        make_field('💰 Invoices / Receipts / Financial',    financial_docs),
         make_field('📁 Exposed Files & Secrets',             exposed_files_and_secrets),
         make_field('👤 PII / User Data Exposure',            pii_exposure),
         make_field('🐙 GitHub Code Leaks',                   github),
     ]
 
-    total_dorks = sum(len(f) for f in [cloud_leaks, financial_docs_1, financial_docs_2, exposed_files_and_secrets,
+    total_dorks = sum(len(f) for f in [cloud_leaks, financial_docs, exposed_files_and_secrets,
                                         pii_exposure, github])
 
     await send_dork_embed(
