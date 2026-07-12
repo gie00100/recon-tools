@@ -582,7 +582,7 @@ async def cmd_dork(domain):
         (f'Google: Debug/phpinfo',         g(f'site:{d} "phpinfo()" OR "debug=true" OR "XDEBUG_SESSION" OR "Symfony Profiler"')),
     ]
 
-    # 8. Open redirect / SSRF params
+  # 9. Subdomain/infra discovery
     redirect_ssrf = [
         (f'Google: Open redirect params',  g(f'site:{d} inurl:(redirect|return|next|url|dest|destination|continue|goto)=')),
         (f'Google: SSRF params',           g(f'site:{d} inurl:(fetch|load|proxy|request|uri|src|path|service)=')),
