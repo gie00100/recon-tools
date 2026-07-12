@@ -549,22 +549,11 @@ async def cmd_dork(domain):
         (f'Bing: Financial docs',          bing(f'site:{d} (filetype:pdf OR filetype:xlsx) "invoice" OR "receipt" OR "bill"')),
     ]
 
-    # 3. Exposed sensitive files & configs
-    exposed_files = [
-        (f'Google: .env/.git/.bak files',  g(f'site:{d} ext:env OR ext:bak OR ext:sql OR ext:json "password" OR "secret" OR "key"')),
-        (f'Google: config/backup files',   g(f'site:{d} ("config.php" OR "wp-config.php" OR "settings.py" OR "database.yml" OR ".htpasswd")')),
-        (f'Google: log files w/ secrets',  g(f'site:{d} ext:log ("password" OR "token" OR "Authorization")')),
-        (f'Google: SQL dumps',             g(f'site:{d} ext:sql ("INSERT INTO" OR "CREATE TABLE" OR "password")')),
-        (f'Bing: .env exposed',            bing(f'site:{d} ".env" OR "DB_PASSWORD" OR "APP_SECRET"')),
-    ]
-
-    # 4. API keys / tokens / credentials in indexed pages
-    secrets_in_pages = [
-        (f'Google: API keys/tokens',       g(f'site:{d} ("api_key" OR "apikey" OR "access_token" OR "secret_key" OR "client_secret")')),
-        (f'Google: AWS keys',              g(f'site:{d} ("AKIA" OR "aws_access_key" OR "aws_secret")')),
-        (f'Google: Private keys',          g(f'site:{d} ("BEGIN RSA PRIVATE KEY" OR "BEGIN PRIVATE KEY" OR "BEGIN EC PRIVATE KEY")')),
-        (f'Google: Connection strings',    g(f'site:{d} ("mongodb://" OR "postgres://" OR "mysql://" OR "redis://") "password"')),
-        (f'Bing: Tokens in files',         bing(f'site:{d} "password" OR "token" OR "secret" filetype:txt OR filetype:xml OR filetype:json')),
+    # 3. Exposed files & secrets in pages (Combined)
+    exposed_files_and_secrets = [
+        (f'Google: Sensitive configs/logs', g(f'site:{d} (ext:env OR ext:bak OR ext:sql OR ext:json OR ext:log OR "config.php" OR "settings.py" OR ".htpasswd") ("password" OR "secret" OR "key" OR "token")')),
+        (f'Google: API/AWS/Private keys',   g(f'site:{d} ("api_key" OR "access_token" OR "client_secret" OR "AKIA" OR "BEGIN PRIVATE KEY" OR "mongodb://" OR "postgres://")')),
+        (f'Bing: Exposed secrets/tokens',   bing(f'site:{d} "password" OR "token" OR "secret" (filetype:txt OR filetype:xml OR filetype:json OR ".env")')),
     ]
 
     # 5. PII / user data exposure
@@ -627,8 +616,7 @@ async def cmd_dork(domain):
     fields = [
         make_field('☁️ Cloud Storage Leaks (S3/GCS/Azure)', cloud_leaks),
         make_field('💰 Invoices / Receipts / Financial',    financial_docs),
-        make_field('📁 Exposed Sensitive Files',             exposed_files),
-        make_field('🔑 API Keys & Secrets in Pages',        secrets_in_pages),
+        make_field('📁 Exposed Files & Secrets',             exposed_files_and_secrets),
         make_field('👤 PII / User Data Exposure',            pii_exposure),
         make_field('🔗 Third-Party Service Leaks',           third_party_leaks),
         make_field('💥 Error Pages & Debug Info',            error_debug),
@@ -637,8 +625,8 @@ async def cmd_dork(domain):
         make_field('🐙 GitHub Code Leaks',                   github),
     ]
 
-    total_dorks = sum(len(f) for f in [cloud_leaks, financial_docs, exposed_files,
-                                        secrets_in_pages, pii_exposure, third_party_leaks,
+    total_dorks = sum(len(f) for f in [cloud_leaks, financial_docs, exposed_files_and_secrets,
+                                        pii_exposure, third_party_leaks,
                                         error_debug, redirect_ssrf, infra, github])
 
     await send_dork_embed(
