@@ -575,29 +575,6 @@ async def cmd_dork(domain):
         (f'Google: Pastebin leaks',        g(f'site:pastebin.com OR site:paste.ee "{d}" password OR email OR token')),
     ]
 
-    # 7. Error pages / debug info / stack traces
-    error_debug = [
-        (f'Google: Stack traces',          g(f'site:{d} ("stack trace" OR "traceback" OR "Exception in" OR "at com." OR "at org.")')),
-        (f'Google: DB errors',             g(f'site:{d} ("SQL syntax" OR "mysql_fetch" OR "ORA-" OR "SQLSTATE" OR "pg_query")')),
-        (f'Google: Debug/phpinfo',         g(f'site:{d} "phpinfo()" OR "debug=true" OR "XDEBUG_SESSION" OR "Symfony Profiler"')),
-    ]
-
-  # 9. Subdomain/infra discovery
-    redirect_ssrf = [
-        (f'Google: Open redirect params',  g(f'site:{d} inurl:(redirect|return|next|url|dest|destination|continue|goto)=')),
-        (f'Google: SSRF params',           g(f'site:{d} inurl:(fetch|load|proxy|request|uri|src|path|service)=')),
-    ]
-
-    # 9. Subdomain/infra discovery
-    infra = [
-        (f'URLScan: Indexed URLs',         f'https://urlscan.io/search/#page.domain%3A{d}'),
-        (f'URLScan: Subdomains',           f'https://urlscan.io/search/#domain%3A{d}'),
-        (f'VirusTotal: Domain report',     f'https://www.virustotal.com/gui/domain/{d}/relations'),
-        (f'VirusTotal: URLs indexed',      f'https://www.virustotal.com/gui/domain/{d}/urls'),
-        (f'Shodan: Subdomains/services',   f'https://www.shodan.io/search?query=hostname%3A{d}'),
-        (f'Wayback Machine',               f'https://web.archive.org/web/*/{d}/*'),
-        (f'crt.sh: SSL certs (subdomains)',f'https://crt.sh/?q=%25.{d}&output=json'),
-    ]
 
     # 10. GitHub code leaks
     github = [
@@ -615,19 +592,16 @@ async def cmd_dork(domain):
 
     fields = [
         make_field('☁️ Cloud Storage Leaks (S3/GCS/Azure)', cloud_leaks),
-        make_field('💰 Invoices / Receipts / Financial',    financial_docs),
+        make_field('💰 Financial Docs (Pt. 1)',             financial_docs_1),
+        make_field('💰 Financial Docs (Pt. 2)',             financial_docs_2),
         make_field('📁 Exposed Files & Secrets',             exposed_files_and_secrets),
         make_field('👤 PII / User Data Exposure',            pii_exposure),
         make_field('🔗 Third-Party Service Leaks',           third_party_leaks),
-        make_field('💥 Error Pages & Debug Info',            error_debug),
-        make_field('↩️ Open Redirect & SSRF Params',         redirect_ssrf),
-        make_field('🌐 Infra Discovery (URLScan/VT/Shodan)', infra),
         make_field('🐙 GitHub Code Leaks',                   github),
     ]
 
-    total_dorks = sum(len(f) for f in [cloud_leaks, financial_docs, exposed_files_and_secrets,
-                                        pii_exposure, third_party_leaks,
-                                        error_debug, redirect_ssrf, infra, github])
+    total_dorks = sum(len(f) for f in [cloud_leaks, financial_docs_1, financial_docs_2, exposed_files_and_secrets,
+                                        pii_exposure, third_party_leaks, github])
 
     await send_dork_embed(
         f'🔎 Dorks for `{d}`',
