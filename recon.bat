@@ -18,6 +18,7 @@ echo    [5]  Clean VPS Data        (remove old output files)
 echo    [6]  Scan Single Domain    (recon on one domain)
 echo    [7]  Dry Run               (preview targets, no scan)
 echo    [8]  Setup / Install       (install deps and configure)
+echo    [9]  Scan Dashboard        (scans done vs remaining)
 echo    [Q]  Quit
 echo.
 echo  ================================================================
@@ -40,6 +41,7 @@ if /i "%CHOICE%"=="5" goto :CLEAN
 if /i "%CHOICE%"=="6" goto :SINGLE
 if /i "%CHOICE%"=="7" goto :DRYRUN
 if /i "%CHOICE%"=="8" goto :SETUP
+if /i "%CHOICE%"=="9" goto :DASHBOARD
 if /i "%CHOICE%"=="Q" goto :EOF
 if /i "%CHOICE%"=="q" goto :EOF
 
@@ -192,6 +194,19 @@ echo    [8] Setup / Install
 echo  ================================================================
 echo.
 call setup.bat
+goto :DONE
+
+
+
+REM ================================================================
+:DASHBOARD
+cls
+echo.
+echo  ================================================================
+echo    [9] Scan Dashboard
+echo  ================================================================
+echo.
+venv\Scripts\python.exe scripts\vps\scan_dashboard.py
 goto :DONE
 
 
