@@ -1,0 +1,1643 @@
+# === Whatnot (HackerOne) ===
+# Program: https://hackerone.com/whatnot
+# Scope: *.whatnot.com
+# STATUS: SCANNED ✓
+# whatnot.com
+# api.whatnot.com
+# auction-service.whatnot.com
+# www.whatnot.com
+
+# === Twilio (HackerOne) ===
+# Program: https://hackerone.com/twilio
+# Scope: Twilio + SendGrid + Segment + Authy
+# STATUS: SCANNED ✓
+# twilio.com
+# api.twilio.com
+# www.twilio.com
+# console.twilio.com
+# help.twilio.com
+# sendgrid.com
+# app.sendgrid.com
+# api.sendgrid.com
+# signup.sendgrid.com
+# mc.sendgrid.com
+# segment.com
+# app.segment.com
+
+# === Anduril Industries (HackerOne) ===
+# Program: https://hackerone.com/anduril_industries
+# Scope: *.anduril.com, *.anduril.dev, *.andurildev.com, *.anduril.au
+# STATUS: SCANNED ✓
+# anduril.com
+# anduril.dev
+# andurildev.com
+# anduril.com.au
+# anduril.au
+# andurildev.au
+
+# === Unico IDtech (HackerOne) ===
+# Program: https://hackerone.com/unico_idtech/policy_scopes
+# Scope: unico.io, *.uat.unico.app, *.cadastro.uat.unico.app, acesso.io subdomains
+# STATUS: SCANNED ✓
+# unico.io
+# secure.unico.io
+# openfinance.unico.io
+# devcenter.unico.io
+# idpay-uat.unico.io
+# issuer.idpay-uat.unico.io
+# idcash-uat.unico.io
+# backend-sdk.uat.private.unico.run
+# identityhomolog.acesso.io
+# accountshomolog.acesso.io
+
+# === Banco Plata (HackerOne) ===
+# Program: https://hackerone.com/banco_plata/policy_scopes
+# Scope: *.platacard.mx, *.bancoplata.mx
+# STATUS: SCANNED ✓
+# platacard.mx
+# bancoplata.mx
+
+# === Stripchat (HackerOne) ===
+# Program: https://hackerone.com/stripchat/policy_scopes
+# Scope: *.stripchat.com
+# STATUS: SCANNED ✓
+# stripchat.com
+# go.stripchat.com
+
+# === Kong (HackerOne) ===
+# Program: https://hackerone.com/kong/policy_scopes
+# Scope: *.api.konghq.com, konghq.com, etc.
+# STATUS: SCANNED ✓
+# konghq.com
+# developer.konghq.com
+# cloud.konghq.com
+# us.identity.konghq.com
+# app.insomnia.rest
+
+# === Robinhood (HackerOne) ===
+# Program: https://hackerone.com/robinhood/policy_scopes
+# Scope: robinhood.com properties, bitstamp.net, tradepmr.com
+# STATUS: SCANNED ✓
+# robinhood.com
+# saytechnologies.com
+# api.robinhood.com
+# cashier.robinhood.com
+# minerva.robinhood.com
+# nummus.robinhood.com
+# identi.robinhood.com
+# www.bitstamp.net
+# fusion.tradepmr.com
+# www.tradepmr.com
+# insight2.tradepmr.com
+
+# === Ripio (HackerOne) ===
+# Program: https://hackerone.com/ripio/policy_scopes
+# Scope: ripio.com, ripiotrade.co
+# STATUS: SCANNED ✓
+# ripio.com
+# ripiotrade.co
+# trade.ripio.com
+# app.ripio.com
+# kyc.ripio.com
+# auth.ripio.com
+# defi.ripio.com
+# sandbox-b2b.ripio.com
+# bridge.ripio.com
+
+# === M-Pesa (HackerOne) ===
+# Program: https://hackerone.com/mpesa/policy_scopes
+# Scope: m-pesa.com and subdomains, m-pesa.africa
+# STATUS: SCANNED ✓
+# m-pesa.com
+# mpa.ekyc.backoffice.m-pesa.com
+# mpa.ekyc.selfregister.m-pesa.com
+# openapiportal.m-pesa.com
+# openapi.m-pesa.com
+# m-pesa.africa
+
+# === HubSpot (HackerOne) ===
+# Program: https://hackerone.com/hubspot/policy_scopes
+# Scope: hubspot.com, hubapi.com, hubspotemail.net, hs-sites.com, hubspotpagebuilder.com/eu, chatspot.ai, hubspot.net
+# STATUS: SCANNED ✓
+# hubspot.com
+# hubapi.com
+# hubspotemail.net
+# hs-sites.com
+# hs-sites-eu1.com
+# hubspotpagebuilder.com
+# hubspotpagebuilder.eu
+# chatspot.ai
+# hubspot.net
+
+# === Verily Life Sciences (HackerOne) ===
+# Program: https://hackerone.com/verily_life_sciences/policy_scopes
+# Scope: verily.com, signalpath.com, verilyme.com, projectbaseline.com
+# STATUS: SCANNED ✓
+# verily.com
+# signalpath.com
+# verilyme.com
+# projectbaseline.com
+
+# === Bykea (HackerOne) ===
+# Program: https://hackerone.com/bykea/policy_scopes
+# Scope: *.bykea.net, bykea.com
+# STATUS: SCANNED ✓
+# bykea.com
+# bykea.net
+# maps.bykea.net
+# leaflet-map.bykea.net
+# nominatim.bykea.net
+# geocode-beta.bykea.net
+# api.bykea.net
+# tomoe.bykea.net
+
+# === Wells Fargo (HackerOne) ===
+# Program: https://hackerone.com/wellsfargo-bbp/policy_scopes
+# Scope: *.wellsfargo.com, *.wf.com
+# STATUS: SCANNED ✓
+# wellsfargo.com
+# wf.com
+# connect.secure.wellsfargo.com
+# homeloans.wellsfargo.com
+# accountoffers.wellsfargo.com
+
+# === KHealth (HackerOne) ===
+# Program: https://hackerone.com/khealth/policy_scopes
+# Scope: *.khealth.com, *.hhc247.org, *.khealth-test.com, partner health subdomains
+# STATUS: SCANNED ✓
+# khealth.com
+# hhc247.org
+# csconnect.org
+# mgbcareconnect.org
+# northwellprimarycarenow.com
+# hmh247.org
+# primarycareondemand.mayoclinic.org
+# novanthealthvirtualprimarycare.org
+# pennmedicine.connect-visit.com
+
+# === Playtika (HackerOne) ===
+# Program: https://hackerone.com/playtika/policy_scopes
+# STATUS: SCANNED ✓
+# slotomania.com
+# playtika.com
+# bingoblitz.com
+# caesarsgames.com
+# boardkingsgame.com
+# houseoffun.com
+# playwsop.com
+# serious.li
+# wooga.com
+# redecor.com
+# seriously.com
+# monopoly-poker.com
+# playticorp.com
+# gnocchi-www.buffalo-ggn.net
+# bestfiends.com
+# governorofpoker.com
+# gop3.nl
+
+# === Finnair (HackerOne) ===
+# Program: https://hackerone.com/finnair_vdp/policy_scopes
+# STATUS: SCANNED ✓
+# finnair.com
+
+# === Deriv Services Ltd (HackerOne) ===
+# Program: https://hackerone.com/deriv/policy_scopes
+# STATUS: SCANNED ✓
+# deriv.com
+# deriv.cloud
+# derivws.com
+# deriv.partners
+
+# === Varonis (HackerOne) ===
+# Program: https://hackerone.com/varonis/policy_scopes
+# STATUS: SCANNED ✓
+# varonis.com
+# varonis.io
+# varonis.net
+# varonis-preprod.com
+# cyral.com
+
+# === Netflix (HackerOne) ===
+# Program: https://hackerone.com/netflix/policy_scopes
+# STATUS: SCANNED ✓
+# nflxext.com
+# netflix.com
+# ftl.netflix.com
+# cloud.netflix.com
+# nflxvideo.net
+# dradis.netflix.com
+# nflximg.net
+# nflxso.net
+# beacon.netflix.com
+# customerevents.netflix.com
+# secure.netflix.com
+# help.netflix.com
+# ichnaea.netflix.com
+# presentationtracking.netflix.com
+# nmtracking.netflix.com
+# meechum.netflix.com
+# ir.netflix.com
+# ir.netflix.net
+# netflixinvestor.com
+
+# === Early Warning (HackerOne) ===
+# Program: https://hackerone.com/early_warning/policy_scopes
+# STATUS: SCANNED ✓
+# zellepay.com
+# earlywarning.com
+# zelle.com
+# zelleservice.my.site.com
+# ews-fusion.my.site.com
+# zelleservice.my.salesforce.com
+# www.certos.com
+# clearxchange.com
+# earlywarning.io
+# toolkit.zellepay.com
+# zellepay.force.com
+# earlywarningapi.force.com
+
+# === Truecaller (HackerOne) ===
+# Program: https://hackerone.com/truecaller/policy_scopes
+# truecaller.com
+# business.truecaller.com
+# web.truecaller.com
+# www.truecaller.com
+# business-resources.truecaller.com
+# community.truecaller.com
+# adsmanager.truecaller.com
+# support.truecaller.com
+
+# === Remitly (HackerOne) ===
+# Program: https://hackerone.com/remitly/policy_scopes
+# remitly.com
+# blog.remitly.com
+# api.remitly.io
+# cards.remitly.io
+# rewire.com
+# app.rewire.to
+# cardpayments.remitly.io
+# access.remitly.com
+# auth.remitly.com
+# login.remitly.com
+# media.remitly.io
+# partner-webhook.remitly.io
+# ablink.info.remitly.com
+# ir.remitly.com
+# news.remitly.com
+# access-sandbox.remitly.com
+# rates.rewire.com
+# app3.rewire.to
+# careers.remitly.com
+# metrics.int.remitly.com
+# site.rewire.com
+# remitly.io
+# beamitmobile.com
+# getorigen.com
+# getsurenow.com
+# insuritly.com
+# origenapp.com
+# origenbanking.com
+# origencard.com
+# origendebit.com
+# origenfinance.com
+# remilty.net
+# remilty.org
+# remitir.com
+# remitiy.com
+# remitly-3pjs.com
+# remitly-vendor.com
+# remitly.ca
+# remitly.cash
+# remitly.co
+# remitly.co.uk
+# remitly.com.au
+# remitly.com.mx
+# remitly.de
+# remitly.es
+# remitly.eu
+# remitly.fr
+# remitly.jp
+# remitly.me
+# remitly.mx
+# remitly.net
+# remitly.org
+# remitly.uk
+# remitly.xyz
+# remitlyapi.com
+# remitlycard.com
+# remitlycredit.com
+# remitlydata.com
+# remitlyit.com
+# remitlypay.com
+# remitlypayments.com
+# remitlytest.com
+# remitlywallet.com
+# remitresearch.com
+# travelcash.money
+# whyisend.com
+
+# === Toolsforhumanity (HackerOne) ===
+# Program: https://hackerone.com/toolsforhumanity/policy_scopes
+# worldcoin.org
+# consumer.worldcoin.org
+# worldcoin-distributors.com
+# worldcoin.dev
+# toolsforhumanity.com
+# developer.worldcoin.org
+# world.org
+# support.worldcoin.com
+# support.world.org
+
+# === Dynatrace (HackerOne) ===
+# Program: https://hackerone.com/dynatrace/policy_scopes
+# sprint.dynatracelabs.com
+# sprint.apps.dynatracelabs.com
+# account-sprint.dynatracelabs.com
+# sso-sprint.dynatracelabs.com
+# myaccount-hardening.dynatracelabs.com
+# dynatrace.com
+# dev.dynatracelabs.com
+# university-staging.dynatracelabs.com
+
+# === Bybit Fintech Ltd (HackerOne) ===
+# Program: https://hackerone.com/bybit_fintech/policy_scopes
+# bybit.com
+# bybit.eu
+# bybit.tr
+# testnet.bybit.eu
+# www.byreal.io
+
+# === Boozt Fashion AB (HackerOne) ===
+# Program: https://hackerone.com/boozt/policy_scopes
+# boozt.com
+# booztlet.com
+# kronor.io
+
+# === MercadoLibre (HackerOne) ===
+# Program: https://hackerone.com/mercadolibre/policy_scopes
+# adminml.com
+# mercadolibre.cl
+# mercadolibre.com
+# mercadolibre.com.ar
+# mercadolibre.com.co
+# mercadolibre.com.mx
+# mercadolibre.com.pe
+# mercadolibre.com.uy
+# mercadolivre.com.br
+# mercadopago.cl
+# mercadopago.com
+# mercadopago.com.ar
+# mercadopago.com.br
+# mercadopago.com.co
+# mercadopago.com.mx
+# mercadopago.com.pe
+# mercadopago.com.uy
+# mlstatic.com
+# api.mercadolibre.com
+# api.mercadopago.com
+# biolibre.ar
+# biolibre.cl
+# biolibre.co
+# biolibre.mx
+# biolivre.com.br
+# furycloud.io
+# furydocs.io
+# logistica.redelcom.cl
+# meliplay.com.ar
+# meliplay.com.pe
+# meliplay.com.uy
+# mercadobackoffice.com
+# mercadoenvios.com.ve
+# mercadolibreexperience.cl
+# mercadolivreexperience.com.br
+# mercadopago.com.ve
+# mercadoplay.co
+# mercadoplay.com.pe
+# mercadoplay.com.uy
+# mercadoplay.pe
+# mercadoplay.uy
+# mpago.la
+# mpago.li
+# portalinmobiliario.cl
+# portalinmobiliario.com
+# sustentabilidadmercadolibre.com
+# tucarro.com
+# tucarro.com.co
+# tumoto.com
+
+# === Booking.com (HackerOne) ===
+# Program: https://hackerone.com/bookingcom/policy_scopes
+# booking.com
+# fareharbor.com
+# fareharbor.engineering
+# rentalcars.com
+# accommodations.booking.com
+# account.booking.com
+# admin.booking.com
+# autocomplete.booking.com
+# careers.booking.com
+# cars.booking.com
+# chat.booking.com
+# compass.fareharbor.com
+# demo.fareharbor.com
+# distribution-xml.booking.com
+# experiences.booking.com
+# fareharborsites.com
+# fhdn.fareharbor.com
+# flights.booking.com
+# secure-iphone-xml.booking.com
+# iphone-xml.booking.com
+# indicative-pricing.taxi.booking.com
+# kyc-onboarding.booking.com
+# marketing.fareharbor.com
+# metasearch-api.booking.com
+# paybridge.booking.com
+# paymentcomponent.booking.com
+# paynotifications.booking.com
+# phone-validation.taxi.booking.com
+# portal.taxi.booking.com
+# readonly.fareharbor.com
+# secure-supply-xml.booking.com
+# secure.booking.com
+# sites.fareharbor.com
+# spark.fareharbor.com
+# supplier.auth.toag.booking.com
+# supply-xml.booking.com
+# tableau.fareharbor.engineering
+# taxi.booking.com
+# taxis.booking.com
+# teleport.fareharbor.engineering
+# webhooks.booking.com
+# widget.rentalcars.com
+# www.fareharbor.com
+
+# === Adjust (HackerOne) ===
+# Program: https://hackerone.com/adjust/policy_scopes
+# adjust.com
+# adjust.net
+# adjust.net.in
+# adjust.world
+
+# === Trip.com (HackerOne) ===
+# Program: https://hackerone.com/trip_com/policy_scopes
+# trip.com
+# travix.com
+# travix.io
+# trainpal.com
+# mytrainpal.com
+# cheaptickets.nl
+# triplinkintl.com
+# tyo-masters.co.jp
+# budgetair.com
+# flugladen.de
+# vayama.com
+# vliegwinkel.nl
+# trip.biz
+# app.blueskytravelvietnam.com
+
+# === HYPR (HackerOne) ===
+# Program: https://hackerone.com/hypr-corp/policy_scopes
+# hypr.com
+# gethypr.com
+
+# === bbpos_limited (HackerOne) ===
+# Program: https://hackerone.com/bbpos_limited/policy_scopes
+# bbpos.com
+# emms.bbpos.com
+# www.emms.bbpos.com
+# portal.wisemanager.com
+# login.wisemanager.com
+# wisemanager.com
+# tms.bbpos.com
+# developer.bbpos.com
+# bbpos.com.hk
+# bbpos.com.cn
+
+# === wurl (HackerOne) ===
+# Program: https://hackerone.com/wurl/policy_scopes
+# wurl.com
+# platform.wurl.com
+# accelerate.wurl.com
+# reporting.wurl.com
+# portal.wurl.com
+# wurl.tv
+
+# === gocardless_bbp (HackerOne) ===
+# Program: https://hackerone.com/gocardless_bbp/policy_scopes
+# pay-sandbox.gocardless.com
+# api-sandbox.gocardless.com
+# connect-sandbox.gocardless.com
+# oauth-sandbox.gocardless.com
+# payer-details-sandbox.gocardless.com
+# manage-sandbox.gocardless.com
+# ob.gocardless.com
+# www.gocardless.com
+# developer.gocardless.com
+# gocardless.io
+# gocardless-banking.io
+# gocardless-cicd.io
+# gocardless-lab.io
+# gocardless.dev
+# auth0.gocardless.com
+# sso-demo.gocardless-staging.io
+
+# === REDOX_BBP ===
+# testredoxengine.com
+# 10x.redoxengine.com
+# testapp.redoxengine.com
+# testapi.redoxengine.com
+# docs.redoxengine.com
+# fhir.redoxengine.com
+# explore.redoxengine.com
+# www.redoxengine.com
+# help.redoxengine.com
+
+# === RING ===
+# immedia-semi.com
+# blinkforhome.com
+# prd-ring-web-us.prd.rings.solutions
+# publicsafety.ring.com
+
+# === NEWEGG ===
+# newegg.com
+# newegg.ca
+# secure.newegg.com
+# secure.newegg.ca
+# pmtcards.newegg.com
+
+# === EERO ===
+# eero.com
+# e2ro.com
+
+# === FLOQAST ===
+# eu.floqast.app
+# floqast.app
+# floqast.engineering
+# api-eu.floqast.app
+
+# === HILTON ===
+# hilton.com
+# hilton.io
+# hiltonbusinessonline.com
+# hiltonlocalbiz.com
+
+# === OKG ===
+# okx.com
+# oklink.com
+
+# === TELIA_EESTI ===
+# www.telia.ee
+# iseteenindus.telia.ee
+# pood.telia.ee
+# sso.telia.ee
+# digitark.telia.ee
+# teliatv.ee
+# diil.ee
+# teenused.telia.ee
+# port.teliahybridcloud.com
+# files.teliahybridcloud.com
+# tellimus.telia.ee
+# super.ee
+# signbox.telia.ee
+
+# === DPDGROUP_UK ===
+# q2-consumers.dpd.co.uk
+# track.dpd.co.uk
+# dpdgroup.co.uk
+# q2-login.dpd.co.uk
+
+# === inDrive (HackerOne) ===
+# Program: https://hackerone.com/indrive/policy_scopes
+# Scope: 37 domains (37 bounty-eligible)
+# STATUS: SCANNED ✓
+# indrive.com
+# indriver.com
+# indriverapp.com
+# ab-platform-api.eu-east-1.indriverapp.com
+# alternativa.film
+# api.ryadom.kz
+# auroratechaward.com
+# blog.indrive.com
+# careers.indrive.com
+# cargo.indrive.com
+# couriers.indrive.com
+# debug.clairvoyance.indrive.tech
+# delivery-webview.indrive.com
+# external.indrive.dev
+# file-storage-front.eu-east-1.indriverapp.com
+# cas-cf.euce1.indriverapp.com
+# ingest.clairvoyance.indrive.tech
+# intercity.indrive.com
+# invisionu.education
+# job.ryadom.kz
+# landing.ryadom.kz
+# media.indrive.com
+# messenger.eu-east-1.indriverapp.com
+# movie.indrive.com
+# new-order.eu-east-1.indriverapp.com
+# oymyakon.indriver.io
+# priority.eu-east-1.indriverapp.com
+# profile-api.eu-east-1.indriverapp.com
+# ryadom.kz
+# sso.ryadom.kz
+# teammate.indriver.io
+# truck-api.eu-east-1.indriverapp.com
+# url-checker.indrive.com
+# volans.tech
+# watchdocs.indriverapp.com
+# web.ryadom.kz
+# wga.volans.tech
+
+# === Grindr (HackerOne) ===
+# Program: https://hackerone.com/grindr/policy_scopes
+# Scope: 8 domains (5 bounty-eligible)
+# STATUS: SCANNED ✓
+# grindr.com
+# grindr.io
+# grindr.mobi
+# web.grindr.com
+
+# === Malwarebytes (HackerOne) ===
+# Program: https://hackerone.com/malwarebytes/policy_scopes
+# Scope: 18 domains (15 bounty-eligible)
+# STATUS: SCANNED ✓
+# cloud.malwarebytes.com
+# cyrus-security.com
+# malwarebytes.com
+# mb-cosmos.com
+# mbamupdates.com
+# mwb-threatintel.com
+# mwbsys.com
+# threatdown.com
+# cloud.threatdown.com
+# oneview.threatdownstage.com
+# my.malwarebytes.com
+# oneview.threatdown.com
+# www.malwarebytes.com
+
+# === 8x8 (HackerOne) ===
+# Program: https://hackerone.com/8x8-bounty/policy_scopes
+# Scope: 74 domains (24 bounty-eligible)
+# STATUS: SCANNED ✓
+# 8x8.vc
+# 8x8cloud.net
+# 8x8staging.com
+# chalet.8x8.com
+# jit.si
+# jitsi.net
+# p8t.us
+# wavecell.com
+# admin.8x8.com
+# apps.8x8.com
+# cloud8.8x8.com
+# connect.8x8.com
+# webrtc.8x8.com
+# pay.8x8.com
+# platform.8x8.com
+# platform.8x8pilot.com
+# sso.8x8.com
+# sso.8x8pilot.com
+# uc.8x8pilot.com
+# user-profile-staging.8x8.com
+# user-profile.8x8.com
+# voapi.8x8.com
+# work-staging.8x8.com
+# work.8x8.com
+
+# === Superbet (HackerOne) ===
+# Program: https://hackerone.com/superbet/policy_scopes
+# Scope: 16 domains (16 bounty-eligible)
+# STATUS: SCANNED ✓
+# happening.dev
+# luckydays.ca
+# luckydays.com
+# napoleoncasino.be
+# napoleondice.be
+# napoleongames.be
+# napoleonsports.be
+# spinaway.com
+# superbet.com
+# superbet.gr
+# superbet.pl
+# superbet.ro
+# superbet.rs
+# ro.superbet.games
+# ro.superbet.sport
+# superbet.bet.br
+
+# === MoonPay  (HackerOne) ===
+# Program: https://hackerone.com/moonpay/policy_scopes
+# Scope: 9 domains (9 bounty-eligible)
+# STATUS: SCANNED ✓
+# hypermint.com
+# moonpay.com
+# moonpaycloud.com
+# api.moonpay.com
+# app.moonpay.com
+# auth.moonpay.com
+# buy.moonpay.com
+# sell.moonpay.com
+# web3.moonpay.com
+
+# === kiwicom (HackerOne) ===
+# Program: https://hackerone.com/kiwicom/policy_scopes
+# Scope: 7 domains
+# STATUS: SCANNED ✓
+# kiwi.com
+# skypicker.com
+# www.kiwi.com
+# auth.skypicker.com
+# tequila.kiwi.com
+# jobs.kiwi.com
+
+# === yuga_labs (HackerOne) ===
+# Program: https://hackerone.com/yuga_labs/policy_scopes
+# Scope: 4 domains
+# STATUS: SCANNED ✓
+# boredapeyachtclub.com
+# yuga.com
+# yugalabs.io
+# otherside.xyz
+
+# === expediagroup_bbp (HackerOne) ===
+# Program: https://hackerone.com/expediagroup_bbp/policy_scopes
+# Scope: 33 domains
+# STATUS: SCANNED ✓
+# vrbo.com
+# carrentals.com
+# wotif.com
+# cheaptickets.com
+# lastminute.co.nz
+# lastminute.com.au
+# travelocity.com
+# travelocity.ca
+# expediapartnercentral.com
+# www.hotels.com
+# www.expedia.com
+# www.vrbo.com
+# www.hotwirepartnercentral.com
+# www.orbitz.com
+# www.ebookers.com
+# www.ebookers.fi
+# www.mrjet.se
+# www.carrentals.com
+# www.wotif.com
+# www.cheaptickets.com
+# www.lastminute.co.nz
+# www.lastminute.com.au
+# www.travelocity.com
+# www.travelocity.ca
+# www.abritel.fr
+# www.bookabach.co.nz
+# www.fewo-direkt.de
+# www.stayz.com.au
+# www.expediagroup.com
+# www.flights.com
+# www.expedia-aarp.com
+# www.expediataap.com
+# www.hotwire.com
+
+# === deribit (HackerOne) ===
+# Program: https://hackerone.com/deribit/policy_scopes
+# Scope: 4 domains
+# STATUS: SCANNED ✓
+# deribit.com
+# test.deribit.com
+# insights.deribit.com
+# pb.deribit.com
+
+# === mongodb (HackerOne) ===
+# Program: https://hackerone.com/mongodb/policy_scopes
+# Scope: 1 domains
+# STATUS: SCANNED ✓
+# mongodb.com
+
+# === sidefx (HackerOne) ===
+# Program: https://hackerone.com/sidefx/policy_scopes
+# Scope: 1 domains
+# STATUS: SCANNED ✓
+# sidefx.com
+
+# === metamask (HackerOne) ===
+# Program: https://hackerone.com/metamask/policy_scopes
+# Scope: 6 domains
+# STATUS: SCANNED ✓
+
+# === wealthsimple (HackerOne) ===
+# Program: https://hackerone.com/wealthsimple/policy_scopes
+# Scope: 2 domains
+# STATUS: SCANNED ✓
+
+# === kayak (HackerOne) ===
+# Program: https://hackerone.com/kayak/policy_scopes
+# Scope: 10 domains
+# STATUS: SCANNED ✓
+
+# === shein (HackerOne) ===
+# Program: https://hackerone.com/shein/policy_scopes
+# Scope: 3 domains
+# STATUS: SCANNED ✓
+
+# === instacart (HackerOne) ===
+# Program: https://hackerone.com/instacart/policy_scopes
+# Scope: 7 domains
+# STATUS: SCANNED ✓
+
+# === weber-grills (HackerOne) ===
+# Program: https://hackerone.com/weber-grills/policy_scopes
+# Scope: 5 domains
+# STATUS: SCANNED ✓
+
+# === Exodus (HackerOne) ===
+# Program: https://hackerone.com/exodus/policy_scopes
+# Scope: 4 domains (4 bounty-eligible)
+# STATUS: SCANNED ✓
+# a.exodus.io
+# exodus.com
+# exodus.io
+# exodus-movement.exodus
+
+# === Netlify (HackerOne) ===
+# Program: https://hackerone.com/netlify/policy_scopes
+# Scope: 14 domains (14 bounty-eligible)
+# STATUS: SCANNED ✓
+# infra-prod.nsvcs.net
+# onegraph.com
+# ops.netlify.com
+# services-prod.nsvcs.net
+# services.netlify.com
+# api.netlify.com
+# app.netlify.com
+# internal-docs.netlify.com
+# internal.netlify.com
+# list-v2--netlify-plugins.netlify.app
+# netlify-cdp-loader.netlify.app
+# netlify-rum.netlify.app
+# screenshot-proxy.netlify.app
+# supportal.netlify.app
+
+# === Basecamp (HackerOne) ===
+# Program: https://hackerone.com/basecamp/policy_scopes
+# Scope: 13 domains (12 bounty-eligible)
+# STATUS: SCANNED ✓
+# hey.com
+# basecamp.app
+# hey.app
+# hey.exe
+# app.basecamp.com
+# basecamp-setup.exe
+# launchpad.37signals.com
+# world.hey.com
+
+# === TikTok (HackerOne) ===
+# Program: https://hackerone.com/tiktok/policy_scopes
+# Scope: 29 domains (29 bounty-eligible)
+# STATUS: SCANNED ✓
+# pipopay.com
+# soundon.global
+# tiktok.com
+# tiktokcdn.com
+# tiktokpublishers.com
+# tiktokv.com
+# academy-outbound-ads.tiktok.com
+# ads.tiktok.com
+# affiliate-id.tokopedia.com
+# business.tiktok.com
+# careers.tiktok.com
+# creatormarketplace.tiktok.com
+# developers.tiktok.com
+# effecthouse.tiktok.com
+# fp-sg.tiktokv.com
+# live-backstage.tiktok.com
+# partner.tiktokshop.com
+# pay.tokopediax.com
+# seller-id.tokopedia.com
+# shop-id.tokopedia.com
+# shop.tiktok.com
+# www.pangleglobal.com
+# www.soundon.global
+
+# === Logitech (HackerOne) ===
+# Program: https://hackerone.com/logitech/policy_scopes
+# Scope: 62 domains (19 bounty-eligible)
+# STATUS: SCANNED ✓
+# streamlabs.com
+# vc.logitech.com
+# accounts.logi.com
+# circle.logi.com
+# gaming.logicool.co.jp
+# id.logi.com
+# logiq.logitech.io
+# logitechg.com.cn
+# sync.logitech.com
+# www.astrogaming.com
+# www.logicool.co.jp
+# www.logitech.com.cn
+# www.logitechg.com
+# www.ultimateears.com
+
+# === Enjin (HackerOne) ===
+# Program: https://hackerone.com/enjin/policy_scopes
+# Scope: 3 domains (2 bounty-eligible)
+# STATUS: SCANNED ✓
+# nft.io
+
+# === Acronis (HackerOne) ===
+# Program: https://hackerone.com/acronis/policy_scopes
+# Scope: 8 domains (8 bounty-eligible)
+# STATUS: SCANNED ✓
+# 5nine.com
+# acronis.com
+# acronis.work
+# devicelock.com
+# account.acronis.com
+# beta-cloud.acronis.com
+
+# === Callsign (HackerOne) ===
+# Program: https://hackerone.com/callsign-bbp/policy_scopes
+# Scope: 10 domains (10 bounty-eligible)
+# STATUS: SCANNED ✓
+# app.s02.callsign.com
+# s02.callsign.com
+# b2b.s02.callsign.com
+# a2develop.com
+# a2verify.com
+# dashboard.callsign.com
+# portal.a2verify.com
+# dashboard.a2verify.com
+# dashboard-a.callsign.com
+# portal.callsign.com
+
+# === Moon Active (HackerOne) ===
+# Program: https://hackerone.com/moon-active/policy_scopes
+# Scope: 4 domains (4 bounty-eligible)
+# STATUS: SCANNED ✓
+# vik-game.moonactive.net
+# moonactive.com
+# moonactive.net
+
+# === Mux (HackerOne) ===
+# Program: https://hackerone.com/mux/policy_scopes
+# Scope: 8 domains (8 bounty-eligible)
+# STATUS: SCANNED ✓
+# dashboard.mux.com
+# api.mux.com
+# stream.mux.com
+# image.mux.com
+# live.mux.com
+# global-live.mux.com
+# litix.io
+# player.mux.com
+
+# === Wonder (HackerOne) ===
+# Program: https://hackerone.com/wonder-bbp/policy_scopes
+# Scope: 19 domains (19 bounty-eligible)
+# STATUS: SCANNED ✓
+# www.blueapron.com
+# wonder.com
+# order.wonder.com
+# grubhub.com
+# seamless.com
+# www.grubhub.com
+# www.menupages.com
+# www.seamless.com
+# restaurant.grubhub.com
+# www.jo30.com
+# www.tapingo.com
+# jo30.com
+# tapingo.com
+# auth.grubhub.com
+# sensor.grubhub.com
+# tastemade.com
+
+# === PlayStation (HackerOne) ===
+# Program: https://hackerone.com/playstation/policy_scopes
+# Scope: 20 domains (19 bounty-eligible)
+# STATUS: SCANNED ✓
+# api.playstation.com
+# playstation.net
+# sonyentertainmentnetwork.com
+# api.direct.playstation.com
+# ca.account.sony.com
+# checkout.playstation.com
+# compete.playstation.com
+# direct.playstation.com
+# my.account.sony.com
+# my.playstation.com
+# profile.playstation.com
+# ps5.np.playstation.net
+# session-share.playstation.com
+# social.playstation.com
+# store.playstation.com
+# transact.playstation.com
+# wallets.api.playstation.com
+# web.np.playstation.com
+# www.playstation.com
+
+# === Xiaomi (HackerOne) ===
+# Program: https://hackerone.com/xiaomi/policy_scopes
+# Scope: 55 domains (55 bounty-eligible)
+# STATUS: SCANNED ✓
+# airstar-finance.com
+# airstar.com
+# airstarfinance.net
+# aleenote.cn
+# aleenote.com
+# baoliyun.com
+# duokan.com
+# hongyuanib.com
+# mi.cn
+# mi.com
+# mifile.cn
+# migames.com
+# miinsurtech.cn
+# miinsurtech.com
+# miinsurtech.net
+# mijiayoupin.com
+# mioffice.cn
+# mios.cn
+# miot-spec.org
+# mipay.com
+# mipay.net
+# miui.cn
+# miui.com
+# miwifi.com
+# oktukids.com
+# openvela.com
+# wali.com
+# xiangkankeji.cn
+# xiangkankeji.com
+# xiangkannews.cn
+# xiaomi.com
+# xiaomi.net
+# xiaomi.org
+# xiaomiev.com
+# xiaomimimo.com
+# xiaomimobile.com
+# xiaomiprint.com
+# xiaomiwear.com
+# xiaomiyoupin.com
+# xunkid.com
+# xunkids.com
+# youpin.cn
+# zmifi.com
+
+# === Flutter UK&I (HackerOne) ===
+# Program: https://hackerone.com/flutteruki/policy_scopes
+# Scope: 39 domains (39 bounty-eligible)
+# STATUS: SCANNED ✓
+# betfair.com
+# betfair.es
+# betfair.it
+# betfair.ro
+# betfair.se
+# betsharedservices.io
+# betviewapi.com
+# dibz.co.uk
+# msgsvc.io
+# operationstechnology.io
+# paddypartners.com
+# paddypower.com
+# paddypower.it
+# platformservices.io
+# ppb.com
+# ppbdev.com
+# sbgcdn.com
+# sbgcore.com
+# sbgorigin.com
+# sbgservices.com
+# sbgtest.net
+# securityservices.io
+# skybet.co.uk
+# skybet.com
+# skybet.net
+# skybetservices.com
+# skybettest.net
+# skybettingandgaming.com
+# skybettingandgaming.design
+# skybettingandgaming.info
+# skybingo.com
+# skycasino.com
+# skygamingcontent.com
+# skypoker.com
+# skyvegas.com
+# sportinglife.com
+# itv7.itv.com
+# rafflee.co.uk
+# super6.skysports.com
+
+# === Amazon Vulnerability Research Program (HackerOne) ===
+# Program: https://hackerone.com/amazonvrp/policy_scopes
+# Scope: 65 domains (65 bounty-eligible)
+# STATUS: SCANNED ✓
+# amazon.ae
+# amazon.ca
+# amazon.cl
+# amazon.cn
+# amazon.co.jp
+# amazon.co.uk
+# amazon.co.za
+# amazon.com
+# amazon.com.au
+# amazon.com.be
+# amazon.com.br
+# amazon.com.co
+# amazon.com.mx
+# amazon.com.ng
+# amazon.com.tr
+# amazon.de
+# amazon.eg
+# amazon.es
+# amazon.fr
+# amazon.in
+# amazon.it
+# amazon.nl
+# amazon.pl
+# amazon.sa
+# amazon.se
+# amazon.sg
+# amazon.speech.sim
+# amazonpayinsurance.in
+# in.amazon.mshop.android.business.shopping
+# in.amazon.mshop.android.shopping
+# primevideo.com/*
+# www.amazon.com
+
+# === Marriott Bug Bounty Program (HackerOne) ===
+# Program: https://hackerone.com/marriott/policy_scopes
+# Scope: 78 domains (77 bounty-eligible)
+# STATUS: SCANNED ✓
+# apigatewayc.marriott.com
+# apigwc.marriott.com
+# artifactory.marriott.com
+# dcfgateway.marriott.com
+# gateway.marriott.com
+# mgs.marriott.com
+# sba.marriott.com
+# activities.marriott.com
+# all-inclusive.marriott.com
+# apcgateway.marriott.com
+# app-insiders.marriott.com
+# auth-apc.marriott.com
+# bilt.marriott.com
+# bpa2.marriott.com
+# bsp.marriott.com
+# cache.marriott.com
+# careers.marriott.com
+# channel-portal.homes-and-villas.marriott.com
+# ci-propertyconversionportal.marriott.com
+# contentportal.marriott.com
+# contentportalauth.marriott.com
+# cpp.marriott.com
+# dcfgateway*.marriott.com
+# device.marriott.com
+# editionhotels.com
+# efast.marriott.com
+# eidhelp.marriott.com
+# esupplier.marriott.com
+# gateway*.marriott.com
+# gifts.marriott.com
+# globaldesign.marriott.com
+# help.marriott.com
+# homes-and-villas.marriott.com
+# hotel-deals.marriott.com
+# hotel-development.marriott.com
+# www.shopmarriott.com
+# dcfgatewaytst1.marriott.com
+# gatewaydsapdev2.marriott.com
+# gatewaydsaptst1.marriott.com
+# gatewaydsaptst2.marriott.com
+# ifast.marriott.com
+# jobs.marriott.com
+# join.marriott.com
+# joinmarriottbonvoy.com
+# joinrewards.marriott.com
+# lawmanager.marriott.com
+# marriottfranchisetransactions.marriott.com
+# marrtool.com
+# mds.marriott.com
+# meetmarriottbonvoy.marriott.com
+# mipartnerprivileges.marriott.com
+# moments.marriott.com
+# moments.marriottbonvoy.com
+# oasisprod.marriott.com
+# ocijlbex1prd.marriott.com
+# owa.marriott.com
+# passwordchallenge.marriott.com
+# prod-mipaasiaasservices.marriott.com
+# psp.marriott.com
+# reservations.all-inclusive.marriott.com
+# smetrics.marriott.com
+# splunk-phantom-nlb.marriott.com
+# ssm-marriottms.saviyntcloud.com
+# sso.marriott.com
+# travelagents.marriott.com
+# traveler.marriott.com
+# uber.marriott.com
+# university.marriott.com
+# vacation.marriott.com
+# wechat.api.marriott.com
+# www.giving.marriott.com
+# www.marriott.com
+# www.members.marriott.com
+# www.ritzcarlton.com
+# www.travel-brilliantly.marriott.com
+
+# === Roblox (HackerOne) ===
+# Program: https://hackerone.com/roblox/policy_scopes
+# Scope: 4 domains (4 bounty-eligible)
+# STATUS: SCANNED ✓
+# ra.roblox.com
+# rbx.com
+# roblox.com
+# blox.link
+
+# === Ping Identity (HackerOne) ===
+# Program: https://hackerone.com/pingidentity/policy_scopes
+# Scope: 4 domains (4 bounty-eligible)
+# STATUS: SCANNED ✓
+# api.ort-one-pingone.com
+# apps.ort-one-pingone.com
+# auth.ort-one-pingone.com
+# console.ort-one-pingone.com
+
+# === pixiv (HackerOne) ===
+# Program: https://hackerone.com/pixiv/policy_scopes
+# Scope: 17 domains (17 bounty-eligible)
+# STATUS: SCANNED ✓
+# fanbox.cc
+# accounts.pixiv.net
+# booth.pm
+# coban.pixiv.net
+# comic-indies.pixiv.net
+# comic.pixiv.net
+# dic.pixiv.net
+# vroid.com
+# hub.vroid.com
+# neoket.net
+# novel.pixiv.net
+# pastela.app
+# payment.pixiv.net
+# premium.pixiv.net
+# sensei.pixiv.net
+# sketch.pixiv.net
+# www.pixiv.net
+
+# === Credit Karma (HackerOne) ===
+# Program: https://hackerone.com/creditkarma/policy_scopes
+# Scope: 8 domains (8 bounty-eligible)
+# STATUS: SCANNED ✓
+# accounts.creditkarma.com
+# api.creditkarma.com
+# blog.creditkarma.com
+# www.creditkarma.com
+# support.creditkarma.ca
+# www.creditkarma.ca
+
+# === Superhuman (formerly Grammarly) (HackerOne) ===
+# Program: https://hackerone.com/superhuman/policy_scopes
+# Scope: 16 domains (16 bounty-eligible)
+# STATUS: SCANNED ✓
+# coda.io
+# grammarly.com
+# grammarly.io
+# grammarlyaws.com
+# superhuman.com
+# app.grammarly.com
+# coda.grammarly.com
+# codacontent.io
+# codahosted.io
+# gateway.superhuman.com
+# id.superhuman.com
+# io.coda
+# io.coda.codaapp
+# settings.superhuman.com
+
+# === FanDuel (HackerOne) ===
+# Program: https://hackerone.com/fanduel/policy_scopes
+# Scope: 15 domains (15 bounty-eligible)
+# STATUS: SCANNED ✓
+# fanduel.com
+# mgmt.fndlsb.net
+# prd.fndlsb.net
+# tvg.com
+# fndlsb.net
+# 4njbets.com
+# 4njbets.us.betfair.com
+# login-4ngbets.us.betfair.com
+# login-4njbets.us.betfair.com
+# www.4njbets.com
+
+# === Flickr (HackerOne) ===
+# Program: https://hackerone.com/flickr/policy_scopes
+# Scope: 4 domains (4 bounty-eligible)
+# STATUS: SCANNED ✓
+# flickr.com
+# modefestival.com
+# www.whatismode.com
+
+# === Bank al Etihad (HackerOne) ===
+# Program: https://hackerone.com/bankaletihad-bbp/policy_scopes
+# Scope: 5 domains
+# STATUS: SCANNED ✓
+# bankaletihad.com
+# verify.bankaletihad.com
+# business.bankaletihad.com
+# www.finto.io
+# http://developer.bankaletihad.com
+
+# === ArenaNet (HackerOne) ===
+# Program: https://hackerone.com/arenanet/policy_scopes
+# Scope: 22 domains
+# STATUS: SCANNED ✓
+# account.arena.net
+# api.guildwars2.com
+# ncplatform.net
+# www.arena.net
+# feedback.guildwars2.com
+# www.guildwars.com
+# www.guildwars2.com
+# hom.guildwars2.com
+# leaderboards.guildwars2.com
+# manual.guildwars2.com
+# welcome.guildwars2.com
+# guildwars.com
+# guildwars2.com
+# staticwars.com
+# arenanetworks.com
+# access.corp.arena.net
+# outsource.corp.arena.net
+# aws.access.corp.arena.net
+# aws.outsource.corp.arena.net
+# forum.guildwars2.com
+# staticwars.com
+# arenanet.dev
+
+# === SmartBear Software (HackerOne) ===
+# Program: https://hackerone.com/smartbear_software_bbp/policy_scopes
+# Scope: 17 domains
+# STATUS: SCANNED ✓
+# app.swaggerhub.com
+# app.loadninja.com
+# manage.smartbear.com
+# id.smartbear.com
+# studio.cucumber.io
+# swagger.io
+# app.bugsnag.com
+# api.bugsnag.com
+# build.bugsnag.com
+# hooks.bugsnag.com
+# notify.bugsnag.com
+# sessions.bugsnag.com
+# upload.bugsnag.com
+# explore.swaggerhub.com
+# app.visualtest.io
+# pactflow.io
+# portal.swaggerhub.com
+
+# === GOAT (HackerOne) ===
+# Program: https://hackerone.com/goat/policy_scopes
+# Scope: 4 domains
+# STATUS: SCANNED ✓
+# goat.com
+# flightclub.com
+# alias.org
+# sneakers.com
+
+# === Quora (HackerOne) ===
+# Program: https://hackerone.com/quora/policy_scopes
+# Scope: 4 domains (4 bounty-eligible)
+# STATUS: SCANNED ✓
+# quora.com
+# poe.com
+
+# === Yelp (HackerOne) ===
+# Program: https://hackerone.com/yelp/policy_scopes
+# Scope: 5 domains (5 bounty-eligible)
+# STATUS: SCANNED ✓
+# yelp.com
+# yelpwifi.com
+# yelptop100.com
+
+# === GitLab (HackerOne) ===
+# Program: https://hackerone.com/gitlab/policy_scopes
+# Scope: 10 domains (10 bounty-eligible)
+# STATUS: SCANNED ✓
+# gitlab.net
+# gitlab.org
+# gitlap.com
+# about.gitlab.com
+# advisories.gitlab.com
+# customers.gitlab.com
+# design.gitlab.com
+# docs.gitlab.com
+# gitlab.com
+# registry.gitlab.com
+
+# === Eternal (HackerOne) ===
+# Program: https://hackerone.com/eternal/policy_scopes
+# Scope: 22 domains (21 bounty-eligible)
+# STATUS: SCANNED ✓
+# district.in
+# edition.in
+# eternal.com
+# hyperpure.com
+# insider.in
+# runnr.in
+# ticketnew.com
+# tktnew.com
+# zdev.net
+# zomans.com
+# zomato.com
+# api.grofers.com
+# api2.grofers.com
+# bistro-api.blinkit.com
+# blinkit.com
+# mcp-server.zomato.com
+# winecellar.zomato.com
+
+# === Shopify (HackerOne) ===
+# Program: https://hackerone.com/shopify/policy_scopes
+# Scope: 15 domains (15 bounty-eligible)
+# STATUS: SCANNED ✓
+# pci.shopifyinc.com
+# shopify.com
+# shopify.io
+# shopifycloud.com
+# shopifycs.com
+# shopifykloud.com
+# accounts.shopify.com
+# admin.shopify.com
+# arrive-server.shopifycloud.com
+# linkpop.com
+# partners.shopify.com
+# shop.app
+# shopify.plus
+# shopifyinbox.com
+# your-store.myshopify.com
+
+# === Adobe (HackerOne) ===
+# Program: https://hackerone.com/adobe/policy_scopes
+# Scope: 30 domains (29 bounty-eligible)
+# STATUS: SCANNED ✓
+# acrobat.adobe.com
+# account.adobe.com
+# account.magento.com
+# adobeid-na1.services.adobe.com
+# auth.services.adobe.com
+# commercemarketplace.adobe.com
+# contributor.stock.adobe.com
+# firefly.adobe.com
+# fonts.adobe.com
+# federatedid-na1.services.adobe.com
+# ims-na1.adobelogin.com
+# learningmanagerstage4.adobe.com
+# magento.com
+# net.s2stagehance.com
+# new.express.adobe.com
+# photos.adobe.io
+# photoshop.adobe.com
+# portfolio.ccpsx.com
+# repo.magento.com
+# stock.adobe.com
+
+# === Airbnb (HackerOne) ===
+# Program: https://hackerone.com/airbnb/policy_scopes
+# Scope: 26 domains (26 bounty-eligible)
+# STATUS: SCANNED ✓
+# airbnb-aws.com
+# airbnb.com
+# airbnb.org
+# airbnbcitizen.com
+# airbnbpayments.com
+# atairbnb.com
+# byairbnb.com
+# hoteltonight-test.com
+# hoteltonight.com
+# luxuryretreats.com
+# muscache.com
+# musta.ch
+# withairbnb.com
+# api.airbnb.com
+# assets.airbnb.com
+# callbacks.airbnb.com
+# m.airbnb.com
+# next.airbnb.com
+# one.airbnb.com
+# open.airbnb.com
+# support-api.airbnb.com
+# www.airbnb.com
+# www.hoteltonight.com
+
+# === Vimeo (HackerOne) ===
+# Program: https://hackerone.com/vimeo/policy_scopes
+# Scope: 23 domains (23 bounty-eligible)
+# STATUS: SCANNED ✓
+# cloud.vimeo.com
+# livestream.com
+# magisto.com
+# new.livestream.com
+# vhx.tv
+# vimeo.com
+# api.vhx.tv
+# api.vimeo.com
+# applause1.magisto.com
+# checkout.vimeo.com
+# donations.livestream.com
+# embed.vhx.tv
+# magisto.com
+# www.magisto.com
+# player.vimeo.com
+# staging.magisto.com
+# vimeo.magisto.com
+# vimeopro.com
+# www.livestream.com
+# www.vimeo.com
+
+# === Automattic (HackerOne) ===
+# Program: https://hackerone.com/automattic/policy_scopes
+# Scope: 23 domains (23 bounty-eligible)
+# STATUS: SCANNED ✓
+# srvcs.tumblr.com
+# tumblr.com
+# akismet.com
+# api.tumblr.com
+# assets.tumblr.com
+# clay.earth
+# embed.tumblr.com
+# gravatar.com
+# intensedebate.com
+# mailpoet.com
+# my.pressable.com
+# parse.ly
+# safe.tumblr.com
+# secure.tumblr.com
+# simperium.com
+# simplenote.com
+# t.umblr.com
+# wordpress.com
+# wpscan.com
+# www.tumblr.com
+
+# === Coinbase (HackerOne) ===
+# Program: https://hackerone.com/coinbase/policy_scopes
+# Scope: 19 domains (19 bounty-eligible)
+# STATUS: SCANNED ✓
+# cbhq.net
+# coinbase-corp.com
+# coinbase.com
+# 54.175.255.192/27
+# api.coinbase.com
+# api.custody.coinbase.com
+# cloud.coinbase.com
+# commerce.coinbase.com
+# custody.coinbase.com
+# institutional.coinbase.com
+# international.coinbase.com
+# nft.coinbase.com
+# prime.coinbase.com
+# pro.coinbase.com
+
+# === Lyft (HackerOne) ===
+# Program: https://hackerone.com/lyft/policy_scopes
+# Scope: 14 domains
+# STATUS: SCANNED ✓
+# lyft.com
+# api.lyft.com
+# baywheels.com
+# lyftbusiness.com
+# lyft.net
+# publicbikesystem.net
+# lyftmail.com
+# lyft-corp.net
+
+# === BuzzFeed (HackerOne) ===
+# Program: https://hackerone.com/buzzfeed/policy_scopes
+# Scope: 10 domains
+# STATUS: SCANNED ✓
+# buzzfeed.com
+# tasty.co
+# community.buzzfeed.com
+# buzzfeednews.com
+# huffingtonpost.com
+# huffpost.com
+# huffpost.net
+# huffpo.net
+# affliate.buzzfeed.com
+
+# === Sea (HackerOne) ===
+# Program: https://hackerone.com/sea/policy_scopes
+# Scope: 12 domains
+# STATUS: SCANNED ✓
+# garena.com
+# shopee.com
+# airpay.com
+# seagroup.com
+# garenanow.com
+# freefiremobile.com
+# ocha.com
+# seatalk.com
+# shopeepay.com
+# seabank.com
+# maribank.com

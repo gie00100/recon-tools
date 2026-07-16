@@ -1,1643 +1,4368 @@
-# === Whatnot (HackerOne) ===
-# Program: https://hackerone.com/whatnot
-# Scope: *.whatnot.com
-# STATUS: SCANNED ✓
-# whatnot.com
-# api.whatnot.com
-# auction-service.whatnot.com
-# www.whatnot.com
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║         BUGCROWD PUBLIC BUG BOUNTY PROGRAMS                     ║
+# ║         Auto-generated from rix4uni/scope dataset                ║
+# ║         Generated: 2026-07-16 18:21                            ║
+# ║         Programs: 623 | Domains: 1247                       ║
+# ╚══════════════════════════════════════════════════════════════════╝
 
-# === Twilio (HackerOne) ===
-# Program: https://hackerone.com/twilio
-# Scope: Twilio + SendGrid + Segment + Authy
-# STATUS: SCANNED ✓
-# twilio.com
-# api.twilio.com
-# www.twilio.com
-# console.twilio.com
-# help.twilio.com
-# sendgrid.com
-# app.sendgrid.com
-# api.sendgrid.com
-# signup.sendgrid.com
-# mc.sendgrid.com
-# segment.com
-# app.segment.com
-
-# === Anduril Industries (HackerOne) ===
-# Program: https://hackerone.com/anduril_industries
-# Scope: *.anduril.com, *.anduril.dev, *.andurildev.com, *.anduril.au
-# STATUS: SCANNED ✓
-# anduril.com
-# anduril.dev
-# andurildev.com
-# anduril.com.au
-# anduril.au
-# andurildev.au
-
-# === Unico IDtech (HackerOne) ===
-# Program: https://hackerone.com/unico_idtech/policy_scopes
-# Scope: unico.io, *.uat.unico.app, *.cadastro.uat.unico.app, acesso.io subdomains
-# STATUS: SCANNED ✓
-# unico.io
-# secure.unico.io
-# openfinance.unico.io
-# devcenter.unico.io
-# idpay-uat.unico.io
-# issuer.idpay-uat.unico.io
-# idcash-uat.unico.io
-# backend-sdk.uat.private.unico.run
-# identityhomolog.acesso.io
-# accountshomolog.acesso.io
-
-# === Banco Plata (HackerOne) ===
-# Program: https://hackerone.com/banco_plata/policy_scopes
-# Scope: *.platacard.mx, *.bancoplata.mx
-# STATUS: SCANNED ✓
-# platacard.mx
-# bancoplata.mx
-
-# === Stripchat (HackerOne) ===
-# Program: https://hackerone.com/stripchat/policy_scopes
-# Scope: *.stripchat.com
-# STATUS: SCANNED ✓
-# stripchat.com
-# go.stripchat.com
-
-# === Kong (HackerOne) ===
-# Program: https://hackerone.com/kong/policy_scopes
-# Scope: *.api.konghq.com, konghq.com, etc.
-# STATUS: SCANNED ✓
-# konghq.com
-# developer.konghq.com
-# cloud.konghq.com
-# us.identity.konghq.com
-# app.insomnia.rest
-
-# === Robinhood (HackerOne) ===
-# Program: https://hackerone.com/robinhood/policy_scopes
-# Scope: robinhood.com properties, bitstamp.net, tradepmr.com
-# STATUS: SCANNED ✓
-# robinhood.com
-# saytechnologies.com
-# api.robinhood.com
-# cashier.robinhood.com
-# minerva.robinhood.com
-# nummus.robinhood.com
-# identi.robinhood.com
-# www.bitstamp.net
-# fusion.tradepmr.com
-# www.tradepmr.com
-# insight2.tradepmr.com
-
-# === Ripio (HackerOne) ===
-# Program: https://hackerone.com/ripio/policy_scopes
-# Scope: ripio.com, ripiotrade.co
-# STATUS: SCANNED ✓
-# ripio.com
-# ripiotrade.co
-# trade.ripio.com
-# app.ripio.com
-# kyc.ripio.com
-# auth.ripio.com
-# defi.ripio.com
-# sandbox-b2b.ripio.com
-# bridge.ripio.com
-
-# === M-Pesa (HackerOne) ===
-# Program: https://hackerone.com/mpesa/policy_scopes
-# Scope: m-pesa.com and subdomains, m-pesa.africa
-# STATUS: SCANNED ✓
-# m-pesa.com
-# mpa.ekyc.backoffice.m-pesa.com
-# mpa.ekyc.selfregister.m-pesa.com
-# openapiportal.m-pesa.com
-# openapi.m-pesa.com
-# m-pesa.africa
-
-# === HubSpot (HackerOne) ===
-# Program: https://hackerone.com/hubspot/policy_scopes
-# Scope: hubspot.com, hubapi.com, hubspotemail.net, hs-sites.com, hubspotpagebuilder.com/eu, chatspot.ai, hubspot.net
-# STATUS: SCANNED ✓
-# hubspot.com
-# hubapi.com
-# hubspotemail.net
-# hs-sites.com
-# hs-sites-eu1.com
-# hubspotpagebuilder.com
-# hubspotpagebuilder.eu
-# chatspot.ai
-# hubspot.net
-
-# === Verily Life Sciences (HackerOne) ===
-# Program: https://hackerone.com/verily_life_sciences/policy_scopes
-# Scope: verily.com, signalpath.com, verilyme.com, projectbaseline.com
-# STATUS: SCANNED ✓
-# verily.com
-# signalpath.com
-# verilyme.com
-# projectbaseline.com
-
-# === Bykea (HackerOne) ===
-# Program: https://hackerone.com/bykea/policy_scopes
-# Scope: *.bykea.net, bykea.com
-# STATUS: SCANNED ✓
-# bykea.com
-# bykea.net
-# maps.bykea.net
-# leaflet-map.bykea.net
-# nominatim.bykea.net
-# geocode-beta.bykea.net
-# api.bykea.net
-# tomoe.bykea.net
-
-# === Wells Fargo (HackerOne) ===
-# Program: https://hackerone.com/wellsfargo-bbp/policy_scopes
-# Scope: *.wellsfargo.com, *.wf.com
-# STATUS: SCANNED ✓
-# wellsfargo.com
-# wf.com
-# connect.secure.wellsfargo.com
-# homeloans.wellsfargo.com
-# accountoffers.wellsfargo.com
-
-# === KHealth (HackerOne) ===
-# Program: https://hackerone.com/khealth/policy_scopes
-# Scope: *.khealth.com, *.hhc247.org, *.khealth-test.com, partner health subdomains
-# STATUS: SCANNED ✓
-# khealth.com
-# hhc247.org
-# csconnect.org
-# mgbcareconnect.org
-# northwellprimarycarenow.com
-# hmh247.org
-# primarycareondemand.mayoclinic.org
-# novanthealthvirtualprimarycare.org
-# pennmedicine.connect-visit.com
-
-# === Playtika (HackerOne) ===
-# Program: https://hackerone.com/playtika/policy_scopes
-# STATUS: SCANNED ✓
-# slotomania.com
-# playtika.com
-# bingoblitz.com
-# caesarsgames.com
-# boardkingsgame.com
-# houseoffun.com
-# playwsop.com
-# serious.li
-# wooga.com
-# redecor.com
-# seriously.com
-# monopoly-poker.com
-# playticorp.com
-# gnocchi-www.buffalo-ggn.net
-# bestfiends.com
-# governorofpoker.com
-# gop3.nl
-
-# === Finnair (HackerOne) ===
-# Program: https://hackerone.com/finnair_vdp/policy_scopes
-# STATUS: SCANNED ✓
-# finnair.com
-
-# === Deriv Services Ltd (HackerOne) ===
-# Program: https://hackerone.com/deriv/policy_scopes
+# === 10Bis (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/10bis.co.il
+# Scope: *.10bis.co.il
 # STATUS: PENDING
-deriv.com
-deriv.cloud
-derivws.com
-deriv.partners
+10bis.co.il
 
-# === Varonis (HackerOne) ===
-# Program: https://hackerone.com/varonis/policy_scopes
-# STATUS: SCANNED ✓
-# varonis.com
-# varonis.io
-# varonis.net
-# varonis-preprod.com
-# cyral.com
-
-# === Netflix (HackerOne) ===
-# Program: https://hackerone.com/netflix/policy_scopes
-# STATUS: SCANNED ✓
-# nflxext.com
-# netflix.com
-# ftl.netflix.com
-# cloud.netflix.com
-# nflxvideo.net
-# dradis.netflix.com
-# nflximg.net
-# nflxso.net
-# beacon.netflix.com
-# customerevents.netflix.com
-# secure.netflix.com
-# help.netflix.com
-# ichnaea.netflix.com
-# presentationtracking.netflix.com
-# nmtracking.netflix.com
-# meechum.netflix.com
-# ir.netflix.com
-# ir.netflix.net
-# netflixinvestor.com
-
-# === Early Warning (HackerOne) ===
-# Program: https://hackerone.com/early_warning/policy_scopes
-# STATUS: SCANNED ✓
-# zellepay.com
-# earlywarning.com
-# zelle.com
-# zelleservice.my.site.com
-# ews-fusion.my.site.com
-# zelleservice.my.salesforce.com
-# www.certos.com
-# clearxchange.com
-# earlywarning.io
-# toolkit.zellepay.com
-# zellepay.force.com
-# earlywarningapi.force.com
-
-# === Truecaller (HackerOne) ===
-# Program: https://hackerone.com/truecaller/policy_scopes
-# truecaller.com
-# business.truecaller.com
-# web.truecaller.com
-# www.truecaller.com
-# business-resources.truecaller.com
-# community.truecaller.com
-# adsmanager.truecaller.com
-# support.truecaller.com
-
-# === Remitly (HackerOne) ===
-# Program: https://hackerone.com/remitly/policy_scopes
-# remitly.com
-# blog.remitly.com
-# api.remitly.io
-# cards.remitly.io
-# rewire.com
-# app.rewire.to
-# cardpayments.remitly.io
-# access.remitly.com
-# auth.remitly.com
-# login.remitly.com
-# media.remitly.io
-# partner-webhook.remitly.io
-# ablink.info.remitly.com
-# ir.remitly.com
-# news.remitly.com
-# access-sandbox.remitly.com
-# rates.rewire.com
-# app3.rewire.to
-# careers.remitly.com
-# metrics.int.remitly.com
-# site.rewire.com
-# remitly.io
-# beamitmobile.com
-# getorigen.com
-# getsurenow.com
-# insuritly.com
-# origenapp.com
-# origenbanking.com
-# origencard.com
-# origendebit.com
-# origenfinance.com
-# remilty.net
-# remilty.org
-# remitir.com
-# remitiy.com
-# remitly-3pjs.com
-# remitly-vendor.com
-# remitly.ca
-# remitly.cash
-# remitly.co
-# remitly.co.uk
-# remitly.com.au
-# remitly.com.mx
-# remitly.de
-# remitly.es
-# remitly.eu
-# remitly.fr
-# remitly.jp
-# remitly.me
-# remitly.mx
-# remitly.net
-# remitly.org
-# remitly.uk
-# remitly.xyz
-# remitlyapi.com
-# remitlycard.com
-# remitlycredit.com
-# remitlydata.com
-# remitlyit.com
-# remitlypay.com
-# remitlypayments.com
-# remitlytest.com
-# remitlywallet.com
-# remitresearch.com
-# travelcash.money
-# whyisend.com
-
-# === Toolsforhumanity (HackerOne) ===
-# Program: https://hackerone.com/toolsforhumanity/policy_scopes
-# worldcoin.org
-# consumer.worldcoin.org
-# worldcoin-distributors.com
-# worldcoin.dev
-# toolsforhumanity.com
-# developer.worldcoin.org
-# world.org
-# support.worldcoin.com
-# support.world.org
-
-# === Dynatrace (HackerOne) ===
-# Program: https://hackerone.com/dynatrace/policy_scopes
-# sprint.dynatracelabs.com
-# sprint.apps.dynatracelabs.com
-# account-sprint.dynatracelabs.com
-# sso-sprint.dynatracelabs.com
-# myaccount-hardening.dynatracelabs.com
-# dynatrace.com
-# dev.dynatracelabs.com
-# university-staging.dynatracelabs.com
-
-# === Bybit Fintech Ltd (HackerOne) ===
-# Program: https://hackerone.com/bybit_fintech/policy_scopes
-# bybit.com
-# bybit.eu
-# bybit.tr
-# testnet.bybit.eu
-# www.byreal.io
-
-# === Boozt Fashion AB (HackerOne) ===
-# Program: https://hackerone.com/boozt/policy_scopes
-# boozt.com
-# booztlet.com
-# kronor.io
-
-# === MercadoLibre (HackerOne) ===
-# Program: https://hackerone.com/mercadolibre/policy_scopes
-# adminml.com
-# mercadolibre.cl
-# mercadolibre.com
-# mercadolibre.com.ar
-# mercadolibre.com.co
-# mercadolibre.com.mx
-# mercadolibre.com.pe
-# mercadolibre.com.uy
-# mercadolivre.com.br
-# mercadopago.cl
-# mercadopago.com
-# mercadopago.com.ar
-# mercadopago.com.br
-# mercadopago.com.co
-# mercadopago.com.mx
-# mercadopago.com.pe
-# mercadopago.com.uy
-# mlstatic.com
-# api.mercadolibre.com
-# api.mercadopago.com
-# biolibre.ar
-# biolibre.cl
-# biolibre.co
-# biolibre.mx
-# biolivre.com.br
-# furycloud.io
-# furydocs.io
-# logistica.redelcom.cl
-# meliplay.com.ar
-# meliplay.com.pe
-# meliplay.com.uy
-# mercadobackoffice.com
-# mercadoenvios.com.ve
-# mercadolibreexperience.cl
-# mercadolivreexperience.com.br
-# mercadopago.com.ve
-# mercadoplay.co
-# mercadoplay.com.pe
-# mercadoplay.com.uy
-# mercadoplay.pe
-# mercadoplay.uy
-# mpago.la
-# mpago.li
-# portalinmobiliario.cl
-# portalinmobiliario.com
-# sustentabilidadmercadolibre.com
-# tucarro.com
-# tucarro.com.co
-# tumoto.com
-
-# === Booking.com (HackerOne) ===
-# Program: https://hackerone.com/bookingcom/policy_scopes
-# booking.com
-# fareharbor.com
-# fareharbor.engineering
-# rentalcars.com
-# accommodations.booking.com
-# account.booking.com
-# admin.booking.com
-# autocomplete.booking.com
-# careers.booking.com
-# cars.booking.com
-# chat.booking.com
-# compass.fareharbor.com
-# demo.fareharbor.com
-# distribution-xml.booking.com
-# experiences.booking.com
-# fareharborsites.com
-# fhdn.fareharbor.com
-# flights.booking.com
-# secure-iphone-xml.booking.com
-# iphone-xml.booking.com
-# indicative-pricing.taxi.booking.com
-# kyc-onboarding.booking.com
-# marketing.fareharbor.com
-# metasearch-api.booking.com
-# paybridge.booking.com
-# paymentcomponent.booking.com
-# paynotifications.booking.com
-# phone-validation.taxi.booking.com
-# portal.taxi.booking.com
-# readonly.fareharbor.com
-# secure-supply-xml.booking.com
-# secure.booking.com
-# sites.fareharbor.com
-# spark.fareharbor.com
-# supplier.auth.toag.booking.com
-# supply-xml.booking.com
-# tableau.fareharbor.engineering
-# taxi.booking.com
-# taxis.booking.com
-# teleport.fareharbor.engineering
-# webhooks.booking.com
-# widget.rentalcars.com
-# www.fareharbor.com
-
-# === Adjust (HackerOne) ===
-# Program: https://hackerone.com/adjust/policy_scopes
-# adjust.com
-# adjust.net
-# adjust.net.in
-# adjust.world
-
-# === Trip.com (HackerOne) ===
-# Program: https://hackerone.com/trip_com/policy_scopes
-# trip.com
-# travix.com
-# travix.io
-# trainpal.com
-# mytrainpal.com
-# cheaptickets.nl
-# triplinkintl.com
-# tyo-masters.co.jp
-# budgetair.com
-# flugladen.de
-# vayama.com
-# vliegwinkel.nl
-# trip.biz
-# app.blueskytravelvietnam.com
-
-# === HYPR (HackerOne) ===
-# Program: https://hackerone.com/hypr-corp/policy_scopes
-# hypr.com
-# gethypr.com
-
-# === bbpos_limited (HackerOne) ===
-# Program: https://hackerone.com/bbpos_limited/policy_scopes
-# bbpos.com
-# emms.bbpos.com
-# www.emms.bbpos.com
-# portal.wisemanager.com
-# login.wisemanager.com
-# wisemanager.com
-# tms.bbpos.com
-# developer.bbpos.com
-# bbpos.com.hk
-# bbpos.com.cn
-
-# === wurl (HackerOne) ===
-# Program: https://hackerone.com/wurl/policy_scopes
-# wurl.com
-# platform.wurl.com
-# accelerate.wurl.com
-# reporting.wurl.com
-# portal.wurl.com
-# wurl.tv
-
-# === gocardless_bbp (HackerOne) ===
-# Program: https://hackerone.com/gocardless_bbp/policy_scopes
-# pay-sandbox.gocardless.com
-# api-sandbox.gocardless.com
-# connect-sandbox.gocardless.com
-# oauth-sandbox.gocardless.com
-# payer-details-sandbox.gocardless.com
-# manage-sandbox.gocardless.com
-# ob.gocardless.com
-# www.gocardless.com
-# developer.gocardless.com
-# gocardless.io
-# gocardless-banking.io
-# gocardless-cicd.io
-# gocardless-lab.io
-# gocardless.dev
-# auth0.gocardless.com
-# sso-demo.gocardless-staging.io
-
-# === REDOX_BBP ===
-# testredoxengine.com
-# 10x.redoxengine.com
-# testapp.redoxengine.com
-# testapi.redoxengine.com
-# docs.redoxengine.com
-# fhir.redoxengine.com
-# explore.redoxengine.com
-# www.redoxengine.com
-# help.redoxengine.com
-
-# === RING ===
-# immedia-semi.com
-# blinkforhome.com
-# prd-ring-web-us.prd.rings.solutions
-# publicsafety.ring.com
-
-# === NEWEGG ===
-# newegg.com
-# newegg.ca
-# secure.newegg.com
-# secure.newegg.ca
-# pmtcards.newegg.com
-
-# === EERO ===
-# eero.com
-# e2ro.com
-
-# === FLOQAST ===
-# eu.floqast.app
-# floqast.app
-# floqast.engineering
-# api-eu.floqast.app
-
-# === HILTON ===
-# hilton.com
-# hilton.io
-# hiltonbusinessonline.com
-# hiltonlocalbiz.com
-
-# === OKG ===
-# okx.com
-# oklink.com
-
-# === TELIA_EESTI ===
-# www.telia.ee
-# iseteenindus.telia.ee
-# pood.telia.ee
-# sso.telia.ee
-# digitark.telia.ee
-# teliatv.ee
-# diil.ee
-# teenused.telia.ee
-# port.teliahybridcloud.com
-# files.teliahybridcloud.com
-# tellimus.telia.ee
-# super.ee
-# signbox.telia.ee
-
-# === DPDGROUP_UK ===
-# q2-consumers.dpd.co.uk
-# track.dpd.co.uk
-# dpdgroup.co.uk
-# q2-login.dpd.co.uk
-
-# === inDrive (HackerOne) ===
-# Program: https://hackerone.com/indrive/policy_scopes
-# Scope: 37 domains (37 bounty-eligible)
-# STATUS: SCANNED ✓
-# indrive.com
-# indriver.com
-# indriverapp.com
-# ab-platform-api.eu-east-1.indriverapp.com
-# alternativa.film
-# api.ryadom.kz
-# auroratechaward.com
-# blog.indrive.com
-# careers.indrive.com
-# cargo.indrive.com
-# couriers.indrive.com
-# debug.clairvoyance.indrive.tech
-# delivery-webview.indrive.com
-# external.indrive.dev
-# file-storage-front.eu-east-1.indriverapp.com
-# cas-cf.euce1.indriverapp.com
-# ingest.clairvoyance.indrive.tech
-# intercity.indrive.com
-# invisionu.education
-# job.ryadom.kz
-# landing.ryadom.kz
-# media.indrive.com
-# messenger.eu-east-1.indriverapp.com
-# movie.indrive.com
-# new-order.eu-east-1.indriverapp.com
-# oymyakon.indriver.io
-# priority.eu-east-1.indriverapp.com
-# profile-api.eu-east-1.indriverapp.com
-# ryadom.kz
-# sso.ryadom.kz
-# teammate.indriver.io
-# truck-api.eu-east-1.indriverapp.com
-# url-checker.indrive.com
-# volans.tech
-# watchdocs.indriverapp.com
-# web.ryadom.kz
-# wga.volans.tech
-
-# === Grindr (HackerOne) ===
-# Program: https://hackerone.com/grindr/policy_scopes
-# Scope: 8 domains (5 bounty-eligible)
-# STATUS: SCANNED ✓
-# grindr.com
-# grindr.io
-# grindr.mobi
-# web.grindr.com
-
-# === Malwarebytes (HackerOne) ===
-# Program: https://hackerone.com/malwarebytes/policy_scopes
-# Scope: 18 domains (15 bounty-eligible)
-# STATUS: SCANNED ✓
-# cloud.malwarebytes.com
-# cyrus-security.com
-# malwarebytes.com
-# mb-cosmos.com
-# mbamupdates.com
-# mwb-threatintel.com
-# mwbsys.com
-# threatdown.com
-# cloud.threatdown.com
-# oneview.threatdownstage.com
-# my.malwarebytes.com
-# oneview.threatdown.com
-# www.malwarebytes.com
-
-# === 8x8 (HackerOne) ===
-# Program: https://hackerone.com/8x8-bounty/policy_scopes
-# Scope: 74 domains (24 bounty-eligible)
-# STATUS: SCANNED ✓
-# 8x8.vc
-# 8x8cloud.net
-# 8x8staging.com
-# chalet.8x8.com
-# jit.si
-# jitsi.net
-# p8t.us
-# wavecell.com
-# admin.8x8.com
-# apps.8x8.com
-# cloud8.8x8.com
-# connect.8x8.com
-# webrtc.8x8.com
-# pay.8x8.com
-# platform.8x8.com
-# platform.8x8pilot.com
-# sso.8x8.com
-# sso.8x8pilot.com
-# uc.8x8pilot.com
-# user-profile-staging.8x8.com
-# user-profile.8x8.com
-# voapi.8x8.com
-# work-staging.8x8.com
-# work.8x8.com
-
-# === Superbet (HackerOne) ===
-# Program: https://hackerone.com/superbet/policy_scopes
-# Scope: 16 domains (16 bounty-eligible)
-# STATUS: SCANNED ✓
-# happening.dev
-# luckydays.ca
-# luckydays.com
-# napoleoncasino.be
-# napoleondice.be
-# napoleongames.be
-# napoleonsports.be
-# spinaway.com
-# superbet.com
-# superbet.gr
-# superbet.pl
-# superbet.ro
-# superbet.rs
-# ro.superbet.games
-# ro.superbet.sport
-# superbet.bet.br
-
-# === MoonPay  (HackerOne) ===
-# Program: https://hackerone.com/moonpay/policy_scopes
-# Scope: 9 domains (9 bounty-eligible)
-# STATUS: SCANNED ✓
-# hypermint.com
-# moonpay.com
-# moonpaycloud.com
-# api.moonpay.com
-# app.moonpay.com
-# auth.moonpay.com
-# buy.moonpay.com
-# sell.moonpay.com
-# web3.moonpay.com
-
-# === kiwicom (HackerOne) ===
-# Program: https://hackerone.com/kiwicom/policy_scopes
-# Scope: 7 domains
-# STATUS: SCANNED ✓
-# kiwi.com
-# skypicker.com
-# www.kiwi.com
-# auth.skypicker.com
-# tequila.kiwi.com
-# jobs.kiwi.com
-
-# === yuga_labs (HackerOne) ===
-# Program: https://hackerone.com/yuga_labs/policy_scopes
-# Scope: 4 domains
-# STATUS: SCANNED ✓
-# boredapeyachtclub.com
-# yuga.com
-# yugalabs.io
-# otherside.xyz
-
-# === expediagroup_bbp (HackerOne) ===
-# Program: https://hackerone.com/expediagroup_bbp/policy_scopes
-# Scope: 33 domains
-# STATUS: SCANNED ✓
-# vrbo.com
-# carrentals.com
-# wotif.com
-# cheaptickets.com
-# lastminute.co.nz
-# lastminute.com.au
-# travelocity.com
-# travelocity.ca
-# expediapartnercentral.com
-# www.hotels.com
-# www.expedia.com
-# www.vrbo.com
-# www.hotwirepartnercentral.com
-# www.orbitz.com
-# www.ebookers.com
-# www.ebookers.fi
-# www.mrjet.se
-# www.carrentals.com
-# www.wotif.com
-# www.cheaptickets.com
-# www.lastminute.co.nz
-# www.lastminute.com.au
-# www.travelocity.com
-# www.travelocity.ca
-# www.abritel.fr
-# www.bookabach.co.nz
-# www.fewo-direkt.de
-# www.stayz.com.au
-# www.expediagroup.com
-# www.flights.com
-# www.expedia-aarp.com
-# www.expediataap.com
-# www.hotwire.com
-
-# === deribit (HackerOne) ===
-# Program: https://hackerone.com/deribit/policy_scopes
-# Scope: 4 domains
-# STATUS: SCANNED ✓
-# deribit.com
-# test.deribit.com
-# insights.deribit.com
-# pb.deribit.com
-
-# === mongodb (HackerOne) ===
-# Program: https://hackerone.com/mongodb/policy_scopes
-# Scope: 1 domains
-# STATUS: SCANNED ✓
-# mongodb.com
-
-# === sidefx (HackerOne) ===
-# Program: https://hackerone.com/sidefx/policy_scopes
-# Scope: 1 domains
+# === 1Debit (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/1debit.com
+# Scope: *.1debit.com
 # STATUS: PENDING
-sidefx.com
+1debit.com
 
-# === metamask (HackerOne) ===
-# Program: https://hackerone.com/metamask/policy_scopes
-# Scope: 6 domains
-# STATUS: SCANNED ✓
-
-# === wealthsimple (HackerOne) ===
-# Program: https://hackerone.com/wealthsimple/policy_scopes
-# Scope: 2 domains
-# STATUS: SCANNED ✓
-
-# === kayak (HackerOne) ===
-# Program: https://hackerone.com/kayak/policy_scopes
-# Scope: 10 domains
-# STATUS: SCANNED ✓
-
-# === shein (HackerOne) ===
-# Program: https://hackerone.com/shein/policy_scopes
-# Scope: 3 domains
-# STATUS: SCANNED ✓
-
-# === instacart (HackerOne) ===
-# Program: https://hackerone.com/instacart/policy_scopes
-# Scope: 7 domains
-# STATUS: SCANNED ✓
-
-# === weber-grills (HackerOne) ===
-# Program: https://hackerone.com/weber-grills/policy_scopes
-# Scope: 5 domains
-# STATUS: SCANNED ✓
-
-# === Exodus (HackerOne) ===
-# Program: https://hackerone.com/exodus/policy_scopes
-# Scope: 4 domains (4 bounty-eligible)
-# STATUS: SCANNED ✓
-# a.exodus.io
-# exodus.com
-# exodus.io
-# exodus-movement.exodus
-
-# === Netlify (HackerOne) ===
-# Program: https://hackerone.com/netlify/policy_scopes
-# Scope: 14 domains (14 bounty-eligible)
-# STATUS: SCANNED ✓
-# infra-prod.nsvcs.net
-# onegraph.com
-# ops.netlify.com
-# services-prod.nsvcs.net
-# services.netlify.com
-# api.netlify.com
-# app.netlify.com
-# internal-docs.netlify.com
-# internal.netlify.com
-# list-v2--netlify-plugins.netlify.app
-# netlify-cdp-loader.netlify.app
-# netlify-rum.netlify.app
-# screenshot-proxy.netlify.app
-# supportal.netlify.app
-
-# === Basecamp (HackerOne) ===
-# Program: https://hackerone.com/basecamp/policy_scopes
-# Scope: 13 domains (12 bounty-eligible)
-# STATUS: SCANNED ✓
-# hey.com
-# basecamp.app
-# hey.app
-# hey.exe
-# app.basecamp.com
-# basecamp-setup.exe
-# launchpad.37signals.com
-# world.hey.com
-
-# === TikTok (HackerOne) ===
-# Program: https://hackerone.com/tiktok/policy_scopes
-# Scope: 29 domains (29 bounty-eligible)
-# STATUS: SCANNED ✓
-# pipopay.com
-# soundon.global
-# tiktok.com
-# tiktokcdn.com
-# tiktokpublishers.com
-# tiktokv.com
-# academy-outbound-ads.tiktok.com
-# ads.tiktok.com
-# affiliate-id.tokopedia.com
-# business.tiktok.com
-# careers.tiktok.com
-# creatormarketplace.tiktok.com
-# developers.tiktok.com
-# effecthouse.tiktok.com
-# fp-sg.tiktokv.com
-# live-backstage.tiktok.com
-# partner.tiktokshop.com
-# pay.tokopediax.com
-# seller-id.tokopedia.com
-# shop-id.tokopedia.com
-# shop.tiktok.com
-# www.pangleglobal.com
-# www.soundon.global
-
-# === Logitech (HackerOne) ===
-# Program: https://hackerone.com/logitech/policy_scopes
-# Scope: 62 domains (19 bounty-eligible)
-# STATUS: SCANNED ✓
-# streamlabs.com
-# vc.logitech.com
-# accounts.logi.com
-# circle.logi.com
-# gaming.logicool.co.jp
-# id.logi.com
-# logiq.logitech.io
-# logitechg.com.cn
-# sync.logitech.com
-# www.astrogaming.com
-# www.logicool.co.jp
-# www.logitech.com.cn
-# www.logitechg.com
-# www.ultimateears.com
-
-# === Enjin (HackerOne) ===
-# Program: https://hackerone.com/enjin/policy_scopes
-# Scope: 3 domains (2 bounty-eligible)
-# STATUS: SCANNED ✓
-# nft.io
-
-# === Acronis (HackerOne) ===
-# Program: https://hackerone.com/acronis/policy_scopes
-# Scope: 8 domains (8 bounty-eligible)
-# STATUS: SCANNED ✓
-# 5nine.com
-# acronis.com
-# acronis.work
-# devicelock.com
-# account.acronis.com
-# beta-cloud.acronis.com
-
-# === Callsign (HackerOne) ===
-# Program: https://hackerone.com/callsign-bbp/policy_scopes
-# Scope: 10 domains (10 bounty-eligible)
-# STATUS: SCANNED ✓
-# app.s02.callsign.com
-# s02.callsign.com
-# b2b.s02.callsign.com
-# a2develop.com
-# a2verify.com
-# dashboard.callsign.com
-# portal.a2verify.com
-# dashboard.a2verify.com
-# dashboard-a.callsign.com
-# portal.callsign.com
-
-# === Moon Active (HackerOne) ===
-# Program: https://hackerone.com/moon-active/policy_scopes
-# Scope: 4 domains (4 bounty-eligible)
-# STATUS: SCANNED ✓
-# vik-game.moonactive.net
-# moonactive.com
-# moonactive.net
-
-# === Mux (HackerOne) ===
-# Program: https://hackerone.com/mux/policy_scopes
-# Scope: 8 domains (8 bounty-eligible)
-# STATUS: SCANNED ✓
-# dashboard.mux.com
-# api.mux.com
-# stream.mux.com
-# image.mux.com
-# live.mux.com
-# global-live.mux.com
-# litix.io
-# player.mux.com
-
-# === Wonder (HackerOne) ===
-# Program: https://hackerone.com/wonder-bbp/policy_scopes
-# Scope: 19 domains (19 bounty-eligible)
-# STATUS: SCANNED ✓
-# www.blueapron.com
-# wonder.com
-# order.wonder.com
-# grubhub.com
-# seamless.com
-# www.grubhub.com
-# www.menupages.com
-# www.seamless.com
-# restaurant.grubhub.com
-# www.jo30.com
-# www.tapingo.com
-# jo30.com
-# tapingo.com
-# auth.grubhub.com
-# sensor.grubhub.com
-# tastemade.com
-
-# === PlayStation (HackerOne) ===
-# Program: https://hackerone.com/playstation/policy_scopes
-# Scope: 20 domains (19 bounty-eligible)
-# STATUS: SCANNED ✓
-# api.playstation.com
-# playstation.net
-# sonyentertainmentnetwork.com
-# api.direct.playstation.com
-# ca.account.sony.com
-# checkout.playstation.com
-# compete.playstation.com
-# direct.playstation.com
-# my.account.sony.com
-# my.playstation.com
-# profile.playstation.com
-# ps5.np.playstation.net
-# session-share.playstation.com
-# social.playstation.com
-# store.playstation.com
-# transact.playstation.com
-# wallets.api.playstation.com
-# web.np.playstation.com
-# www.playstation.com
-
-# === Xiaomi (HackerOne) ===
-# Program: https://hackerone.com/xiaomi/policy_scopes
-# Scope: 55 domains (55 bounty-eligible)
-# STATUS: SCANNED ✓
-# airstar-finance.com
-# airstar.com
-# airstarfinance.net
-# aleenote.cn
-# aleenote.com
-# baoliyun.com
-# duokan.com
-# hongyuanib.com
-# mi.cn
-# mi.com
-# mifile.cn
-# migames.com
-# miinsurtech.cn
-# miinsurtech.com
-# miinsurtech.net
-# mijiayoupin.com
-# mioffice.cn
-# mios.cn
-# miot-spec.org
-# mipay.com
-# mipay.net
-# miui.cn
-# miui.com
-# miwifi.com
-# oktukids.com
-# openvela.com
-# wali.com
-# xiangkankeji.cn
-# xiangkankeji.com
-# xiangkannews.cn
-# xiaomi.com
-# xiaomi.net
-# xiaomi.org
-# xiaomiev.com
-# xiaomimimo.com
-# xiaomimobile.com
-# xiaomiprint.com
-# xiaomiwear.com
-# xiaomiyoupin.com
-# xunkid.com
-# xunkids.com
-# youpin.cn
-# zmifi.com
-
-# === Flutter UK&I (HackerOne) ===
-# Program: https://hackerone.com/flutteruki/policy_scopes
-# Scope: 39 domains (39 bounty-eligible)
-# STATUS: SCANNED ✓
-# betfair.com
-# betfair.es
-# betfair.it
-# betfair.ro
-# betfair.se
-# betsharedservices.io
-# betviewapi.com
-# dibz.co.uk
-# msgsvc.io
-# operationstechnology.io
-# paddypartners.com
-# paddypower.com
-# paddypower.it
-# platformservices.io
-# ppb.com
-# ppbdev.com
-# sbgcdn.com
-# sbgcore.com
-# sbgorigin.com
-# sbgservices.com
-# sbgtest.net
-# securityservices.io
-# skybet.co.uk
-# skybet.com
-# skybet.net
-# skybetservices.com
-# skybettest.net
-# skybettingandgaming.com
-# skybettingandgaming.design
-# skybettingandgaming.info
-# skybingo.com
-# skycasino.com
-# skygamingcontent.com
-# skypoker.com
-# skyvegas.com
-# sportinglife.com
-# itv7.itv.com
-# rafflee.co.uk
-# super6.skysports.com
-
-# === Amazon Vulnerability Research Program (HackerOne) ===
-# Program: https://hackerone.com/amazonvrp/policy_scopes
-# Scope: 65 domains (65 bounty-eligible)
-# STATUS: SCANNED ✓
-# amazon.ae
-# amazon.ca
-# amazon.cl
-# amazon.cn
-# amazon.co.jp
-# amazon.co.uk
-# amazon.co.za
-# amazon.com
-# amazon.com.au
-# amazon.com.be
-# amazon.com.br
-# amazon.com.co
-# amazon.com.mx
-# amazon.com.ng
-# amazon.com.tr
-# amazon.de
-# amazon.eg
-# amazon.es
-# amazon.fr
-# amazon.in
-# amazon.it
-# amazon.nl
-# amazon.pl
-# amazon.sa
-# amazon.se
-# amazon.sg
-# amazon.speech.sim
-# amazonpayinsurance.in
-# in.amazon.mshop.android.business.shopping
-# in.amazon.mshop.android.shopping
-# primevideo.com/*
-# www.amazon.com
-
-# === Marriott Bug Bounty Program (HackerOne) ===
-# Program: https://hackerone.com/marriott/policy_scopes
-# Scope: 78 domains (77 bounty-eligible)
-# STATUS: SCANNED ✓
-# apigatewayc.marriott.com
-# apigwc.marriott.com
-# artifactory.marriott.com
-# dcfgateway.marriott.com
-# gateway.marriott.com
-# mgs.marriott.com
-# sba.marriott.com
-# activities.marriott.com
-# all-inclusive.marriott.com
-# apcgateway.marriott.com
-# app-insiders.marriott.com
-# auth-apc.marriott.com
-# bilt.marriott.com
-# bpa2.marriott.com
-# bsp.marriott.com
-# cache.marriott.com
-# careers.marriott.com
-# channel-portal.homes-and-villas.marriott.com
-# ci-propertyconversionportal.marriott.com
-# contentportal.marriott.com
-# contentportalauth.marriott.com
-# cpp.marriott.com
-# dcfgateway*.marriott.com
-# device.marriott.com
-# editionhotels.com
-# efast.marriott.com
-# eidhelp.marriott.com
-# esupplier.marriott.com
-# gateway*.marriott.com
-# gifts.marriott.com
-# globaldesign.marriott.com
-# help.marriott.com
-# homes-and-villas.marriott.com
-# hotel-deals.marriott.com
-# hotel-development.marriott.com
-# www.shopmarriott.com
-# dcfgatewaytst1.marriott.com
-# gatewaydsapdev2.marriott.com
-# gatewaydsaptst1.marriott.com
-# gatewaydsaptst2.marriott.com
-# ifast.marriott.com
-# jobs.marriott.com
-# join.marriott.com
-# joinmarriottbonvoy.com
-# joinrewards.marriott.com
-# lawmanager.marriott.com
-# marriottfranchisetransactions.marriott.com
-# marrtool.com
-# mds.marriott.com
-# meetmarriottbonvoy.marriott.com
-# mipartnerprivileges.marriott.com
-# moments.marriott.com
-# moments.marriottbonvoy.com
-# oasisprod.marriott.com
-# ocijlbex1prd.marriott.com
-# owa.marriott.com
-# passwordchallenge.marriott.com
-# prod-mipaasiaasservices.marriott.com
-# psp.marriott.com
-# reservations.all-inclusive.marriott.com
-# smetrics.marriott.com
-# splunk-phantom-nlb.marriott.com
-# ssm-marriottms.saviyntcloud.com
-# sso.marriott.com
-# travelagents.marriott.com
-# traveler.marriott.com
-# uber.marriott.com
-# university.marriott.com
-# vacation.marriott.com
-# wechat.api.marriott.com
-# www.giving.marriott.com
-# www.marriott.com
-# www.members.marriott.com
-# www.ritzcarlton.com
-# www.travel-brilliantly.marriott.com
-
-# === Roblox (HackerOne) ===
-# Program: https://hackerone.com/roblox/policy_scopes
-# Scope: 4 domains (4 bounty-eligible)
-# STATUS: SCANNED ✓
-# ra.roblox.com
-# rbx.com
-# roblox.com
-# blox.link
-
-# === Ping Identity (HackerOne) ===
-# Program: https://hackerone.com/pingidentity/policy_scopes
-# Scope: 4 domains (4 bounty-eligible)
-# STATUS: SCANNED ✓
-# api.ort-one-pingone.com
-# apps.ort-one-pingone.com
-# auth.ort-one-pingone.com
-# console.ort-one-pingone.com
-
-# === pixiv (HackerOne) ===
-# Program: https://hackerone.com/pixiv/policy_scopes
-# Scope: 17 domains (17 bounty-eligible)
-# STATUS: SCANNED ✓
-# fanbox.cc
-# accounts.pixiv.net
-# booth.pm
-# coban.pixiv.net
-# comic-indies.pixiv.net
-# comic.pixiv.net
-# dic.pixiv.net
-# vroid.com
-# hub.vroid.com
-# neoket.net
-# novel.pixiv.net
-# pastela.app
-# payment.pixiv.net
-# premium.pixiv.net
-# sensei.pixiv.net
-# sketch.pixiv.net
-# www.pixiv.net
-
-# === Credit Karma (HackerOne) ===
-# Program: https://hackerone.com/creditkarma/policy_scopes
-# Scope: 8 domains (8 bounty-eligible)
-# STATUS: SCANNED ✓
-# accounts.creditkarma.com
-# api.creditkarma.com
-# blog.creditkarma.com
-# www.creditkarma.com
-# support.creditkarma.ca
-# www.creditkarma.ca
-
-# === Superhuman (formerly Grammarly) (HackerOne) ===
-# Program: https://hackerone.com/superhuman/policy_scopes
-# Scope: 16 domains (16 bounty-eligible)
-# STATUS: SCANNED ✓
-# coda.io
-# grammarly.com
-# grammarly.io
-# grammarlyaws.com
-# superhuman.com
-# app.grammarly.com
-# coda.grammarly.com
-# codacontent.io
-# codahosted.io
-# gateway.superhuman.com
-# id.superhuman.com
-# io.coda
-# io.coda.codaapp
-# settings.superhuman.com
-
-# === FanDuel (HackerOne) ===
-# Program: https://hackerone.com/fanduel/policy_scopes
-# Scope: 15 domains (15 bounty-eligible)
-# STATUS: SCANNED ✓
-# fanduel.com
-# mgmt.fndlsb.net
-# prd.fndlsb.net
-# tvg.com
-# fndlsb.net
-# 4njbets.com
-# 4njbets.us.betfair.com
-# login-4ngbets.us.betfair.com
-# login-4njbets.us.betfair.com
-# www.4njbets.com
-
-# === Flickr (HackerOne) ===
-# Program: https://hackerone.com/flickr/policy_scopes
-# Scope: 4 domains (4 bounty-eligible)
-# STATUS: SCANNED ✓
-# flickr.com
-# modefestival.com
-# www.whatismode.com
-
-# === Bank al Etihad (HackerOne) ===
-# Program: https://hackerone.com/bankaletihad-bbp/policy_scopes
-# Scope: 5 domains
-# STATUS: SCANNED ✓
-# bankaletihad.com
-# verify.bankaletihad.com
-# business.bankaletihad.com
-# www.finto.io
-# http://developer.bankaletihad.com
-
-# === ArenaNet (HackerOne) ===
-# Program: https://hackerone.com/arenanet/policy_scopes
-# Scope: 22 domains
-# STATUS: SCANNED ✓
-# account.arena.net
-# api.guildwars2.com
-# ncplatform.net
-# www.arena.net
-# feedback.guildwars2.com
-# www.guildwars.com
-# www.guildwars2.com
-# hom.guildwars2.com
-# leaderboards.guildwars2.com
-# manual.guildwars2.com
-# welcome.guildwars2.com
-# guildwars.com
-# guildwars2.com
-# staticwars.com
-# arenanetworks.com
-# access.corp.arena.net
-# outsource.corp.arena.net
-# aws.access.corp.arena.net
-# aws.outsource.corp.arena.net
-# forum.guildwars2.com
-# staticwars.com
-# arenanet.dev
-
-# === SmartBear Software (HackerOne) ===
-# Program: https://hackerone.com/smartbear_software_bbp/policy_scopes
-# Scope: 17 domains
-# STATUS: SCANNED ✓
-# app.swaggerhub.com
-# app.loadninja.com
-# manage.smartbear.com
-# id.smartbear.com
-# studio.cucumber.io
-# swagger.io
-# app.bugsnag.com
-# api.bugsnag.com
-# build.bugsnag.com
-# hooks.bugsnag.com
-# notify.bugsnag.com
-# sessions.bugsnag.com
-# upload.bugsnag.com
-# explore.swaggerhub.com
-# app.visualtest.io
-# pactflow.io
-# portal.swaggerhub.com
-
-# === GOAT (HackerOne) ===
-# Program: https://hackerone.com/goat/policy_scopes
-# Scope: 4 domains
-# STATUS: SCANNED ✓
-# goat.com
-# flightclub.com
-# alias.org
-# sneakers.com
-
-# === Quora (HackerOne) ===
-# Program: https://hackerone.com/quora/policy_scopes
-# Scope: 4 domains (4 bounty-eligible)
+# === 20Min (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/20min.ch
+# Scope: *.20min.ch
 # STATUS: PENDING
-quora.com
-poe.com
+20min.ch
+api.20min.ch
+audio.20min.ch
+cm.20min.ch
+coral.20min.ch
+partner-feeds.20min.ch
+screenplayer.20min.ch
+videoplayer.20min.ch
 
-# === Yelp (HackerOne) ===
-# Program: https://hackerone.com/yelp/policy_scopes
-# Scope: 5 domains (5 bounty-eligible)
+# === 28Degreescard (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/28degreescard.com.au
+# Scope: *.28degreescard.com.au
 # STATUS: PENDING
-yelp.com
-yelpwifi.com
-yelptop100.com
+28degreescard.com.au
 
-# === GitLab (HackerOne) ===
-# Program: https://hackerone.com/gitlab/policy_scopes
-# Scope: 10 domains (10 bounty-eligible)
+# === 55Degrees Apps (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/55degrees-apps.net
+# Scope: *.55degrees-apps.net
 # STATUS: PENDING
-gitlab.net
-gitlab.org
-gitlap.com
-about.gitlab.com
-advisories.gitlab.com
-customers.gitlab.com
-design.gitlab.com
-docs.gitlab.com
-gitlab.com
-registry.gitlab.com
+actionableagile.55degrees-apps.net
 
-# === Eternal (HackerOne) ===
-# Program: https://hackerone.com/eternal/policy_scopes
-# Scope: 22 domains (21 bounty-eligible)
+# === Acorns (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/acorns.com
+# Scope: *.acorns.com
 # STATUS: PENDING
-district.in
-edition.in
-eternal.com
-hyperpure.com
-insider.in
-runnr.in
-ticketnew.com
-tktnew.com
-zdev.net
-zomans.com
-zomato.com
-api.grofers.com
-api2.grofers.com
-bistro-api.blinkit.com
-blinkit.com
-mcp-server.zomato.com
-winecellar.zomato.com
+acorns.com
+graphql.acorns.com
 
-# === Shopify (HackerOne) ===
-# Program: https://hackerone.com/shopify/policy_scopes
-# Scope: 15 domains (15 bounty-eligible)
+# === Activitylog (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/activitylog.io
+# Scope: *.activitylog.io
 # STATUS: PENDING
-pci.shopifyinc.com
-shopify.com
-shopify.io
-shopifycloud.com
-shopifycs.com
-shopifykloud.com
-accounts.shopify.com
-admin.shopify.com
-arrive-server.shopifycloud.com
-linkpop.com
-partners.shopify.com
-shop.app
-shopify.plus
-shopifyinbox.com
-your-store.myshopify.com
+activitylog.io
 
-# === Adobe (HackerOne) ===
-# Program: https://hackerone.com/adobe/policy_scopes
-# Scope: 30 domains (29 bounty-eligible)
+# === Admindashboard (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/admindashboard.aspx
+# Scope: *.admindashboard.aspx
 # STATUS: PENDING
-acrobat.adobe.com
-account.adobe.com
-account.magento.com
-adobeid-na1.services.adobe.com
-auth.services.adobe.com
-commercemarketplace.adobe.com
-contributor.stock.adobe.com
-firefly.adobe.com
-fonts.adobe.com
-federatedid-na1.services.adobe.com
-ims-na1.adobelogin.com
-learningmanagerstage4.adobe.com
-magento.com
-net.s2stagehance.com
-new.express.adobe.com
-photos.adobe.io
-photoshop.adobe.com
-portfolio.ccpsx.com
-repo.magento.com
-stock.adobe.com
+admindashboard.aspx
 
-# === Airbnb (HackerOne) ===
-# Program: https://hackerone.com/airbnb/policy_scopes
-# Scope: 26 domains (26 bounty-eligible)
+# === Adsrvr (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/adsrvr.org
+# Scope: *.adsrvr.org
 # STATUS: PENDING
-airbnb-aws.com
-airbnb.com
-airbnb.org
-airbnbcitizen.com
-airbnbpayments.com
-atairbnb.com
-byairbnb.com
-hoteltonight-test.com
-hoteltonight.com
-luxuryretreats.com
-muscache.com
-musta.ch
-withairbnb.com
-api.airbnb.com
-assets.airbnb.com
-callbacks.airbnb.com
-m.airbnb.com
-next.airbnb.com
-one.airbnb.com
-open.airbnb.com
-support-api.airbnb.com
-www.airbnb.com
-www.hoteltonight.com
+adsrvr.org
+ops-sso.adsrvr.org
 
-# === Vimeo (HackerOne) ===
-# Program: https://hackerone.com/vimeo/policy_scopes
-# Scope: 23 domains (23 bounty-eligible)
+# === Adstruc (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/adstruc.com
+# Scope: *.adstruc.com
 # STATUS: PENDING
-cloud.vimeo.com
-livestream.com
-magisto.com
-new.livestream.com
-vhx.tv
-vimeo.com
-api.vhx.tv
-api.vimeo.com
-applause1.magisto.com
-checkout.vimeo.com
-donations.livestream.com
-embed.vhx.tv
-magisto.com
-www.magisto.com
-player.vimeo.com
-staging.magisto.com
-vimeo.magisto.com
-vimeopro.com
-www.livestream.com
-www.vimeo.com
+clients.adstruc.com
+demo.adstruc.com
+docker-staging.adstruc.com
 
-# === Automattic (HackerOne) ===
-# Program: https://hackerone.com/automattic/policy_scopes
-# Scope: 23 domains (23 bounty-eligible)
+# === Afterpay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/afterpay.com
+# Scope: *.afterpay.com
 # STATUS: PENDING
-srvcs.tumblr.com
-tumblr.com
-akismet.com
-api.tumblr.com
-assets.tumblr.com
-clay.earth
-embed.tumblr.com
-gravatar.com
-intensedebate.com
-mailpoet.com
-my.pressable.com
-parse.ly
-safe.tumblr.com
-secure.tumblr.com
-simperium.com
-simplenote.com
-t.umblr.com
-wordpress.com
-wpscan.com
-www.tumblr.com
+afterpay.com
+developers.afterpay.com
+mobileapi.afterpay.com
+portal.afterpay.com
+portalapi.us.afterpay.com
 
-# === Coinbase (HackerOne) ===
-# Program: https://hackerone.com/coinbase/policy_scopes
-# Scope: 19 domains (19 bounty-eligible)
+# === Agency360 (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/agency360.com
+# Scope: *.agency360.com
 # STATUS: PENDING
-cbhq.net
-coinbase-corp.com
-coinbase.com
-54.175.255.192/27
-api.coinbase.com
-api.custody.coinbase.com
-cloud.coinbase.com
-commerce.coinbase.com
-custody.coinbase.com
-institutional.coinbase.com
-international.coinbase.com
-nft.coinbase.com
-prime.coinbase.com
-pro.coinbase.com
+app.agency360.com
 
-# === Lyft (HackerOne) ===
-# Program: https://hackerone.com/lyft/policy_scopes
-# Scope: 14 domains
+# === Aips Internal (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/aips-internal.com
+# Scope: *.aips-internal.com
 # STATUS: PENDING
-lyft.com
-api.lyft.com
-baywheels.com
-lyftbusiness.com
-lyft.net
-publicbikesystem.net
-lyftmail.com
-lyft-corp.net
+aips-internal.com
 
-# === BuzzFeed (HackerOne) ===
-# Program: https://hackerone.com/buzzfeed/policy_scopes
-# Scope: 10 domains
+# === Aiven (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/aiven.io
+# Scope: *.aiven.io
 # STATUS: PENDING
-buzzfeed.com
-tasty.co
-community.buzzfeed.com
-buzzfeednews.com
-huffingtonpost.com
-huffpost.com
-huffpost.net
-huffpo.net
-affliate.buzzfeed.com
+aiven.io
+api.aiven.io
+console.aiven.io
+regatta.aiven.io
 
-# === Sea (HackerOne) ===
-# Program: https://hackerone.com/sea/policy_scopes
-# Scope: 12 domains
+# === Aivencloud (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/aivencloud.com
+# Scope: *.aivencloud.com
 # STATUS: PENDING
-garena.com
-shopee.com
-airpay.com
-seagroup.com
-garenanow.com
-freefiremobile.com
-ocha.com
-seatalk.com
-shopeepay.com
-seabank.com
-maribank.com
+falcon-bug-bounty-flag-pgsql-dev-sandbox.aivencloud.com
+
+# === Akhwien (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/akhwien.at
+# Scope: *.akhwien.at
+# STATUS: PENDING
+akhwien.at
+
+# === Album (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/album.link
+# Scope: *.album.link
+# STATUS: PENDING
+album.link
+
+# === Allsaints (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/allsaints.me
+# Scope: *.allsaints.me
+# STATUS: PENDING
+allsaints.me
+
+# === Amazon Tacticalplanner (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/amazon-tacticalplanner.com
+# Scope: *.amazon-tacticalplanner.com
+# STATUS: PENDING
+assets.development.amazon-tacticalplanner.com
+
+# === Android (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/android.com
+# Scope: *.android.com
+# STATUS: PENDING
+market.android.com
+
+# === Apex Football (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/apex-football.com
+# Scope: *.apex-football.com
+# STATUS: PENDING
+apex-football.com
+
+# === Apexnews (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/apexnews.com
+# Scope: *.apexnews.com
+# STATUS: PENDING
+apexnews.com
+
+# === Apexscores (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/apexscores.io
+# Scope: *.apexscores.io
+# STATUS: PENDING
+apexscores.io
+
+# === Apigee (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/apigee.net
+# Scope: *.apigee.net
+# STATUS: PENDING
+maf-holding-prod.apigee.net
+
+# === App (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/app.link
+# Scope: *.app.link
+# STATUS: PENDING
+linktree.app.link
+
+# === Apple (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/apple.com
+# Scope: *.apple.com
+# STATUS: PENDING
+itunes.apple.com
+testflight.apple.com
+
+# === Arcanitegames (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/arcanitegames.ca
+# Scope: *.arcanitegames.ca
+# STATUS: PENDING
+arcanitegames.ca
+
+# === Arlo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/arlo.com
+# Scope: *.arlo.com
+# STATUS: PENDING
+arlo.com
+beta.arlo.com
+mcs.arlo.com
+my.arlo.com
+myapi.arlo.com
+partnerapi.arlo.com
+updates.arlo.com
+
+# === Arlocloud (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/arlocloud.com
+# Scope: *.arlocloud.com
+# STATUS: PENDING
+arlocloud.com
+
+# === Arloxcld (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/arloxcld.com
+# Scope: *.arloxcld.com
+# STATUS: PENDING
+arloxcld.com
+
+# === Arrowfilms (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/arrowfilms.com
+# Scope: *.arrowfilms.com
+# STATUS: PENDING
+arrowfilms.com
+
+# === Artist (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/artist.link
+# Scope: *.artist.link
+# STATUS: PENDING
+artist.link
+
+# === Arubanetworks (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/arubanetworks.com
+# Scope: *.arubanetworks.com
+# STATUS: PENDING
+central.arubanetworks.com
+
+# === Asana (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/asana.biz
+# Scope: *.asana.biz
+# STATUS: PENDING
+asana.biz
+
+# === Asana (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/asana.com
+# Scope: *.asana.com
+# STATUS: PENDING
+app.asana.com
+asana.com
+form.asana.com
+
+# === Asana (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/asana.plus
+# Scope: *.asana.plus
+# STATUS: PENDING
+asana.plus
+
+# === Assurancewireless (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/assurancewireless.com
+# Scope: *.assurancewireless.com
+# STATUS: PENDING
+assurancewireless.com
+
+# === Atl Paas (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/atl-paas.net
+# Scope: *.atl-paas.net
+# STATUS: PENDING
+atl-paas.net
+
+# === Atlassian (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/atlassian.com
+# Scope: *.atlassian.com
+# STATUS: PENDING
+admin.atlassian.com
+atlassian.com
+confluence.atlassian.com
+id.atlassian.com
+mcp.atlassian.com
+start.atlassian.com
+support.atlassian.com
+
+# === Atlassian (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/atlassian.net
+# Scope: *.atlassian.net
+# STATUS: PENDING
+atlassian.net
+
+# === Atlastunnel (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/atlastunnel.com
+# Scope: *.atlastunnel.com
+# STATUS: PENDING
+atlastunnel.com
+
+# === Atom Lens (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/atom-lens.com
+# Scope: *.atom-lens.com
+# STATUS: PENDING
+wiki.atom-lens.com
+
+# === Aurory (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/aurory.io
+# Scope: *.aurory.io
+# STATUS: PENDING
+app.aurory.io
+
+# === Auth0 (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/auth0.com
+# Scope: *.auth0.com
+# STATUS: PENDING
+auth0.com
+marketplace.auth0.com
+production.maf.auth0.com
+
+# === Auth0 (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/auth0.net
+# Scope: *.auth0.net
+# STATUS: PENDING
+auth0.net
+
+# === Auth0App (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/auth0app.com
+# Scope: *.auth0app.com
+# STATUS: PENDING
+cic-bug-bounty.auth0app.com
+config.cic-bug-bounty.auth0app.com
+manage.cic-bug-bounty.auth0app.com
+
+# === Backblaze (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/backblaze.com
+# Scope: *.backblaze.com
+# STATUS: PENDING
+backblaze.com
+
+# === Backblazeb2 (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/backblazeb2.com
+# Scope: *.backblazeb2.com
+# STATUS: PENDING
+backblazeb2.com
+
+# === Bany (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bany.dev
+# Scope: *.bany.dev
+# STATUS: PENDING
+staging-api.bany.dev
+staging-app.bany.dev
+
+# === Barracuda (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/barracuda.com
+# Scope: *.barracuda.com
+# STATUS: PENDING
+barracuda.com
+
+# === Binance (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/binance.com
+# Scope: *.binance.com
+# STATUS: PENDING
+api.binance.com
+binance.com
+
+# === Binance (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/binance.tr
+# Scope: *.binance.tr
+# STATUS: PENDING
+binance.tr
+
+# === Binance (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/binance.us
+# Scope: *.binance.us
+# STATUS: PENDING
+binance.us
+
+# === Bistro (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bistro.sk
+# Scope: *.bistro.sk
+# STATUS: PENDING
+bistro.sk
+
+# === Bitbucket (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bitbucket.org
+# Scope: *.bitbucket.org
+# STATUS: PENDING
+bitbucket.org
+
+# === Bitdefender (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bitdefender.com
+# Scope: *.bitdefender.com
+# STATUS: PENDING
+bitdefender.com
+
+# === Bitdefender (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bitdefender.net
+# Scope: *.bitdefender.net
+# STATUS: PENDING
+bitdefender.net
+
+# === Bitgo Test (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bitgo-test.com
+# Scope: *.bitgo-test.com
+# STATUS: PENDING
+app.bitgo-test.com
+
+# === Bitgo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bitgo.ae
+# Scope: *.bitgo.ae
+# STATUS: PENDING
+bitgo.ae
+
+# === Bitgo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bitgo.com
+# Scope: *.bitgo.com
+# STATUS: PENDING
+app.bitgo.com
+bitgo.com
+
+# === Bitpanda (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bitpanda.com
+# Scope: *.bitpanda.com
+# STATUS: PENDING
+account.bitpanda.com
+api.bitpanda.com
+bitpanda.com
+blog.bitpanda.com
+socket.bitpanda.com
+web.bitpanda.com
+
+# === Bitrise (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bitrise.io
+# Scope: *.bitrise.io
+# STATUS: PENDING
+app.bitrise.io
+
+# === Bitso (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bitso.com
+# Scope: *.bitso.com
+# STATUS: PENDING
+bitso.com
+
+# === Blis (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/blis.com
+# Scope: *.blis.com
+# STATUS: PENDING
+assets.platform.blis.com
+assets.platform.development.blis.com
+assets.platform.rc.blis.com
+audiencelogos.blis.com
+blis.com
+imply-pivot.blis.com
+imply-pivot.test.blis.com
+imply.blis.com
+imply.internal.platform.blis.com
+imply.platform.blis.com
+imply.platform.development.blis.com
+imply.platform.rc.blis.com
+imply.test.blis.com
+internal.platform.blis.com
+jenkins-github.gcp.blis.com
+platform.blis.com
+platform.development.blis.com
+platform.development2.blis.com
+platform.rc.blis.com
+signature.blis.com
+sitepixel.blis.com
+sitepixel.dev.blis.com
+
+# === Blismedia (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/blismedia.com
+# Scope: *.blismedia.com
+# STATUS: PENDING
+creative.infinity.blismedia.com
+platform.blismedia.com
+privacy.blismedia.com
+
+# === Blockchain (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/blockchain.com
+# Scope: *.blockchain.com
+# STATUS: PENDING
+blockchain.com
+
+# === Blockchain (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/blockchain.info
+# Scope: *.blockchain.info
+# STATUS: PENDING
+api.blockchain.info
+ws.blockchain.info
+
+# === Blofin (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/blofin.com
+# Scope: *.blofin.com
+# STATUS: PENDING
+blofin.com
+wallet.blofin.com
+
+# === Bluehost (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bluehost.com
+# Scope: *.bluehost.com
+# STATUS: PENDING
+bluehost.com
+
+# === Bokundemo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bokundemo.com
+# Scope: *.bokundemo.com
+# STATUS: PENDING
+bokundemo.com
+
+# === Bokuntest (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bokuntest.com
+# Scope: *.bokuntest.com
+# STATUS: PENDING
+bokuntest.com
+
+# === Bolt (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bolt.eu
+# Scope: *.bolt.eu
+# STATUS: PENDING
+bolt.eu
+
+# === Breadcrumb (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/breadcrumb.com
+# Scope: *.breadcrumb.com
+# STATUS: PENDING
+hq.breadcrumb.com
+
+# === Bugcrowd (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bugcrowd.com
+# Scope: *.bugcrowd.com
+# STATUS: PENDING
+api.bugcrowd.com
+bugcrowd.com
+docs.bugcrowd.com
+identity.bugcrowd.com
+tracker.bugcrowd.com
+
+# === Bugcrowd (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bugcrowd.net
+# Scope: *.bugcrowd.net
+# STATUS: PENDING
+gov.bugcrowd.net
+
+# === Bullish Test (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bullish-test.com
+# Scope: *.bullish-test.com
+# STATUS: PENDING
+api.simnext.bullish-test.com
+simnext.bullish-test.com
+
+# === Bullish (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bullish.com
+# Scope: *.bullish.com
+# STATUS: PENDING
+bullish.com
+investor.bullish.com
+
+# === Butlerfortrello (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/butlerfortrello.com
+# Scope: *.butlerfortrello.com
+# STATUS: PENDING
+butlerfortrello.com
+
+# === Buyersedge (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/buyersedge.co.nz
+# Scope: *.buyersedge.co.nz
+# STATUS: PENDING
+buyersedge.co.nz
+
+# === Buyersedge (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/buyersedge.com.au
+# Scope: *.buyersedge.com.au
+# STATUS: PENDING
+buyersedge.com.au
+
+# === Bwin (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/bwin.com
+# Scope: *.bwin.com
+# STATUS: PENDING
+bwin.com
+casino.bwin.com
+
+# === Canva Apps (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/canva-apps.cn
+# Scope: *.canva-apps.cn
+# STATUS: PENDING
+canva-apps.cn
+
+# === Canva Apps (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/canva-apps.com
+# Scope: *.canva-apps.com
+# STATUS: PENDING
+canva-apps.com
+
+# === Canva (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/canva.cn
+# Scope: *.canva.cn
+# STATUS: PENDING
+canva.cn
+
+# === Canva (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/canva.com
+# Scope: *.canva.com
+# STATUS: PENDING
+api.canva.com
+canva.com
+
+# === Canva (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/canva.tech
+# Scope: *.canva.tech
+# STATUS: PENDING
+canva.tech
+
+# === Carecredit (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/carecredit.com.au
+# Scope: *.carecredit.com.au
+# STATUS: PENDING
+carecredit.com.au
+
+# === Carrefouruae (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/carrefouruae.com
+# Scope: *.carrefouruae.com
+# STATUS: PENDING
+carrefouruae.com
+
+# === Carsdirect (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/carsdirect.com
+# Scope: *.carsdirect.com
+# STATUS: PENDING
+carsdirect.com
+
+# === Cash (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cash.app
+# Scope: *.cash.app
+# STATUS: PENDING
+cash.app
+
+# === Cashstaging (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cashstaging.app
+# Scope: *.cashstaging.app
+# STATUS: PENDING
+cashstaging.app
+
+# === Cb2 (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cb2.ae
+# Scope: *.cb2.ae
+# STATUS: PENDING
+cb2.ae
+
+# === Cdn Code (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cdn-code.org
+# Scope: *.cdn-code.org
+# STATUS: PENDING
+adhoc-bugcrowd-studio.cdn-code.org
+adhoc-bugcrowd.cdn-code.org
+
+# === Certinia (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/certinia.com
+# Scope: *.certinia.com
+# STATUS: PENDING
+certinia.com
+
+# === Cfr (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cfr.org
+# Scope: *.cfr.org
+# STATUS: PENDING
+cfr.org
+education.cfr.org
+
+# === Chainabuse Staging (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/chainabuse-staging.com
+# Scope: *.chainabuse-staging.com
+# STATUS: PENDING
+api.chainabuse-staging.com
+chainabuse-staging.com
+
+# === Chime (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/chime.com
+# Scope: *.chime.com
+# STATUS: PENDING
+app-qa.chime.com
+app.chime.com
+chime.com
+member-qa.chime.com
+
+# === Chimebank (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/chimebank.com
+# Scope: *.chimebank.com
+# STATUS: PENDING
+chimebank.com
+
+# === Chimecard (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/chimecard.com
+# Scope: *.chimecard.com
+# STATUS: PENDING
+chimecard.com
+
+# === Chimepayments (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/chimepayments.com
+# Scope: *.chimepayments.com
+# STATUS: PENDING
+chimepayments.com
+
+# === Chipotle (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/chipotle.co.uk
+# Scope: *.chipotle.co.uk
+# STATUS: PENDING
+chipotle.co.uk
+
+# === Chipotle (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/chipotle.com
+# Scope: *.chipotle.com
+# STATUS: PENDING
+catering.chipotle.com
+chipotle.com
+services.chipotle.com
+
+# === Chmfin (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/chmfin.com
+# Scope: *.chmfin.com
+# STATUS: PENDING
+chmfin.com
+
+# === Classdojo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/classdojo.co.uk
+# Scope: *.classdojo.co.uk
+# STATUS: PENDING
+classdojo.co.uk
+
+# === Classdojo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/classdojo.com
+# Scope: *.classdojo.com
+# STATUS: PENDING
+api.classdojo.com
+classdojo.com
+clients.multiplayer.classdojo.com
+dev.tutoring.classdojo.com
+home.classdojo.com
+monster-customizer.classdojo.com
+student.classdojo.com
+teach.classdojo.com
+ticket.multiplayer.classdojo.com
+ws.multiplayer.classdojo.com
+
+# === Claytonapp (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/claytonapp.com
+# Scope: *.claytonapp.com
+# STATUS: PENDING
+staging.claytonapp.com
+
+# === Clearpay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/clearpay.co.uk
+# Scope: *.clearpay.co.uk
+# STATUS: PENDING
+clearpay.co.uk
+portal.clearpay.co.uk
+portalapi.eu.clearpay.co.uk
+
+# === Clearpay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/clearpay.com
+# Scope: *.clearpay.com
+# STATUS: PENDING
+api.clearpay.com
+clearpay.com
+mobileapi.clearpay.com
+portal.clearpay.com
+
+# === Clickhou (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/clickhou.se
+# Scope: *.clickhou.se
+# STATUS: PENDING
+clickhou.se
+
+# === Client (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/client.htm
+# Scope: *.client.htm
+# STATUS: PENDING
+client.htm
+
+# === Cloudinary (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cloudinary.com
+# Scope: *.cloudinary.com
+# STATUS: PENDING
+api.cloudinary.com
+cloudinary.com
+dimensions.cloudinary.com
+mediaflows.cloudinary.com
+res.cloudinary.com
+
+# === Cloudvector (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cloudvector.com
+# Scope: *.cloudvector.com
+# STATUS: PENDING
+cloudvector.com
+
+# === Clovesoftware Dev (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/clovesoftware-dev.com
+# Scope: *.clovesoftware-dev.com
+# STATUS: PENDING
+clovesoftware-dev.com
+
+# === Clovesoftware (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/clovesoftware.com
+# Scope: *.clovesoftware.com
+# STATUS: PENDING
+clovesoftware.com
+
+# === Cms (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cms.gov
+# Scope: *.cms.gov
+# STATUS: PENDING
+cms.gov
+cmsnationaltrainingprogram.cms.gov
+eua.cms.gov
+nsa-idr.cms.gov
+portal.cms.gov
+qpp.cms.gov
+
+# === Coindesk (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/coindesk.com
+# Scope: *.coindesk.com
+# STATUS: PENDING
+coindesk.com
+consensus2026.sandbox.events.coindesk.com
+data-api.coindesk.com
+
+# === Coinmarketcap (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/coinmarketcap.com
+# Scope: *.coinmarketcap.com
+# STATUS: PENDING
+3rdparty-apis.coinmarketcap.com
+api.coinmarketcap.com
+coinmarketcap.com
+portal-api.coinmarketcap.com
+pro-api.coinmarketcap.com
+pro.coinmarketcap.com
+
+# === Comcast (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/comcast.com
+# Scope: *.comcast.com
+# STATUS: PENDING
+business.comcast.com
+
+# === Comcast (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/comcast.net
+# Scope: *.comcast.net
+# STATUS: PENDING
+sys.comcast.net
+
+# === Coral (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/coral.co.uk
+# Scope: *.coral.co.uk
+# STATUS: PENDING
+coral.co.uk
+
+# === Cortexpowered (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cortexpowered.com
+# Scope: *.cortexpowered.com
+# STATUS: PENDING
+packages.cortexpowered.com
+sfleet.cortexpowered.com
+sflower.cortexpowered.com
+
+# === Crateandbarrel (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/crateandbarrel.me
+# Scope: *.crateandbarrel.me
+# STATUS: PENDING
+crateandbarrel.me
+
+# === Cryptocompare (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cryptocompare.com
+# Scope: *.cryptocompare.com
+# STATUS: PENDING
+tools-api.cryptocompare.com
+
+# === Csscoperations (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/csscoperations.com
+# Scope: *.csscoperations.com
+# STATUS: PENDING
+csscoperations.com
+
+# === Cuehit (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cuehit.net
+# Scope: *.cuehit.net
+# STATUS: PENDING
+secure.cuehit.net
+
+# === Cultbeauty (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/cultbeauty.co.uk
+# Scope: *.cultbeauty.co.uk
+# STATUS: PENDING
+cultbeauty.co.uk
+
+# === Dailyadvent (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/dailyadvent.com
+# Scope: *.dailyadvent.com
+# STATUS: PENDING
+dailyadvent.com
+
+# === Dell (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/dell.com
+# Scope: *.dell.com
+# STATUS: PENDING
+dell.com
+
+# === Delltechnologies (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/delltechnologies.com
+# Scope: *.delltechnologies.com
+# STATUS: PENDING
+console.delltechnologies.com
+delltechnologies.com
+
+# === Delta (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/delta.app
+# Scope: *.delta.app
+# STATUS: PENDING
+delta.app
+
+# === Demandforced3 (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/demandforced3.com
+# Scope: *.demandforced3.com
+# STATUS: PENDING
+demandforced3.com
+
+# === Designify (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/designify.com
+# Scope: *.designify.com
+# STATUS: PENDING
+designify.com
+
+# === Developersites (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/developersites.com.au
+# Scope: *.developersites.com.au
+# STATUS: PENDING
+developersites.com.au
+ftp.developersites.com.au
+scripts.developersites.com.au
+
+# === Doj (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/doj.io
+# Scope: *.doj.io
+# STATUS: PENDING
+doj.io
+
+# === Dojo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/dojo.me
+# Scope: *.dojo.me
+# STATUS: PENDING
+dojo.me
+
+# === Download Browser Plugin (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/download-browser-plugin.htm
+# Scope: *.download-browser-plugin.htm
+# STATUS: PENDING
+download-browser-plugin.htm
+
+# === Eazybi (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/eazybi.com
+# Scope: *.eazybi.com
+# STATUS: PENDING
+docs.eazybi.com
+
+# === Ecwid (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/ecwid.com
+# Scope: *.ecwid.com
+# STATUS: PENDING
+app.ecwid.com
+
+# === Edu (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/edu.au
+# Scope: *.edu.au
+# STATUS: PENDING
+monashcollege.edu.au
+monashprofessional.edu.au
+pay.monashcollege.edu.au
+
+# === Electroneum (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/electroneum.com
+# Scope: *.electroneum.com
+# STATUS: PENDING
+blockexplorer.electroneum.com
+legacy-blockexplorer.electroneum.com
+testnet-blockexplorer.electroneum.com
+
+# === Elementor (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/elementor.careers
+# Scope: *.elementor.careers
+# STATUS: PENDING
+elementor.careers
+
+# === Elementor (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/elementor.com
+# Scope: *.elementor.com
+# STATUS: PENDING
+developers.elementor.com
+go.elementor.com
+library.elementor.com
+my.elementor.com
+translate.elementor.com
+
+# === Emakina (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/emakina.at
+# Scope: *.emakina.at
+# STATUS: PENDING
+emakina.at
+
+# === Emakina (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/emakina.ch
+# Scope: *.emakina.ch
+# STATUS: PENDING
+emakina.ch
+
+# === Emakina (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/emakina.com
+# Scope: *.emakina.com
+# STATUS: PENDING
+emakina.com
+
+# === Emakina (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/emakina.fr
+# Scope: *.emakina.fr
+# STATUS: PENDING
+emakina.fr
+
+# === Emakina (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/emakina.group
+# Scope: *.emakina.group
+# STATUS: PENDING
+emakina.group
+
+# === Emakina (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/emakina.nl
+# Scope: *.emakina.nl
+# STATUS: PENDING
+emakina.nl
+
+# === Emakina (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/emakina.us
+# Scope: *.emakina.us
+# STATUS: PENDING
+emakina.us
+
+# === Enjoyselfish (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/enjoyselfish.com
+# Scope: *.enjoyselfish.com
+# STATUS: PENDING
+enjoyselfish.com
+
+# === Epam (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/epam.com
+# Scope: *.epam.com
+# STATUS: PENDING
+epam.com
+lab.epam.com
+opensource.epam.com
+projects.epam.com
+
+# === Epicgames (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/epicgames.com
+# Scope: *.epicgames.com
+# STATUS: PENDING
+store.epicgames.com
+
+# === Episerver (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/episerver.net
+# Scope: *.episerver.net
+# STATUS: PENDING
+dxc.episerver.net
+paasportal.episerver.net
+
+# === Etherscan (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/etherscan.io
+# Scope: *.etherscan.io
+# STATUS: PENDING
+etherscan.io
+
+# === Etoro (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/etoro.com
+# Scope: *.etoro.com
+# STATUS: PENDING
+etoro.com
+
+# === Etoropartners (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/etoropartners.com
+# Scope: *.etoropartners.com
+# STATUS: PENDING
+etoropartners.com
+
+# === Etorox (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/etorox.com
+# Scope: *.etorox.com
+# STATUS: PENDING
+etorox.com
+
+# === Etsy (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/etsy.com
+# Scope: *.etsy.com
+# STATUS: PENDING
+blog.etsy.com
+careers.etsy.com
+community.etsy.com
+etsy.com
+help.etsy.com
+
+# === Etsypayments (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/etsypayments.com
+# Scope: *.etsypayments.com
+# STATUS: PENDING
+etsypayments.com
+
+# === Euid (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/euid.eu
+# Scope: *.euid.eu
+# STATUS: PENDING
+optout.prod.euid.eu
+prod.euid.eu
+
+# === Fashion4Less (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/fashion4less.me
+# Scope: *.fashion4less.me
+# STATUS: PENDING
+fashion4less.me
+
+# === Feednews (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/feednews.com
+# Scope: *.feednews.com
+# STATUS: PENDING
+feednews.com
+
+# === Felixforus (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/felixforus.ca
+# Scope: *.felixforus.ca
+# STATUS: PENDING
+bugcrowd.charm.felixforus.ca
+bugcrowd.lucky.felixforus.ca
+
+# === Fga (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/fga.dev
+# Scope: *.fga.dev
+# STATUS: PENDING
+api.us1.fga.dev
+customers.us1.fga.dev
+dashboard.fga.dev
+play.fga.dev
+
+# === Fin (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/fin.ai
+# Scope: *.fin.ai
+# STATUS: PENDING
+app.fin.ai
+fin.ai
+
+# === Financialforce (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/financialforce.com
+# Scope: *.financialforce.com
+# STATUS: PENDING
+financialforce.com
+
+# === Finicity (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/finicity.com
+# Scope: *.finicity.com
+# STATUS: PENDING
+finicity.com
+
+# === Finicityreports (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/finicityreports.com
+# Scope: *.finicityreports.com
+# STATUS: PENDING
+consumer.finicityreports.com
+
+# === Fireblocks (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/fireblocks.io
+# Scope: *.fireblocks.io
+# STATUS: PENDING
+sandbox-api.fireblocks.io
+sb-console-api.fireblocks.io
+sb-mobile-api.fireblocks.io
+
+# === Fivetran (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/fivetran.com
+# Scope: *.fivetran.com
+# STATUS: PENDING
+fivetran.com
+
+# === Flatmates (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/flatmates.com.au
+# Scope: *.flatmates.com.au
+# STATUS: PENDING
+api-next.flatmates.com.au
+next.flatmates.com.au
+
+# === Flipkey (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/flipkey.com
+# Scope: *.flipkey.com
+# STATUS: PENDING
+flipkey.com
+
+# === Flourish User Preview (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/flourish-user-preview.com
+# Scope: *.flourish-user-preview.com
+# STATUS: PENDING
+flourish-user-preview.com
+
+# === Flourish User Templates (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/flourish-user-templates.com
+# Scope: *.flourish-user-templates.com
+# STATUS: PENDING
+flourish-user-templates.com
+
+# === Flourish (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/flourish.studio
+# Scope: *.flourish.studio
+# STATUS: PENDING
+flourish.studio
+
+# === Fstr (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/fstr.rocks
+# Scope: *.fstr.rocks
+# STATUS: PENDING
+api.fstr.rocks
+rc.fstr.rocks
+
+# === Galabingo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/galabingo.com
+# Scope: *.galabingo.com
+# STATUS: PENDING
+galabingo.com
+
+# === Galacasino (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/galacasino.com
+# Scope: *.galacasino.com
+# STATUS: PENDING
+galacasino.com
+
+# === Gamemaker (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gamemaker.io
+# Scope: *.gamemaker.io
+# STATUS: PENDING
+gamemaker.io
+marketplace.gamemaker.io
+
+# === Gearset (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gearset.com
+# Scope: *.gearset.com
+# STATUS: PENDING
+hipaa.staging.gearset.com
+staging-api.gearset.com
+staging.gearset.com
+
+# === Gemcreditline (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gemcreditline.co.nz
+# Scope: *.gemcreditline.co.nz
+# STATUS: PENDING
+gemcreditline.co.nz
+
+# === Gemfinance (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gemfinance.co.nz
+# Scope: *.gemfinance.co.nz
+# STATUS: PENDING
+gemfinance.co.nz
+
+# === Geminiadvisory (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/geminiadvisory.io
+# Scope: *.geminiadvisory.io
+# STATUS: PENDING
+geminiadvisory.io
+
+# === Gemvisa (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gemvisa.com.au
+# Scope: *.gemvisa.com.au
+# STATUS: PENDING
+gemvisa.com.au
+
+# === Genoapay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/genoapay.co.nz
+# Scope: *.genoapay.co.nz
+# STATUS: PENDING
+genoapay.co.nz
+
+# === Genoapay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/genoapay.com
+# Scope: *.genoapay.com
+# STATUS: PENDING
+genoapay.com
+
+# === Gesundheitsverbund (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gesundheitsverbund.at
+# Scope: *.gesundheitsverbund.at
+# STATUS: PENDING
+gesundheitsverbund.at
+secumails.gesundheitsverbund.at
+
+# === Getmoneytree (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/getmoneytree.com
+# Scope: *.getmoneytree.com
+# STATUS: PENDING
+app-staging.getmoneytree.com
+business-staging.getmoneytree.com
+jp-api-staging.getmoneytree.com
+myaccount-staging.getmoneytree.com
+redash-staging.getmoneytree.com
+vault-staging.getmoneytree.com
+
+# === Github (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/github.com
+# Scope: *.github.com
+# STATUS: PENDING
+github.com
+
+# === Glean (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/glean.com
+# Scope: *.glean.com
+# STATUS: PENDING
+app.glean.com
+bug-bounty-be.glean.com
+
+# === Globalacademycme (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/globalacademycme.com
+# Scope: *.globalacademycme.com
+# STATUS: PENDING
+globalacademycme.com
+
+# === Gohenry (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gohenry.com
+# Scope: *.gohenry.com
+# STATUS: PENDING
+gohenry.com
+
+# === Gomastercard (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gomastercard.com.au
+# Scope: *.gomastercard.com.au
+# STATUS: PENDING
+gomastercard.com.au
+
+# === Google (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/google.com
+# Scope: *.google.com
+# STATUS: PENDING
+chromewebstore.google.com
+
+# === Governmentjobs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/governmentjobs.com
+# Scope: *.governmentjobs.com
+# STATUS: PENDING
+governmentjobs.com
+
+# === Gtld Servers (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gtld-servers.net
+# Scope: *.gtld-servers.net
+# STATUS: PENDING
+gtld-servers.net
+
+# === Gv (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gv.at
+# Scope: *.gv.at
+# STATUS: PENDING
+magwien.gv.at
+mein.wien.gv.at
+stp.wien.gv.at
+wibi.wien.gv.at
+wien.gv.at
+
+# === Gx (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gx.games
+# Scope: *.gx.games
+# STATUS: PENDING
+api.gx.games
+create.gx.games
+gx.games
+
+# === Gx (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/gx.me
+# Scope: *.gx.me
+# STATUS: PENDING
+api.gx.me
+gx.me
+
+# === Hatching (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/hatching.io
+# Scope: *.hatching.io
+# STATUS: PENDING
+hatching.io
+
+# === Holidaylettings (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/holidaylettings.com
+# Scope: *.holidaylettings.com
+# STATUS: PENDING
+holidaylettings.com
+
+# === Hostgator (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/hostgator.com
+# Scope: *.hostgator.com
+# STATUS: PENDING
+hostgator.com
+
+# === Hostgator (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/hostgator.com.br
+# Scope: *.hostgator.com.br
+# STATUS: PENDING
+financeiro.hostgator.com.br
+hostgator.com.br
+
+# === Housetrip (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/housetrip.com
+# Scope: *.housetrip.com
+# STATUS: PENDING
+housetrip.com
+
+# === Hytale (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/hytale.com
+# Scope: *.hytale.com
+# STATUS: PENDING
+accounts.hytale.com
+hytale.com
+store.hytale.com
+
+# === Hytale (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/hytale.dev
+# Scope: *.hytale.dev
+# STATUS: PENDING
+hytale.dev
+
+# === Ibops (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/ibops.net
+# Scope: *.ibops.net
+# STATUS: PENDING
+api.ibops.net
+api.int.ibops.net
+
+# === Ibotta (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/ibotta.com
+# Scope: *.ibotta.com
+# STATUS: PENDING
+api.ibotta.com
+app.ibotta.com
+backend.ibotta.com
+content-server.ibotta.com
+ibotta.com
+
+# === Ifood (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/ifood.com.br
+# Scope: *.ifood.com.br
+# STATUS: PENDING
+developer.ifood.com.br
+gestordepedidos.ifood.com.br
+ifood.com.br
+marketplace.ifood.com.br
+shop.ifood.com.br
+static-images.ifood.com.br
+wsloja.ifood.com.br
+
+# === Ifoodpago (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/ifoodpago.com.br
+# Scope: *.ifoodpago.com.br
+# STATUS: PENDING
+contadigital.ifoodpago.com.br
+portal.ifoodpago.com.br
+
+# === Ikarem (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/ikarem.io
+# Scope: *.ikarem.io
+# STATUS: PENDING
+ikarem.io
+
+# === Illamasqua (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/illamasqua.com
+# Scope: *.illamasqua.com
+# STATUS: PENDING
+illamasqua.com
+
+# === Immutable (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/immutable.com
+# Scope: *.immutable.com
+# STATUS: PENDING
+api.immutable.com
+api.x.immutable.com
+auth.immutable.com
+hub.immutable.com
+passport.immutable.com
+play.immutable.com
+
+# === Imperva (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/imperva.com
+# Scope: *.imperva.com
+# STATUS: PENDING
+imperva.com
+
+# === Incapsula (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/incapsula.com
+# Scope: *.incapsula.com
+# STATUS: PENDING
+incapsula.com
+
+# === Indeed (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/indeed.com
+# Scope: *.indeed.com
+# STATUS: PENDING
+apis.indeed.com
+indeed.com
+
+# === Indeed (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/indeed.net
+# Scope: *.indeed.net
+# STATUS: PENDING
+indeed.net
+
+# === Indeed (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/indeed.tech
+# Scope: *.indeed.tech
+# STATUS: PENDING
+indeed.tech
+
+# === Indeedflex (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/indeedflex.com
+# Scope: *.indeedflex.com
+# STATUS: PENDING
+indeedflex.com
+
+# === Infiniteathlete (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/infiniteathlete.ai
+# Scope: *.infiniteathlete.ai
+# STATUS: PENDING
+infiniteathlete.ai
+platform.infiniteathlete.ai
+
+# === Intercom (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/intercom.com
+# Scope: *.intercom.com
+# STATUS: PENDING
+api.intercom.com
+app.intercom.com
+developers.intercom.com
+intercom.com
+mcp.intercom.com
+mobile-messenger.intercom.com
+
+# === Intercom (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/intercom.io
+# Scope: *.intercom.io
+# STATUS: PENDING
+api-iam.intercom.io
+api.intercom.io
+app.intercom.io
+
+# === Intercomassets (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/intercomassets.com
+# Scope: *.intercomassets.com
+# STATUS: PENDING
+intercomassets.com
+
+# === Intercomcdn (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/intercomcdn.com
+# Scope: *.intercomcdn.com
+# STATUS: PENDING
+intercomcdn.com
+
+# === Interestfree (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/interestfree.com.au
+# Scope: *.interestfree.com.au
+# STATUS: PENDING
+interestfree.com.au
+
+# === Internetbrands (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/internetbrands.com
+# Scope: *.internetbrands.com
+# STATUS: PENDING
+ibconnect.internetbrands.com
+internetbrands.com
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.at
+# Scope: *.irobot.at
+# STATUS: PENDING
+irobot.at
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.be
+# Scope: *.irobot.be
+# STATUS: PENDING
+irobot.be
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.ca
+# Scope: *.irobot.ca
+# STATUS: PENDING
+irobot.ca
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.co.uk
+# Scope: *.irobot.co.uk
+# STATUS: PENDING
+irobot.co.uk
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.com
+# Scope: *.irobot.com
+# STATUS: PENDING
+answers.irobot.com
+homesupport.irobot.com
+investor.irobot.com
+irobot.com
+media.irobot.com
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.de
+# Scope: *.irobot.de
+# STATUS: PENDING
+irobot.de
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.es
+# Scope: *.irobot.es
+# STATUS: PENDING
+irobot.es
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.fr
+# Scope: *.irobot.fr
+# STATUS: PENDING
+irobot.fr
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.ie
+# Scope: *.irobot.ie
+# STATUS: PENDING
+irobot.ie
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.nl
+# Scope: *.irobot.nl
+# STATUS: PENDING
+irobot.nl
+
+# === Irobot (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobot.pt
+# Scope: *.irobot.pt
+# STATUS: PENDING
+irobot.pt
+
+# === Irobotapi (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/irobotapi.com
+# Scope: *.irobotapi.com
+# STATUS: PENDING
+aspen-ecommerce-prod.iot.irobotapi.com
+zuora-ecommerce-prod.iot.irobotapi.com
+
+# === Itsfogo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/itsfogo.com
+# Scope: *.itsfogo.com
+# STATUS: PENDING
+media.itsfogo.com
+
+# === Jet External (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/jet-external.com
+# Scope: *.jet-external.com
+# STATUS: PENDING
+jet-external.com
+
+# === Jobapi (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/jobapi.net
+# Scope: *.jobapi.net
+# STATUS: PENDING
+jobapi.net
+
+# === Jobsdb (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/jobsdb.com
+# Scope: *.jobsdb.com
+# STATUS: PENDING
+jobsdb.com
+
+# === Jobstreet (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/jobstreet.com
+# Scope: *.jobstreet.com
+# STATUS: PENDING
+jobstreet.com
+
+# === Jointhemoment (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/jointhemoment.net
+# Scope: *.jointhemoment.net
+# STATUS: PENDING
+jointhemoment.net
+
+# === Jora (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/jora.com
+# Scope: *.jora.com
+# STATUS: PENDING
+jora.com
+
+# === Jora (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/jora.xyz
+# Scope: *.jora.xyz
+# STATUS: PENDING
+jora.xyz
+
+# === Just Data (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/just-data.io
+# Scope: *.just-data.io
+# STATUS: PENDING
+just-data.io
+
+# === Just Eat (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/just-eat.ch
+# Scope: *.just-eat.ch
+# STATUS: PENDING
+just-eat.ch
+
+# === Just Eat (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/just-eat.co.il
+# Scope: *.just-eat.co.il
+# STATUS: PENDING
+just-eat.co.il
+
+# === Just Eat (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/just-eat.co.uk
+# Scope: *.just-eat.co.uk
+# STATUS: PENDING
+just-eat.co.uk
+
+# === Just Eat (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/just-eat.com
+# Scope: *.just-eat.com
+# STATUS: PENDING
+just-eat.com
+
+# === Just Eat (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/just-eat.es
+# Scope: *.just-eat.es
+# STATUS: PENDING
+just-eat.es
+
+# === Just Eat (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/just-eat.io
+# Scope: *.just-eat.io
+# STATUS: PENDING
+just-eat.io
+
+# === Justeat Int (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/justeat-int.com
+# Scope: *.justeat-int.com
+# STATUS: PENDING
+api.justeat-int.com
+justeat-int.com
+
+# === Justeattakeaway (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/justeattakeaway.com
+# Scope: *.justeattakeaway.com
+# STATUS: PENDING
+justeattakeaway.com
+
+# === Jwt (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/jwt.io
+# Scope: *.jwt.io
+# STATUS: PENDING
+jwt.io
+
+# === Kaleido (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/kaleido.ai
+# Scope: *.kaleido.ai
+# STATUS: PENDING
+kaleido.ai
+
+# === Keeper (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/keeper.io
+# Scope: *.keeper.io
+# STATUS: PENDING
+docs.keeper.io
+
+# === Keepersecurity (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/keepersecurity.com
+# Scope: *.keepersecurity.com
+# STATUS: PENDING
+keepersecurity.com
+
+# === Kiln (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/kiln.it
+# Scope: *.kiln.it
+# STATUS: PENDING
+kiln.it
+
+# === Kinergysolutions (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/kinergysolutions.com
+# Scope: *.kinergysolutions.com
+# STATUS: PENDING
+portal-api.anz.kinergysolutions.com
+portal.anz.kinergysolutions.com
+
+# === Kiteworks (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/kiteworks.dev
+# Scope: *.kiteworks.dev
+# STATUS: PENDING
+kw-bugcrowd-pub.bounty.kiteworks.dev
+
+# === Klaviyo Dev (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/klaviyo-dev.com
+# Scope: *.klaviyo-dev.com
+# STATUS: PENDING
+klaviyo-dev.com
+
+# === Klaviyo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/klaviyo.com
+# Scope: *.klaviyo.com
+# STATUS: PENDING
+a.klaviyo.com
+klaviyo.com
+mcp.klaviyo.com
+services.klaviyo.com
+
+# === Klaviyomsv (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/klaviyomsv.com
+# Scope: *.klaviyomsv.com
+# STATUS: PENDING
+klaviyomsv.com
+
+# === Kohls (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/kohls.com
+# Scope: *.kohls.com
+# STATUS: PENDING
+kohls.com
+
+# === Korta (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/korta.is
+# Scope: *.korta.is
+# STATUS: PENDING
+korta.is
+
+# === Kortathjonustan (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/kortathjonustan.is
+# Scope: *.kortathjonustan.is
+# STATUS: PENDING
+kortathjonustan.is
+
+# === Kucoin (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/kucoin.com
+# Scope: *.kucoin.com
+# STATUS: PENDING
+kucoin.com
+
+# === Ladbrokes (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/ladbrokes.com
+# Scope: *.ladbrokes.com
+# STATUS: PENDING
+ladbrokes.com
+
+# === Lafourchette (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lafourchette.com
+# Scope: *.lafourchette.com
+# STATUS: PENDING
+payment.lafourchette.com
+
+# === Langfuse (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/langfuse.com
+# Scope: *.langfuse.com
+# STATUS: PENDING
+cloud.langfuse.com
+
+# === Lastpass (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lastpass.com
+# Scope: *.lastpass.com
+# STATUS: PENDING
+accounts.lastpass.com
+admin.lastpass.com
+auth.lastpass.com
+blog.lastpass.com
+lastpass.com
+support.lastpass.com
+
+# === Latitudefinancial (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/latitudefinancial.co.nz
+# Scope: *.latitudefinancial.co.nz
+# STATUS: PENDING
+latitudefinancial.co.nz
+
+# === Latitudefinancial (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/latitudefinancial.com
+# Scope: *.latitudefinancial.com
+# STATUS: PENDING
+api.test.latitudefinancial.com
+latitudefinancial.com
+
+# === Latitudefinancial (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/latitudefinancial.com.au
+# Scope: *.latitudefinancial.com.au
+# STATUS: PENDING
+latitudefinancial.com.au
+
+# === Latitudeinfinity (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/latitudeinfinity.com.au
+# Scope: *.latitudeinfinity.com.au
+# STATUS: PENDING
+latitudeinfinity.com.au
+
+# === Latitudepay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/latitudepay.com
+# Scope: *.latitudepay.com
+# STATUS: PENDING
+latitudepay.com
+
+# === Latitudepay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/latitudepay.com.au
+# Scope: *.latitudepay.com.au
+# STATUS: PENDING
+latitudepay.com.au
+
+# === Latitudepayapps (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/latitudepayapps.com
+# Scope: *.latitudepayapps.com
+# STATUS: PENDING
+app.latitudepayapps.com
+images.latitudepayapps.com
+
+# === Launchdarkly (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/launchdarkly.com
+# Scope: *.launchdarkly.com
+# STATUS: PENDING
+app.launchdarkly.com
+docs.launchdarkly.com
+events.launchdarkly.com
+launchdarkly.com
+stream.launchdarkly.com
+
+# === Lego (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lego.me
+# Scope: *.lego.me
+# STATUS: PENDING
+lego.me
+
+# === Lfscnp (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lfscnp.com
+# Scope: *.lfscnp.com
+# STATUS: PENDING
+master.servicecentre-nz.digitalservicing-np.lfscnp.com
+master.servicecentre.digitalservicing-np.lfscnp.com
+
+# === Lh360 (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lh360.com
+# Scope: *.lh360.com
+# STATUS: PENDING
+portalv2.lh360.com
+
+# === Li (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/li.me
+# Scope: *.li.me
+# STATUS: PENDING
+li.me
+
+# === Lieferando (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lieferando.de
+# Scope: *.lieferando.de
+# STATUS: PENDING
+lieferando.de
+
+# === Lightspeed (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lightspeed.app
+# Scope: *.lightspeed.app
+# STATUS: PENDING
+developers.retail.lightspeed.app
+manager.trial.lsk.lightspeed.app
+store.retail.lightspeed.app
+
+# === Lime (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lime.bike
+# Scope: *.lime.bike
+# STATUS: PENDING
+admintool.lime.bike
+data.lime.bike
+external-api.lime.bike
+gpt.lime.bike
+help.lime.bike
+juicer.lime.bike
+lp.lime.bike
+ops.lime.bike
+proxy-production.lime.bike
+web-message-high.lime.bike
+web-message.lime.bike
+web-production.lime.bike
+
+# === Limeinternal (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/limeinternal.com
+# Scope: *.limeinternal.com
+# STATUS: PENDING
+data.limeinternal.com
+orchard.limeinternal.com
+
+# === Linktr (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/linktr.ee
+# Scope: *.linktr.ee
+# STATUS: PENDING
+linktr.ee
+
+# === Linktree Extensions (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/linktree-extensions.com
+# Scope: *.linktree-extensions.com
+# STATUS: PENDING
+linktree-extensions.com
+
+# === Linktree (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/linktree.com
+# Scope: *.linktree.com
+# STATUS: PENDING
+linktree.com
+
+# === Lookfantastic (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lookfantastic.com
+# Scope: *.lookfantastic.com
+# STATUS: PENDING
+lookfantastic.com
+
+# === Loom (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/loom.com
+# Scope: *.loom.com
+# STATUS: PENDING
+loom.com
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.co.jp
+# Scope: *.lululemon.co.jp
+# STATUS: PENDING
+lululemon.co.jp
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.co.kr
+# Scope: *.lululemon.co.kr
+# STATUS: PENDING
+lululemon.co.kr
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.co.nz
+# Scope: *.lululemon.co.nz
+# STATUS: PENDING
+lululemon.co.nz
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.co.uk
+# Scope: *.lululemon.co.uk
+# STATUS: PENDING
+lululemon.co.uk
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.com
+# Scope: *.lululemon.com
+# STATUS: PENDING
+eu.lululemon.com
+lululemon.com
+shop.lululemon.com
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.com.au
+# Scope: *.lululemon.com.au
+# STATUS: PENDING
+lululemon.com.au
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.com.hk
+# Scope: *.lululemon.com.hk
+# STATUS: PENDING
+lululemon.com.hk
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.de
+# Scope: *.lululemon.de
+# STATUS: PENDING
+lululemon.de
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.es
+# Scope: *.lululemon.es
+# STATUS: PENDING
+lululemon.es
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.fr
+# Scope: *.lululemon.fr
+# STATUS: PENDING
+lululemon.fr
+
+# === Lululemon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/lululemon.me
+# Scope: *.lululemon.me
+# STATUS: PENDING
+lululemon.me
+
+# === Luno (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/luno.com
+# Scope: *.luno.com
+# STATUS: PENDING
+api.staging.luno.com
+app.staging.luno.com
+mobileapi.staging.luno.com
+staging.luno.com
+
+# === Luno (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/luno.com.ng
+# Scope: *.luno.com.ng
+# STATUS: PENDING
+staging.luno.com.ng
+
+# === Maf (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/maf.ae
+# Scope: *.maf.ae
+# STATUS: PENDING
+vtcprodapi.maf.ae
+
+# === Mafshoppingmalls (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mafshoppingmalls.com
+# Scope: *.mafshoppingmalls.com
+# STATUS: PENDING
+api.mafshoppingmalls.com
+
+# === Magic (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/magic.link
+# Scope: *.magic.link
+# STATUS: PENDING
+api.magic.link
+auth.magic.link
+dashboard.magic.link
+
+# === Magicplanetmena (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/magicplanetmena.com
+# Scope: *.magicplanetmena.com
+# STATUS: PENDING
+magicplanetmena.com
+
+# === Malloftheemirates (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/malloftheemirates.com
+# Scope: *.malloftheemirates.com
+# STATUS: PENDING
+malloftheemirates.com
+
+# === Mankind (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mankind.co.uk
+# Scope: *.mankind.co.uk
+# STATUS: PENDING
+mankind.co.uk
+
+# === Mastercard (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mastercard.ch
+# Scope: *.mastercard.ch
+# STATUS: PENDING
+mastercard.ch
+
+# === Mastercard (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mastercard.com
+# Scope: *.mastercard.com
+# STATUS: PENDING
+developer.mastercard.com
+donate.mastercard.com
+performancemarketing.mastercard.com
+src.mastercard.com
+
+# === Mastercard (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mastercard.com.au
+# Scope: *.mastercard.com.au
+# STATUS: PENDING
+mastercard.com.au
+
+# === Mastercard (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mastercard.nl
+# Scope: *.mastercard.nl
+# STATUS: PENDING
+mastercard.nl
+
+# === Mastercard (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mastercard.us
+# Scope: *.mastercard.us
+# STATUS: PENDING
+mastercard.us
+
+# === Masterpassteststore (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/masterpassteststore.com
+# Scope: *.masterpassteststore.com
+# STATUS: PENDING
+masterpassteststore.com
+
+# === Matalan (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/matalan.co.uk
+# Scope: *.matalan.co.uk
+# STATUS: PENDING
+matalan.co.uk
+
+# === Mattermost (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mattermost.com
+# Scope: *.mattermost.com
+# STATUS: PENDING
+cloud.mattermost.com
+mattermost.com
+
+# === Mclead (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mclead.com.au
+# Scope: *.mclead.com.au
+# STATUS: PENDING
+mclead.com.au
+
+# === Mdedge (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mdedge.com
+# Scope: *.mdedge.com
+# STATUS: PENDING
+mdedge.com
+
+# === Medscape (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/medscape.com
+# Scope: *.medscape.com
+# STATUS: PENDING
+login.medscape.com
+profreg.medscape.com
+
+# === Meraki (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/meraki.com
+# Scope: *.meraki.com
+# STATUS: PENDING
+meraki.com
+
+# === Metrobyt Mobile (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/metrobyt-mobile.com
+# Scope: *.metrobyt-mobile.com
+# STATUS: PENDING
+metrobyt-mobile.com
+
+# === Mgm (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mgm.mo
+# Scope: *.mgm.mo
+# STATUS: PENDING
+booking.mgm.mo
+jobs.mgm.mo
+mgm.mo
+mobileapp-gaming.mgm.mo
+mobileapp-non-gaming.mgm.mo
+static.mgm.mo
+tickets.mgm.mo
+
+# === Mgmmacau (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mgmmacau.com
+# Scope: *.mgmmacau.com
+# STATUS: PENDING
+mgmmacau.com
+
+# === Microsoft (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/microsoft.com
+# Scope: *.microsoft.com
+# STATUS: PENDING
+microsoft.com
+microsoftedge.microsoft.com
+
+# === Mintmobile (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mintmobile.com
+# Scope: *.mintmobile.com
+# STATUS: PENDING
+mintmobile.com
+my.mintmobile.com
+
+# === Mlife (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mlife.mo
+# Scope: *.mlife.mo
+# STATUS: PENDING
+mlife.mo
+
+# === Mobile (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mobile.monash
+# Scope: *.mobile.monash
+# STATUS: PENDING
+cms.mobile.monash
+mobile.monash
+status.mobile.monash
+
+# === Moengage (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/moengage.com
+# Scope: *.moengage.com
+# STATUS: PENDING
+dashboard-101.moengage.com
+
+# === Monas (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/monas.edu
+# Scope: *.monas.edu
+# STATUS: PENDING
+formative.eassessment.monas.edu
+
+# === Monash (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/monash.edu
+# Scope: *.monash.edu
+# STATUS: PENDING
+account-registration.monash.edu
+agent.apps.monash.edu
+alumni-friends.monash.edu
+apps.connect.monash.edu
+collections.monash.edu
+compulsoryunits.monash.edu
+connect.monash.edu
+eassessment.monash.edu
+equella.monash.edu
+evigilation.monash.edu
+fileshare.ze.monash.edu
+formative.eassessment.monash.edu
+forms.apps.monash.edu
+gp.monash.edu
+identity.monash.edu
+ims.monash.edu
+interviews.monash.edu
+mids.monash.edu
+mix-dev.monash.edu
+mix-qat.monash.edu
+mix.monash.edu
+mlivetickets.monash.edu
+monash.edu
+move.monash.edu
+myapp.monash.edu
+online.monash.edu
+partner.apps.monash.edu
+research.monash.edu
+researchmgt.monash.edu
+shop.monash.edu
+studentplacements.monash.edu
+unihub.monash.edu
+
+# === Moovitapp (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/moovitapp.com
+# Scope: *.moovitapp.com
+# STATUS: PENDING
+support.moovitapp.com
+
+# === Mortgagechoice (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mortgagechoice.com.au
+# Scope: *.mortgagechoice.com.au
+# STATUS: PENDING
+demo.bp.mortgagechoice.com.au
+mortgagechoice.com.au
+
+# === Movilepay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/movilepay.com
+# Scope: *.movilepay.com
+# STATUS: PENDING
+movilepay.com
+
+# === Movilepay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/movilepay.com.br
+# Scope: *.movilepay.com.br
+# STATUS: PENDING
+movilepay.com.br
+
+# === Myconnect (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/myconnect.com.au
+# Scope: *.myconnect.com.au
+# STATUS: PENDING
+hub.myconnect.com.au
+myconnect.com.au
+portal.myconnect.com.au
+ssu.staging.myconnect.com.au
+
+# === Myfitnesspal (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/myfitnesspal.com
+# Scope: *.myfitnesspal.com
+# STATUS: PENDING
+myfitnesspal.com
+
+# === Myklpages (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/myklpages.com
+# Scope: *.myklpages.com
+# STATUS: PENDING
+myklpages.com
+
+# === Mylightspeed (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mylightspeed.app
+# Scope: *.mylightspeed.app
+# STATUS: PENDING
+mylightspeed.app
+
+# === Mylink (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/mylink.page
+# Scope: *.mylink.page
+# STATUS: PENDING
+mylink.page
+
+# === Myopenpass (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/myopenpass.com
+# Scope: *.myopenpass.com
+# STATUS: PENDING
+atlantis-ext.myopenpass.com
+auth.myopenpass.com
+cdn.myopenpass.com
+myopenpass.com
+partner.myopenpass.com
+
+# === Myopenpassdemo (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/myopenpassdemo.com
+# Scope: *.myopenpassdemo.com
+# STATUS: PENDING
+myopenpassdemo.com
+
+# === Myprotein (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/myprotein.com
+# Scope: *.myprotein.com
+# STATUS: PENDING
+myprotein.com
+
+# === Myseek (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/myseek.xyz
+# Scope: *.myseek.xyz
+# STATUS: PENDING
+myseek.xyz
+
+# === Myvitamins (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/myvitamins.com
+# Scope: *.myvitamins.com
+# STATUS: PENDING
+myvitamins.com
+
+# === N0C (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/n0c.com
+# Scope: *.n0c.com
+# STATUS: PENDING
+mg.n0c.com
+
+# === Namejet (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/namejet.com
+# Scope: *.namejet.com
+# STATUS: PENDING
+namejet.com
+
+# === Namestudio (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/namestudio.com
+# Scope: *.namestudio.com
+# STATUS: PENDING
+namestudio.com
+
+# === Namestudioforsocial (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/namestudioforsocial.com
+# Scope: *.namestudioforsocial.com
+# STATUS: PENDING
+namestudioforsocial.com
+
+# === Naspers (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/naspers.com
+# Scope: *.naspers.com
+# STATUS: PENDING
+cfc.naspers.com
+nav.naspers.com
+peopleview.naspers.com
+tracker.naspers.com
+
+# === Navan (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/navan.com
+# Scope: *.navan.com
+# STATUS: PENDING
+app.navan.com
+
+# === Neogov (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/neogov.com
+# Scope: *.neogov.com
+# STATUS: PENDING
+analytics.neogov.com
+api.neogov.com
+cdn.neogov.com
+eforms.neogov.com
+hr.neogov.com
+learn.neogov.com
+login.neogov.com
+onboard.neogov.com
+performance.neogov.com
+secure.neogov.com
+securesignin.neogov.com
+unified.neogov.com
+
+# === Network Auth (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/network-auth.com
+# Scope: *.network-auth.com
+# STATUS: PENDING
+network-auth.com
+
+# === Networksolutions (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/networksolutions.com
+# Scope: *.networksolutions.com
+# STATUS: PENDING
+networksolutions.com
+
+# === Newrelic (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/newrelic.com
+# Scope: *.newrelic.com
+# STATUS: PENDING
+developer.newrelic.com
+docs.newrelic.com
+forum.newrelic.com
+knowledge.newrelic.com
+learn.newrelic.com
+newrelic.com
+one.newrelic.com
+support.newrelic.com
+
+# === Niumba (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/niumba.com
+# Scope: *.niumba.com
+# STATUS: PENDING
+niumba.com
+
+# === Nmfn (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nmfn.com
+# Scope: *.nmfn.com
+# STATUS: PENDING
+nmfn.com
+
+# === Nml (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nml.com
+# Scope: *.nml.com
+# STATUS: PENDING
+nml.com
+
+# === Northwesternmutual (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/northwesternmutual.com
+# Scope: *.northwesternmutual.com
+# STATUS: PENDING
+northwesternmutual.com
+
+# === Npmjs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/npmjs.com
+# Scope: *.npmjs.com
+# STATUS: PENDING
+npmjs.com
+
+# === Nr Data (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nr-data.net
+# Scope: *.nr-data.net
+# STATUS: PENDING
+nr-data.net
+
+# === Nr Ops (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nr-ops.net
+# Scope: *.nr-ops.net
+# STATUS: PENDING
+nr-ops.net
+
+# === Nu (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nu.com.co
+# Scope: *.nu.com.co
+# STATUS: PENDING
+nu.com.co
+
+# === Nu (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nu.com.mx
+# Scope: *.nu.com.mx
+# STATUS: PENDING
+nu.com.mx
+
+# === Nubank (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nubank.com.br
+# Scope: *.nubank.com.br
+# STATUS: PENDING
+nubank.com.br
+
+# === Nubank (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nubank.com.co
+# Scope: *.nubank.com.co
+# STATUS: PENDING
+nubank.com.co
+
+# === Nubank (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nubank.com.mx
+# Scope: *.nubank.com.mx
+# STATUS: PENDING
+nubank.com.mx
+
+# === Nuinvest (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nuinvest.com.br
+# Scope: *.nuinvest.com.br
+# STATUS: PENDING
+nuinvest.com.br
+
+# === Nutrip (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nutrip.com
+# Scope: *.nutrip.com
+# STATUS: PENDING
+monash.app.nutrip.com
+
+# === Nvio (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nvio.ar
+# Scope: *.nvio.ar
+# STATUS: PENDING
+nvio.ar
+
+# === Nvio (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/nvio.mx
+# Scope: *.nvio.mx
+# STATUS: PENDING
+nvio.mx
+
+# === Octopus (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/octopus.com
+# Scope: *.octopus.com
+# STATUS: PENDING
+octopus.com
+
+# === Odcdn (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/odcdn.com.au
+# Scope: *.odcdn.com.au
+# STATUS: PENDING
+odcdn.com.au
+
+# === Odesli (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/odesli.co
+# Scope: *.odesli.co
+# STATUS: PENDING
+odesli.co
+
+# === Odesli (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/odesli.com
+# Scope: *.odesli.com
+# STATUS: PENDING
+odesli.com
+
+# === Okta (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/okta.com
+# Scope: *.okta.com
+# STATUS: PENDING
+help.okta.com
+okta.com
+support.okta.com
+
+# === Oktapreview (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/oktapreview.com
+# Scope: *.oktapreview.com
+# STATUS: PENDING
+admin.oktapreview.com
+at.oktapreview.com
+oktapreview.com
+pam.oktapreview.com
+workflows.oktapreview.com
+
+# === Onetrust (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/onetrust.com
+# Scope: *.onetrust.com
+# STATUS: PENDING
+pentest-app.onetrust.com
+
+# === Onmicrosoft (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/onmicrosoft.com
+# Scope: *.onmicrosoft.com
+# STATUS: PENDING
+schulenwien.onmicrosoft.com
+stadtwien.onmicrosoft.com
+
+# === Openai (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/openai.com
+# Scope: *.openai.com
+# STATUS: PENDING
+api.openai.com
+chat.openai.com
+openai.com
+platform.openai.com
+
+# === Openai (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/openai.org
+# Scope: *.openai.org
+# STATUS: PENDING
+openai.org
+
+# === Openidconnect (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/openidconnect.net
+# Scope: *.openidconnect.net
+# STATUS: PENDING
+openidconnect.net
+
+# === Opensea (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/opensea.io
+# Scope: *.opensea.io
+# STATUS: PENDING
+mcp.opensea.io
+opensea.io
+wallet.opensea.io
+
+# === Opensincera (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/opensincera.com
+# Scope: *.opensincera.com
+# STATUS: PENDING
+opensincera.com
+
+# === Opera Api (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/opera-api.com
+# Scope: *.opera-api.com
+# STATUS: PENDING
+blocklist.opera-api.com
+cdn-store.opera-api.com
+cryptowallet.opera-api.com
+features.opera-api.com
+gx.opera-api.com
+merchandise.opera-api.com
+suggestions.opera-api.com
+weather.opera-api.com
+
+# === Opera Mini (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/opera-mini.net
+# Scope: *.opera-mini.net
+# STATUS: PENDING
+opera-mini.net
+
+# === Opera (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/opera.com
+# Scope: *.opera.com
+# STATUS: PENDING
+accounts.opera.com
+adx.opera.com
+api.neon.opera.com
+auth-adx.op-mobile.opera.com
+auth.opera.com
+autoupdate.geo.opera.com
+browser-notifications.opera.com
+bugs.opera.com
+cashback.opera.com
+cms.adx.opera.com
+download.opera.com
+exchange.opera.com
+flow.opera.com
+get.geo.opera.com
+neon.opera.com
+ofa.adx.opera.com
+ofp.adx.opera.com
+opera.com
+push.opera.com
+speeddials.opera.com
+
+# === Opera (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/opera.news
+# Scope: *.opera.news
+# STATUS: PENDING
+opera.news
+
+# === Opera (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/opera.software
+# Scope: *.opera.software
+# STATUS: PENDING
+opera.software
+osp.opera.software
+
+# === Opera (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/opera.technology
+# Scope: *.opera.technology
+# STATUS: PENDING
+opera.technology
+
+# === Operafootball (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/operafootball.com
+# Scope: *.operafootball.com
+# STATUS: PENDING
+operafootball.com
+
+# === Operaneon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/operaneon.com
+# Scope: *.operaneon.com
+# STATUS: PENDING
+operaneon.com
+
+# === Operanewsapp (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/operanewsapp.com
+# Scope: *.operanewsapp.com
+# STATUS: PENDING
+operanewsapp.com
+
+# === Opr (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/opr.news
+# Scope: *.opr.news
+# STATUS: PENDING
+opr.news
+
+# === Opsgenie (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/opsgenie.com
+# Scope: *.opsgenie.com
+# STATUS: PENDING
+app.opsgenie.com
+mobileapp.opsgenie.com
+opsgenie.com
+
+# === Optimizely Edge (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/optimizely-edge.com
+# Scope: *.optimizely-edge.com
+# STATUS: PENDING
+optimizely-edge.com
+
+# === Optimizely (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/optimizely.com
+# Scope: *.optimizely.com
+# STATUS: PENDING
+accounts.cmp.optimizely.com
+api.optimizely.com
+app.optimizely.com
+cdn-pci.optimizely.com
+cdn.optimizely.com
+flags.expeng.optimizely.com
+
+# === Optus (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/optus.com.au
+# Scope: *.optus.com.au
+# STATUS: PENDING
+ddosportal.optus.com.au
+gateway.optus.com.au
+naasapi.optus.com.au
+optus.com.au
+ras1.optus.com.au
+
+# === Optus (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/optus.net.au
+# Scope: *.optus.net.au
+# STATUS: PENDING
+dns0.optus.net.au
+dns1.optus.net.au
+outsourcing.optus.net.au
+outsourcing2.optus.net.au
+
+# === Optusnet (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/optusnet.com.au
+# Scope: *.optusnet.com.au
+# STATUS: PENDING
+ns1.optusnet.com.au
+ns2.optusnet.com.au
+oes.optusnet.com.au
+ogws.optusnet.com.au
+speedtest-blacktown.optusnet.com.au
+speedtest-brisbane.optusnet.com.au
+speedtest-broome.optusnet.com.au
+speedtest-eastburwood.optusnet.com.au
+speedtest-geelong.optusnet.com.au
+speedtest-goldcoast.optusnet.com.au
+speedtest-hobart.optusnet.com.au
+speedtest-melbourne.optusnet.com.au
+speedtest-newcastle.optusnet.com.au
+speedtest-perth.optusnet.com.au
+speedtest-rockingham.optusnet.com.au
+speedtest-sydney.optusnet.com.au
+speedtest-townsville.optusnet.com.au
+vpn01.syd.optusnet.com.au
+webmail.optusnet.com.au
+
+# === Origin (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/origin.com.au
+# Scope: *.origin.com.au
+# STATUS: PENDING
+api-businessportal.origin.com.au
+businessportal.origin.com.au
+
+# === Origindigital Pac (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/origindigital-pac.com.au
+# Scope: *.origindigital-pac.com.au
+# STATUS: PENDING
+origindigital-pac.com.au
+
+# === Originenergy (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/originenergy.com.au
+# Scope: *.originenergy.com.au
+# STATUS: PENDING
+api.originenergy.com.au
+api.rx.originenergy.com.au
+dataportal.originenergy.com.au
+download.originenergy.com.au
+originenergy.com.au
+support.originenergy.com.au
+
+# === Originzero (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/originzero.com.au
+# Scope: *.originzero.com.au
+# STATUS: PENDING
+api-portal.originzero.com.au
+portal.originzero.com.au
+sign.originzero.com.au
+
+# === Osite99 (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/osite99.com
+# Scope: *.osite99.com
+# STATUS: PENDING
+osite99.com
+
+# === Osl (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/osl.com
+# Scope: *.osl.com
+# STATUS: PENDING
+osl.com
+
+# === Outfra (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/outfra.xyz
+# Scope: *.outfra.xyz
+# STATUS: PENDING
+outfra.xyz
+
+# === Pantheon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/pantheon.io
+# Scope: *.pantheon.io
+# STATUS: PENDING
+dashboard.pantheon.io
+
+# === Partycasino (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/partycasino.com
+# Scope: *.partycasino.com
+# STATUS: PENDING
+casino.partycasino.com
+partycasino.com
+
+# === Partypoker (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/partypoker.com
+# Scope: *.partypoker.com
+# STATUS: PENDING
+partypoker.com
+
+# === Pexels (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/pexels.com
+# Scope: *.pexels.com
+# STATUS: PENDING
+pexels.com
+
+# === Pinterest (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/pinterest.com
+# Scope: *.pinterest.com
+# STATUS: PENDING
+api.pinterest.com
+pinterest.com
+
+# === Pixabay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/pixabay.com
+# Scope: *.pixabay.com
+# STATUS: PENDING
+pixabay.com
+
+# === Pixpay (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/pixpay.fr
+# Scope: *.pixpay.fr
+# STATUS: PENDING
+pixpay.fr
+
+# === Planethoster (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/planethoster.com
+# Scope: *.planethoster.com
+# STATUS: PENDING
+my.planethoster.com
+planethoster.com
+
+# === Planethoster (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/planethoster.net
+# Scope: *.planethoster.net
+# STATUS: PENDING
+api.planethoster.net
+world.planethoster.net
+
+# === Plannthat (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/plannthat.com
+# Scope: *.plannthat.com
+# STATUS: PENDING
+plannthat.com
+
+# === Playlist (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/playlist.link
+# Scope: *.playlist.link
+# STATUS: PENDING
+playlist.link
+
+# === Pods (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/pods.link
+# Scope: *.pods.link
+# STATUS: PENDING
+pods.link
+
+# === Points (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/points.com
+# Scope: *.points.com
+# STATUS: PENDING
+points.com
+
+# === Powerdms (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/powerdms.com
+# Scope: *.powerdms.com
+# STATUS: PENDING
+powerdms.com
+securesignin.powerdms.com
+
+# === Powerpak (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/powerpak.com
+# Scope: *.powerpak.com
+# STATUS: PENDING
+powerpak.com
+
+# === Priceless (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/priceless.com
+# Scope: *.priceless.com
+# STATUS: PENDING
+demo.priceless.com
+priceless.com
+
+# === Property (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/property.com.au
+# Scope: *.property.com.au
+# STATUS: PENDING
+property.com.au
+
+# === Proptrack (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/proptrack.com
+# Scope: *.proptrack.com
+# STATUS: PENDING
+access-sit.uat.proptrack.com
+desktop-sit.uat.proptrack.com
+explore-sit.uat.proptrack.com
+one-sit.uat.proptrack.com
+portfolio-manager-sit.uat.proptrack.com
+proptrack.com
+report.uat.proptrack.com
+valuations-sit.uat.proptrack.com
+
+# === Proptrack (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/proptrack.com.au
+# Scope: *.proptrack.com.au
+# STATUS: PENDING
+proptrack.com.au
+
+# === Prosus (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/prosus.com
+# Scope: *.prosus.com
+# STATUS: PENDING
+analytics-admin.prosus.com
+analytics.prosus.com
+data.prosus.com
+dealflow.prosus.com
+dealflowapi.prosus.com
+hr.prosus.com
+
+# === Psychobunny (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/psychobunny.me
+# Scope: *.psychobunny.me
+# STATUS: PENDING
+psychobunny.me
+
+# === Pulsepoint (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/pulsepoint.com
+# Scope: *.pulsepoint.com
+# STATUS: PENDING
+exchange.pulsepoint.com
+life.pulsepoint.com
+lifeapi.pulsepoint.com
+openapi.pulsepoint.com
+openapitest.pulsepoint.com
+signal.pulsepoint.com
+
+# === Pyszne (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/pyszne.pl
+# Scope: *.pyszne.pl
+# STATUS: PENDING
+pyszne.pl
+
+# === Quintoandar (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/quintoandar.com.br
+# Scope: *.quintoandar.com.br
+# STATUS: PENDING
+apigw.prod.quintoandar.com.br
+finance.quintoandar.com.br
+financeiro.quintoandar.com.br
+quintoandar.com.br
+trato-feito-api.quintoandar.com.br
+user.quintoandar.com.br
+
+# === Quizlet (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/quizlet.com
+# Scope: *.quizlet.com
+# STATUS: PENDING
+quizlet.com
+
+# === Rapyd (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/rapyd.com
+# Scope: *.rapyd.com
+# STATUS: PENDING
+rapyd.com
+
+# === Rapyd (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/rapyd.net
+# Scope: *.rapyd.net
+# STATUS: PENDING
+api.rapyd.net
+checkout.rapyd.net
+dashboard.rapyd.net
+rapyd.net
+verify.rapyd.net
+
+# === Rapyd (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/rapyd.org
+# Scope: *.rapyd.org
+# STATUS: PENDING
+rapyd.org
+
+# === Rea Group (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/rea-group.com
+# Scope: *.rea-group.com
+# STATUS: PENDING
+rea-group.com
+
+# === Realcommercial (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/realcommercial.com.au
+# Scope: *.realcommercial.com.au
+# STATUS: PENDING
+realcommercial.com.au
+
+# === Realestate (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/realestate.com.au
+# Scope: *.realestate.com.au
+# STATUS: PENDING
+accounts.realestate.com.au
+agent-contact.realestate.com.au
+api.id.realestate.com.au
+id.realestate.com.au
+realestate.com.au
+
+# === Reastatic (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/reastatic.net
+# Scope: *.reastatic.net
+# STATUS: PENDING
+reastatic.net
+
+# === Recordedfuture (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/recordedfuture.com
+# Scope: *.recordedfuture.com
+# STATUS: PENDING
+api.recordedfuture.com
+app.recordedfuture.com
+id.recordedfuture.com
+mcp.recordedfuture.com
+recordedfuture.com
+
+# === Refined (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/refined.site
+# Scope: *.refined.site
+# STATUS: PENDING
+refined.site
+
+# === Refinedwiki (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/refinedwiki.com
+# Scope: *.refinedwiki.com
+# STATUS: PENDING
+refinedsites.refinedwiki.com
+
+# === Remove (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/remove.bg
+# Scope: *.remove.bg
+# STATUS: PENDING
+remove.bg
+
+# === Repostnetwork (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/repostnetwork.com
+# Scope: *.repostnetwork.com
+# STATUS: PENDING
+services.repostnetwork.com
+
+# === Requirementyogi (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/requirementyogi.cloud
+# Scope: *.requirementyogi.cloud
+# STATUS: PENDING
+ww1.requirementyogi.cloud
+ww2.requirementyogi.cloud
+
+# === Requirementyogi (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/requirementyogi.com
+# Scope: *.requirementyogi.com
+# STATUS: PENDING
+api.requirementyogi.com
+app.requirementyogi.com
+auth.requirementyogi.com
+confluence.requirementyogi.com
+jira.requirementyogi.com
+
+# === Restaurant Information (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/restaurant-information.com
+# Scope: *.restaurant-information.com
+# STATUS: PENDING
+restaurant-information.com
+
+# === Resume (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/resume.com
+# Scope: *.resume.com
+# STATUS: PENDING
+resume.com
+
+# === Retailsso (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/retailsso.com
+# Scope: *.retailsso.com
+# STATUS: PENDING
+api-prod.retailsso.com
+
+# === Riskrecon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/riskrecon.com
+# Scope: *.riskrecon.com
+# STATUS: PENDING
+api.riskrecon.com
+auth.riskrecon.com
+portal.riskrecon.com
+riskrecon.com
+vendor.riskrecon.com
+
+# === Riskrecon (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/riskrecon.eu
+# Scope: *.riskrecon.eu
+# STATUS: PENDING
+api.riskrecon.eu
+auth.riskrecon.eu
+portal.riskrecon.eu
+vendor.riskrecon.eu
+
+# === Root Servers (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/root-servers.net
+# Scope: *.root-servers.net
+# STATUS: PENDING
+a.root-servers.net
+j.root-servers.net
+
+# === Rtbscale (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/rtbscale.com
+# Scope: *.rtbscale.com
+# STATUS: PENDING
+rtbscale.com
+
+# === S Cloud (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/s-cloud.net
+# Scope: *.s-cloud.net
+# STATUS: PENDING
+s-cloud.net
+
+# === Saltlabs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/saltlabs.com
+# Scope: *.saltlabs.com
+# STATUS: PENDING
+app.saltlabs.com
+app.staging.saltlabs.com
+saltlabs.com
+
+# === Samltool (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/samltool.io
+# Scope: *.samltool.io
+# STATUS: PENDING
+samltool.io
+
+# === Savi (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/savi.xyz
+# Scope: *.savi.xyz
+# STATUS: PENDING
+savi.xyz
+
+# === Scaleft (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/scaleft.com
+# Scope: *.scaleft.com
+# STATUS: PENDING
+app.scaleft.com
+
+# === Scoober (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/scoober.com
+# Scope: *.scoober.com
+# STATUS: PENDING
+scoober.com
+
+# === Sec Tunnel (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/sec-tunnel.com
+# Scope: *.sec-tunnel.com
+# STATUS: PENDING
+sec-tunnel.com
+
+# === Securitytrails (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/securitytrails.com
+# Scope: *.securitytrails.com
+# STATUS: PENDING
+securitytrails.com
+
+# === Seek (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/seek.com
+# Scope: *.seek.com
+# STATUS: PENDING
+auth.seek.com
+employer.seek.com
+graphql.seek.com
+seek.com
+
+# === Seekcdn (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/seekcdn.com
+# Scope: *.seekcdn.com
+# STATUS: PENDING
+seekcdn.com
+
+# === Seekpass (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/seekpass.co
+# Scope: *.seekpass.co
+# STATUS: PENDING
+seekpass.co
+
+# === Send2 (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/send2.co
+# Scope: *.send2.co
+# STATUS: PENDING
+send2.co
+
+# === Service Now (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/service-now.com
+# Scope: *.service-now.com
+# STATUS: PENDING
+tess.service-now.com
+
+# === Sftd Windows (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/sftd-windows.htm
+# Scope: *.sftd-windows.htm
+# STATUS: PENDING
+sftd-windows.htm
+
+# === Sharepoint (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/sharepoint.com
+# Scope: *.sharepoint.com
+# STATUS: PENDING
+stadtwien-my.sharepoint.com
+
+# === Sharerewards (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/sharerewards.com
+# Scope: *.sharerewards.com
+# STATUS: PENDING
+sharerewards.com
+
+# === Shffls (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/shffls.com
+# Scope: *.shffls.com
+# STATUS: PENDING
+shffls.com
+
+# === Shiseido (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/shiseido.me
+# Scope: *.shiseido.me
+# STATUS: PENDING
+shiseido.me
+
+# === Simple Reports (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/simple-reports.com
+# Scope: *.simple-reports.com
+# STATUS: PENDING
+app.simple-reports.com
+
+# === Simplisafe (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/simplisafe.co.uk
+# Scope: *.simplisafe.co.uk
+# STATUS: PENDING
+simplisafe.co.uk
+webapp.simplisafe.co.uk
+
+# === Simplisafe (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/simplisafe.com
+# Scope: *.simplisafe.com
+# STATUS: PENDING
+api.prd.commerce.simplisafe.com
+api.services.simplisafe.com
+api.simplisafe.com
+bb1.simplisafe.com
+bb2.simplisafe.com
+cb.simplisafe.com
+media.simplisafe.com
+mfa.simplisafe.com
+prd.aser.simplisafe.com
+prd.cam.simplisafe.com
+prd.platform.simplisafe.com
+prd.services.simplisafe.com
+prd.webapps.simplisafe.com
+simplisafe.com
+webapp.simplisafe.com
+
+# === Sincera (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/sincera.io
+# Scope: *.sincera.io
+# STATUS: PENDING
+open.sincera.io
+
+# === Site (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/site.com
+# Scope: *.site.com
+# STATUS: PENDING
+optus.my.site.com
+
+# === Skidxb (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/skidxb.com
+# Scope: *.skidxb.com
+# STATUS: PENDING
+skidxb.com
+
+# === Skinfra (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/skinfra.xyz
+# Scope: *.skinfra.xyz
+# STATUS: PENDING
+skinfra.xyz
+
+# === Skippayments (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/skippayments.com
+# Scope: *.skippayments.com
+# STATUS: PENDING
+skippayments.com
+
+# === Skipthedishes (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/skipthedishes.com
+# Scope: *.skipthedishes.com
+# STATUS: PENDING
+skipthedishes.com
+
+# === Skroutz (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/skroutz.gr
+# Scope: *.skroutz.gr
+# STATUS: PENDING
+skroutz.gr
+
+# === Skyscanner (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/skyscanner.net
+# Scope: *.skyscanner.net
+# STATUS: PENDING
+gateway.skyscanner.net
+partnerportal.skyscanner.net
+skyscanner.net
+
+# === Smartline (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/smartline.com.au
+# Scope: *.smartline.com.au
+# STATUS: PENDING
+smartline.com.au
+
+# === Snapnames (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/snapnames.com
+# Scope: *.snapnames.com
+# STATUS: PENDING
+snapnames.com
+
+# === Sol Data (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/sol-data.com
+# Scope: *.sol-data.com
+# STATUS: PENDING
+sol-data.com
+
+# === Solarcity (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/solarcity.com
+# Scope: *.solarcity.com
+# STATUS: PENDING
+solarcity.com
+
+# === Song (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/song.link
+# Scope: *.song.link
+# STATUS: PENDING
+song.link
+
+# === Songlink (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/songlink.io
+# Scope: *.songlink.io
+# STATUS: PENDING
+songlink.io
+
+# === Sophos (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/sophos.com
+# Scope: *.sophos.com
+# STATUS: PENDING
+central.sophos.com
+docs.sophos.com
+sophos.com
+
+# === Soundcloud (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/soundcloud.com
+# Scope: *.soundcloud.com
+# STATUS: PENDING
+artists.soundcloud.com
+connect.soundcloud.com
+soundcloud.com
+
+# === Soundcloud (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/soundcloud.org
+# Scope: *.soundcloud.org
+# STATUS: PENDING
+soundcloud.org
+
+# === Sourcetreeapp (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/sourcetreeapp.com
+# Scope: *.sourcetreeapp.com
+# STATUS: PENDING
+sourcetreeapp.com
+
+# === Sportingbet (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/sportingbet.com
+# Scope: *.sportingbet.com
+# STATUS: PENDING
+casino.sportingbet.com
+
+# === Sprint (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/sprint.com
+# Scope: *.sprint.com
+# STATUS: PENDING
+sprint.com
+
+# === Square (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/square.com
+# Scope: *.square.com
+# STATUS: PENDING
+square.com
+
+# === Square (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/square.online
+# Scope: *.square.online
+# STATUS: PENDING
+square.online
+
+# === Squareup (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/squareup.com
+# Scope: *.squareup.com
+# STATUS: PENDING
+squareup.com
+
+# === Staff (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/staff.monash
+# Scope: *.staff.monash
+# STATUS: PENDING
+staff.monash
+
+# === Statuspage (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/statuspage.io
+# Scope: *.statuspage.io
+# STATUS: PENDING
+manage.statuspage.io
+statuspage.io
+
+# === Student (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/student.monash
+# Scope: *.student.monash
+# STATUS: PENDING
+student.monash
+
+# === Svchifi (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/svchifi.svc
+# Scope: *.svchifi.svc
+# STATUS: PENDING
+svchifi.svc
+
+# === T Mobile (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/t-mobile.com
+# Scope: *.t-mobile.com
+# STATUS: PENDING
+account.t-mobile.com
+api.t-mobile.com
+devedge.t-mobile.com
+digits.t-mobile.com
+t-mobile.com
+tfb.t-mobile.com
+
+# === Tagesanzeiger (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tagesanzeiger.ch
+# Scope: *.tagesanzeiger.ch
+# STATUS: PENDING
+tagesanzeiger.ch
+
+# === Takeaway (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/takeaway.com
+# Scope: *.takeaway.com
+# STATUS: PENDING
+takeaway.com
+
+# === Tamg (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tamg.cloud
+# Scope: *.tamg.cloud
+# STATUS: PENDING
+api.production.cde.tamg.cloud
+
+# === Tapayments (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tapayments.com
+# Scope: *.tapayments.com
+# STATUS: PENDING
+partnerapi.tapayments.com
+partnerapi1.tapayments.com
+partnerapi2.tapayments.com
+walletproxy.tapayments.com
+walletproxy1.tapayments.com
+walletproxy2.tapayments.com
+
+# === Taxify (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/taxify.eu
+# Scope: *.taxify.eu
+# STATUS: PENDING
+taxify.eu
+
+# === Tdl (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tdl.sh
+# Scope: *.tdl.sh
+# STATUS: PENDING
+tdl.sh
+
+# === Tempus Ex (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tempus-ex.com
+# Scope: *.tempus-ex.com
+# STATUS: PENDING
+docs.tempus-ex.com
+tempus-ex.com
+
+# === Tesla (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tesla.cn
+# Scope: *.tesla.cn
+# STATUS: PENDING
+tesla.cn
+
+# === Tesla (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tesla.com
+# Scope: *.tesla.com
+# STATUS: PENDING
+tesla.com
+
+# === Tesla (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tesla.services
+# Scope: *.tesla.services
+# STATUS: PENDING
+tesla.services
+
+# === Teslainsuranceservices (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/teslainsuranceservices.com
+# Scope: *.teslainsuranceservices.com
+# STATUS: PENDING
+teslainsuranceservices.com
+
+# === Teslamotors (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/teslamotors.com
+# Scope: *.teslamotors.com
+# STATUS: PENDING
+teslamotors.com
+
+# === Test Socrata (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/test-socrata.com
+# Scope: *.test-socrata.com
+# STATUS: PENDING
+opendata-demo.test-socrata.com
+opendata.test-socrata.com
+
+# === Thalesgroup (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/thalesgroup.com
+# Scope: *.thalesgroup.com
+# STATUS: PENDING
+supportportal.thalesgroup.com
+
+# === Thatconceptstore (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/thatconceptstore.com
+# Scope: *.thatconceptstore.com
+# STATUS: PENDING
+api-prod.thatconceptstore.com
+thatconceptstore.com
+
+# === Thecurrent (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/thecurrent.com
+# Scope: *.thecurrent.com
+# STATUS: PENDING
+thecurrent.com
+
+# === Thefork (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/thefork.com
+# Scope: *.thefork.com
+# STATUS: PENDING
+api-ws.thefork.com
+api.thefork.com
+blog.thefork.com
+m.thefork.com
+manager.thefork.com
+secure.thefork.com
+thefork.com
+widget.thefork.com
+
+# === Thefork (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/thefork.io
+# Scope: *.thefork.io
+# STATUS: PENDING
+api.thefork.io
+
+# === Thefork (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/thefork.tech
+# Scope: *.thefork.tech
+# STATUS: PENDING
+tools.thefork.tech
+
+# === Theforkmanager (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/theforkmanager.com
+# Scope: *.theforkmanager.com
+# STATUS: PENDING
+theforkmanager.com
+
+# === Thetradedesk (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/thetradedesk.com
+# Scope: *.thetradedesk.com
+# STATUS: PENDING
+api.thetradedesk.com
+auth.thetradedesk.com
+careers.thetradedesk.com
+desk.thetradedesk.com
+edgeacademy.thetradedesk.com
+partner.thetradedesk.com
+thetradedesk.com
+
+# === Thinkglobalhealth (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/thinkglobalhealth.org
+# Scope: *.thinkglobalhealth.org
+# STATUS: PENDING
+thinkglobalhealth.org
+
+# === Thousandeyes (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/thousandeyes.com
+# Scope: *.thousandeyes.com
+# STATUS: PENDING
+api.thousandeyes.com
+app.thousandeyes.com
+thousandeyes.com
+
+# === Thuisbezorgd (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/thuisbezorgd.nl
+# Scope: *.thuisbezorgd.nl
+# STATUS: PENDING
+thuisbezorgd.nl
+
+# === Tidal (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tidal.com
+# Scope: *.tidal.com
+# STATUS: PENDING
+api.tidal.com
+offer.tidal.com
+tidal.com
+
+# === Tidalhi (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tidalhi.fi
+# Scope: *.tidalhi.fi
+# STATUS: PENDING
+tidalhi.fi
+
+# === Tidalhifi (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tidalhifi.com
+# Scope: *.tidalhifi.com
+# STATUS: PENDING
+tidalhifi.com
+
+# === Toursgds (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/toursgds.com
+# Scope: *.toursgds.com
+# STATUS: PENDING
+toursgds.com
+
+# === Tr (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tr.ee
+# Scope: *.tr.ee
+# STATUS: PENDING
+tr.ee
+
+# === Transferwise (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/transferwise.com
+# Scope: *.transferwise.com
+# STATUS: PENDING
+transferwise.com
+
+# === Transparentadvertising (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/transparentadvertising.com
+# Scope: *.transparentadvertising.com
+# STATUS: PENDING
+transparentadvertising.com
+
+# === Transparentadvertising (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/transparentadvertising.eu
+# Scope: *.transparentadvertising.eu
+# STATUS: PENDING
+transparentadvertising.eu
+
+# === Trello (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/trello.com
+# Scope: *.trello.com
+# STATUS: PENDING
+api.trello.com
+trello.com
+
+# === Trello (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/trello.services
+# Scope: *.trello.services
+# STATUS: PENDING
+trello.services
+
+# === Tria (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tria.ge
+# Scope: *.tria.ge
+# STATUS: PENDING
+tria.ge
+
+# === Tripadvisor (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/tripadvisor.com
+# Scope: *.tripadvisor.com
+# STATUS: PENDING
+api.tripadvisor.com
+gwapi.tripadvisor.com
+gwapi1.tripadvisor.com
+gwapi2.tripadvisor.com
+marlo.ext.tripadvisor.com
+rentals.tripadvisor.com
+service.platform.tripadvisor.com
+tripadvisor.com
+
+# === Truata (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/truata.com
+# Scope: *.truata.com
+# STATUS: PENDING
+pioneer.truata.com
+
+# === Ua (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/ua.com
+# Scope: *.ua.com
+# STATUS: PENDING
+api.shop.ua.com
+api.ua.com
+
+# === Uidapi (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/uidapi.com
+# Scope: *.uidapi.com
+# STATUS: PENDING
+core-prod.uidapi.com
+cstg-integ.uidapi.com
+esp-jssdk-integ.uidapi.com
+esp-srvonly-integ.uidapi.com
+example-jssdk-integ.uidapi.com
+example-srvonly-integ.uidapi.com
+optout-prod.uidapi.com
+prod.uidapi.com
+secure-signals-client-side-integ.uidapi.com
+secure-signals-jssdk-integ.uidapi.com
+secure-signals-react-integ.uidapi.com
+secure-signals-srvonly-integ.uidapi.com
+
+# === Ultramobile (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/ultramobile.com
+# Scope: *.ultramobile.com
+# STATUS: PENDING
+my.ultramobile.com
+ultramobile.com
+web-retailer-portal.ultramobile.com
+
+# === Umiloans (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/umiloans.com.au
+# Scope: *.umiloans.com.au
+# STATUS: PENDING
+umiloans.com.au
+
+# === Underarmour (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/underarmour.cn
+# Scope: *.underarmour.cn
+# STATUS: PENDING
+underarmour.cn
+
+# === Underarmour (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/underarmour.co.kr
+# Scope: *.underarmour.co.kr
+# STATUS: PENDING
+underarmour.co.kr
+
+# === Underarmour (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/underarmour.co.uk
+# Scope: *.underarmour.co.uk
+# STATUS: PENDING
+underarmour.co.uk
+
+# === Underarmour (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/underarmour.com
+# Scope: *.underarmour.com
+# STATUS: PENDING
+apphouse.underarmour.com
+armourhouse.underarmour.com
+consumer-sustainability.underarmour.com
+ourhouse.underarmour.com
+snc.underarmour.com
+snctest-c.underarmour.com
+snctest-s.underarmour.com
+supplier.underarmour.com
+transfer.underarmour.com
+underarmour.com
+vpe-us.underarmour.com
+vtxapp9d.underarmour.com
+vtxapp9p.underarmour.com
+vtxapp9q.underarmour.com
+vtxappd.underarmour.com
+
+# === Underarmour (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/underarmour.com.sg
+# Scope: *.underarmour.com.sg
+# STATUS: PENDING
+underarmour.com.sg
+
+# === Underarmournext (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/underarmournext.co.uk
+# Scope: *.underarmournext.co.uk
+# STATUS: PENDING
+underarmournext.co.uk
+
+# === Underarmournext (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/underarmournext.com
+# Scope: *.underarmournext.com
+# STATUS: PENDING
+underarmournext.com
+
+# === Unifiedid (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/unifiedid.com
+# Scope: *.unifiedid.com
+# STATUS: PENDING
+portal.unifiedid.com
+
+# === Unity (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/unity.com
+# Scope: *.unity.com
+# STATUS: PENDING
+api.unity.com
+cloud.unity.com
+id.unity.com
+pay.unity.com
+player-login.unity.com
+services.unity.com
+store.unity.com
+unity.com
+
+# === Unity3D (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/unity3d.com
+# Scope: *.unity3d.com
+# STATUS: PENDING
+unity3d.com
+
+# === Unscreen (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/unscreen.com
+# Scope: *.unscreen.com
+# STATUS: PENDING
+unscreen.com
+
+# === Upwork (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/upwork.com
+# Scope: *.upwork.com
+# STATUS: PENDING
+api.upwork.com
+upwork.com
+
+# === Uri (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/uri.sh
+# Scope: *.uri.sh
+# STATUS: PENDING
+flo.uri.sh
+
+# === Usaa (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/usaa.com
+# Scope: *.usaa.com
+# STATUS: PENDING
+api-a.usaa.com
+api.usaa.com
+authn.usaa.com
+b2bapi-a.usaa.com
+b2bapi.usaa.com
+b2blsapi-a.usaa.com
+b2blsapi.usaa.com
+content.usaa.com
+d1.utv.usaa.com
+d2.utv.usaa.com
+externalconnect.usaa.com
+guest.usaa.com
+l.usaa.com
+liveassist.usaa.com
+liveassist11.usaa.com
+liveassist12.usaa.com
+liveassist21.usaa.com
+liveassist22.usaa.com
+liveassist23.usaa.com
+liveassist24.usaa.com
+mapi-a.usaa.com
+mapi.usaa.com
+mguest.usaa.com
+mobile.usaa.com
+mobileapps.usaa.com
+mstatic.usaa.com
+mydesktop.usaa.com
+myvpn.usaa.com
+nvoice.usaa.com
+partners.usaa.com
+s.usaa.com
+s1.utv.usaa.com
+s2.utv.usaa.com
+securemail.usaa.com
+static.usaa.com
+usaa.com
+utv.usaa.com
+v.utv.usaa.com
+vendorss.usaa.com
+vlagg.usaa.com
+vlapi.usaa.com
+webmail.usaa.com
+ws.usaa.com
+wsmbr.usaa.com
+
+# === Usaa360 (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/usaa360.com
+# Scope: *.usaa360.com
+# STATUS: PENDING
+aemdam.usaa360.com
+
+# === Usaainsurance (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/usaainsurance.com
+# Scope: *.usaainsurance.com
+# STATUS: PENDING
+usaainsurance.com
+
+# === Uscc (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/uscc.com
+# Scope: *.uscc.com
+# STATUS: PENDING
+uscc.com
+
+# === Uscc (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/uscc.net
+# Scope: *.uscc.net
+# STATUS: PENDING
+uscc.net
+
+# === Uscellular (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/uscellular.com
+# Scope: *.uscellular.com
+# STATUS: PENDING
+uscellular.com
+
+# === Usdstandard (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/usdstandard.com
+# Scope: *.usdstandard.com
+# STATUS: PENDING
+usdstandard.com
+
+# === Vacationhomerentals (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vacationhomerentals.com
+# Scope: *.vacationhomerentals.com
+# STATUS: PENDING
+vacationhomerentals.com
+
+# === Vendhq (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vendhq.com
+# Scope: *.vendhq.com
+# STATUS: PENDING
+payment-connectors.vendhq.com
+
+# === Venturatvos (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/venturatvos.com
+# Scope: *.venturatvos.com
+# STATUS: PENDING
+venturatvos.com
+
+# === Verisign Grs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/verisign-grs.com
+# Scope: *.verisign-grs.com
+# STATUS: PENDING
+epptool-ctld.verisign-grs.com
+verisign-grs.com
+
+# === Verisign (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/verisign.com
+# Scope: *.verisign.com
+# STATUS: PENDING
+blog.verisign.com
+verisign.com
+
+# === Viator (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/viator.com
+# Scope: *.viator.com
+# STATUS: PENDING
+help.supplier.viator.com
+kiwi.partner.viator.com
+partnerhelp.viator.com
+partners.viator.com
+selector.viator.com
+supplier.viator.com
+travelagents.viator.com
+viator.com
+
+# === Viatorinc (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/viatorinc.com
+# Scope: *.viatorinc.com
+# STATUS: PENDING
+viatorinc.com
+
+# === Vistarmedia (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vistarmedia.com
+# Scope: *.vistarmedia.com
+# STATUS: PENDING
+api.vistarmedia.com
+assets-cdn.vistarmedia.com
+audience-builder.vistarmedia.com
+creatives.vistarmedia.com
+docsite.vistarmedia.com
+job-svc-b.vistarmedia.com
+maps.vistarmedia.com
+production-delivery-metrics-svc.vistarmedia.com
+production-dynam-creative.vistarmedia.com
+staging-login.vistarmedia.com
+staging-trafficking.vistarmedia.com
+storybook.vistarmedia.com
+transcodes-cdn.vistarmedia.com
+
+# === Vistarmedia (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vistarmedia.eu
+# Scope: *.vistarmedia.eu
+# STATUS: PENDING
+api.vistarmedia.eu
+
+# === Volkswagen (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/volkswagen.de
+# Scope: *.volkswagen.de
+# STATUS: PENDING
+volkswagen.de
+
+# === Voxcinemas (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/voxcinemas.com
+# Scope: *.voxcinemas.com
+# STATUS: PENDING
+uae.voxcinemas.com
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.co.in
+# Scope: *.vwfs.co.in
+# STATUS: PENDING
+vwfs.co.in
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.co.za
+# Scope: *.vwfs.co.za
+# STATUS: PENDING
+vwfs.co.za
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.com
+# Scope: *.vwfs.com
+# STATUS: PENDING
+vwfs.com
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.com.ar
+# Scope: *.vwfs.com.ar
+# STATUS: PENDING
+vwfs.com.ar
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.com.au
+# Scope: *.vwfs.com.au
+# STATUS: PENDING
+vwfs.com.au
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.com.br
+# Scope: *.vwfs.com.br
+# STATUS: PENDING
+vwfs.com.br
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.com.tw
+# Scope: *.vwfs.com.tw
+# STATUS: PENDING
+vwfs.com.tw
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.cz
+# Scope: *.vwfs.cz
+# STATUS: PENDING
+vwfs.cz
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.de
+# Scope: *.vwfs.de
+# STATUS: PENDING
+vwfs.de
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.dk
+# Scope: *.vwfs.dk
+# STATUS: PENDING
+vwfs.dk
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.es
+# Scope: *.vwfs.es
+# STATUS: PENDING
+vwfs.es
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.fr
+# Scope: *.vwfs.fr
+# STATUS: PENDING
+vwfs.fr
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.gr
+# Scope: *.vwfs.gr
+# STATUS: PENDING
+vwfs.gr
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.ie
+# Scope: *.vwfs.ie
+# STATUS: PENDING
+vwfs.ie
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.it
+# Scope: *.vwfs.it
+# STATUS: PENDING
+vwfs.it
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.kr
+# Scope: *.vwfs.kr
+# STATUS: PENDING
+vwfs.kr
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.mx
+# Scope: *.vwfs.mx
+# STATUS: PENDING
+vwfs.mx
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.nl
+# Scope: *.vwfs.nl
+# STATUS: PENDING
+vwfs.nl
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.pl
+# Scope: *.vwfs.pl
+# STATUS: PENDING
+vwfs.pl
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.pt
+# Scope: *.vwfs.pt
+# STATUS: PENDING
+vwfs.pt
+
+# === Vwfs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/vwfs.sk
+# Scope: *.vwfs.sk
+# STATUS: PENDING
+vwfs.sk
+
+# === Webauthn (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/webauthn.me
+# Scope: *.webauthn.me
+# STATUS: PENDING
+webauthn.me
+
+# === Webmd (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/webmd.com
+# Scope: *.webmd.com
+# STATUS: PENDING
+accounts.webmd.com
+member.webmd.com
+pets.webmd.com
+webmd.com
+
+# === Weebly (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/weebly.com
+# Scope: *.weebly.com
+# STATUS: PENDING
+weebly.com
+
+# === Welcomesoftware (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/welcomesoftware.com
+# Scope: *.welcomesoftware.com
+# STATUS: PENDING
+accounts.welcomesoftware.com
+analytics.welcomesoftware.com
+api.welcomesoftware.com
+app.welcomesoftware.com
+cdn-app.welcomesoftware.com
+
+# === Wfmusaa (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/wfmusaa.com
+# Scope: *.wfmusaa.com
+# STATUS: PENDING
+nice.wfmusaa.com
+
+# === Wien (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/wien.at
+# Scope: *.wien.at
+# STATUS: PENDING
+wien.at
+
+# === Wienkav (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/wienkav.at
+# Scope: *.wienkav.at
+# STATUS: PENDING
+wienkav.at
+
+# === Wimpmusic (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/wimpmusic.com
+# Scope: *.wimpmusic.com
+# STATUS: PENDING
+wimpmusic.com
+
+# === Winconnect (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/winconnect.com.au
+# Scope: *.winconnect.com.au
+# STATUS: PENDING
+customerportal.winconnect.com.au
+winconnect.com.au
+
+# === Wise Sandbox (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/wise-sandbox.com
+# Scope: *.wise-sandbox.com
+# STATUS: PENDING
+wise-sandbox.com
+
+# === Wise (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/wise.com
+# Scope: *.wise.com
+# STATUS: PENDING
+wise.com
+
+# === Wmaudience (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/wmaudience.com
+# Scope: *.wmaudience.com
+# STATUS: PENDING
+development.wmaudience.com
+imply.wmaudience.com
+rc.wmaudience.com
+wmaudience.com
+
+# === Wowjobs (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/wowjobs.ca
+# Scope: *.wowjobs.ca
+# STATUS: PENDING
+wowjobs.ca
+
+# === Wyze (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/wyze.com
+# Scope: *.wyze.com
+# STATUS: PENDING
+auth.wyze.com
+my.wyze.com
+wyze.com
+
+# === Wyzecam (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/wyzecam.com
+# Scope: *.wyzecam.com
+# STATUS: PENDING
+api.wyzecam.com
+
+# === Xfinity (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/xfinity.com
+# Scope: *.xfinity.com
+# STATUS: PENDING
+xfinity.com
+
+# === Xyzbmojn (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/xyzbmojn.net
+# Scope: *.xyzbmojn.net
+# STATUS: PENDING
+xyzbmojn.net
+
+# === Yellowblocks (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/yellowblocks.me
+# Scope: *.yellowblocks.me
+# STATUS: PENDING
+lapi.yellowblocks.me
+
+# === Ynab (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/ynab.com
+# Scope: *.ynab.com
+# STATUS: PENDING
+ynab.com
+
+# === Youcouldbe (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/youcouldbe.com
+# Scope: *.youcouldbe.com
+# STATUS: PENDING
+youcouldbe.com
+
+# === Yourdelivery (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/yourdelivery.de
+# Scope: *.yourdelivery.de
+# STATUS: PENDING
+yourdelivery.de
+
+# === Yoyogames (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/yoyogames.com
+# Scope: *.yoyogames.com
+# STATUS: PENDING
+yoyogames.com
+
+# === Zoop (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/zoop.com.br
+# Scope: *.zoop.com.br
+# STATUS: PENDING
+dash.zoop.com.br
+minhaconta.zoop.com.br
+zoop.com.br
+
+# === Zoop (Bugcrowd) ===
+# Program: https://bugcrowd.com/programs/zoop.ws
+# Scope: *.zoop.ws
+# STATUS: PENDING
+zoop.ws

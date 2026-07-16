@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics) — v6.0
+Module: Bounty Scanner (URL Heuristics) — v7.0
 Passively analyzes massive URL collections for high-value bug bounty findings.
 
 ════════════════════════════════════════════════════════════════════════════════
@@ -94,6 +94,97 @@ PRIVATE_IP_REGEX = re.compile(
 )
 # Unix epoch: 10-digit number (seconds since 1970, ~year 2001-2286)
 _EPOCH_10_RE     = re.compile(r'^\d{10}$')
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# JWT CLAIM DECODER — extract expiry, subject, email from JWT payloads
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _decode_jwt_claims(jwt_str: str) -> dict:
+    """Decode the payload of a JWT and return key claims.
+    Returns dict with: exp, sub, email, typ, azp, iss (if present).
+    Returns empty dict on failure."""
+    import base64
+    try:
+        parts = jwt_str.split('.')
+        if len(parts) < 2:
+            return {}
+        payload_b64 = parts[1]
+        # Fix base64 padding
+        payload_b64 += '=' * (-len(payload_b64) % 4)
+        payload = json.loads(base64.urlsafe_b64decode(payload_b64).decode('utf-8', errors='ignore'))
+        claims = {}
+        for key in ('exp', 'iat', 'sub', 'email', 'eml', 'typ', 'type', 'azp', 'iss', 'aud', 'user_id', 'scope'):
+            if key in payload:
+                claims[key] = payload[key]
+        return claims
+    except Exception:
+        return {}
+
+
+def _jwt_evidence_with_claims(jwt_str: str, prefix: str = '') -> str:
+    """Build evidence string for a JWT finding, including decoded claims."""
+    claims = _decode_jwt_claims(jwt_str)
+    parts = []
+    if prefix:
+        parts.append(prefix)
+    parts.append(f'JWT: {jwt_str[:60]}...')
+    if claims.get('exp'):
+        import time as _time
+        exp = claims['exp']
+        if isinstance(exp, (int, float)):
+            if exp > _time.time():
+                days_left = int((exp - _time.time()) / 86400)
+                parts.append(f'STILL VALID ({days_left}d left)')
+            else:
+                days_ago = int((_time.time() - exp) / 86400)
+                parts.append(f'Expired {days_ago}d ago')
+    if claims.get('email') or claims.get('eml'):
+        email = claims.get('email') or claims.get('eml')
+        parts.append(f'User: {email}')
+    elif claims.get('sub'):
+        parts.append(f'Sub: {str(claims["sub"])[:40]}')
+    if claims.get('typ') or claims.get('type'):
+        typ = claims.get('typ') or claims.get('type')
+        parts.append(f'Type: {typ}')
+    return ' | '.join(parts)
+
+
+def _is_oauth_callback_jwt(url: str, params: dict) -> bool:
+    """Return True if the JWT is in a standard OAuth2 authorization code callback.
+    These are single-use, short-lived authorization codes — expected behavior.
+    Pattern: ?code=eyJ... on callback/redirect paths or root paths.
+    Adobe, Coinbase, Shopify etc. all use JWT-format auth codes."""
+    code_val = (params.get('code', params.get('Code', ['']))[0])
+    if not code_val or not JWT_REGEX.match(code_val):
+        return False
+    # Decode claims to check if it's an authorization_code type
+    claims = _decode_jwt_claims(code_val)
+    token_type = claims.get('type', claims.get('typ', '')).lower()
+    if token_type in ('authorization_code', 'auth_code', 'code'):
+        return True
+    # Even without explicit type, ?code= on known OAuth callback patterns is expected
+    path = urlparse(url).path.lower()
+    oauth_callback_paths = ('/callback', '/oauth/callback', '/oauth2/callback',
+                             '/auth/callback', '/login/callback', '/sso/callback',
+                             '/signin-oidc', '/connect/callback')
+    if any(path.endswith(p) or path == p for p in oauth_callback_paths):
+        return True
+    # Root path with ?code= and other OAuth params (state=, scope=) is also a callback
+    if path in ('/', '') and ('state' in params or 'scope' in params):
+        return True
+    return False
+
+
+def _is_invitation_link(url: str, params: dict) -> bool:
+    """Return True for invitation/onboarding links — designed behavior.
+    Pattern: /accept-invitation, /invite, /join with email/token params.
+    These links are intentionally sent to users; emails in them are by design."""
+    path = urlparse(url).path.lower()
+    invitation_segs = ('/accept-invitation', '/accept_invitation', '/acceptinvitation',
+                        '/invite/', '/invitation/', '/join/', '/onboard/',
+                        '/team-invite', '/org-invite', '/workspace-invite')
+    return any(seg in path for seg in invitation_segs)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -685,14 +776,15 @@ _EMAIL_CRED_PATH_RE = re.compile(
 )
 
 
-def _check_credential_in_url(url: str) -> str:
+def _check_credential_in_url(url: str, params: dict = None) -> str:
     """
     Detect plaintext credentials embedded in URLs — always CRITICAL.
 
-    Three patterns:
+    Four patterns:
     1. RFC 3986 basic-auth:          https://user:password@dashboard.example.com/
     2. Email:password in path:       https://join.booking.com/:email@gmail.com:P@ssw0rd
     3. Phone:password in path:       https://registration.site.com/:+15551234567:password
+    4. Credential param pairs:       ?username=admin&password=secret123
 
     Guards: skip mailto:, known placeholder values, pure-lowercase-alpha passwords.
     """
@@ -722,6 +814,31 @@ def _check_credential_in_url(url: str) -> str:
         if pwd.lower() not in _CRED_FP_VALUES and not pwd.isalpha():
             return f'PHONE_CRED_IN_PATH: {phone}:{pwd[:30]}'
 
+    # Pattern 4: Credential param pairs — ?username=X&password=Y
+    if params:
+        params_lower = {k.lower(): v for k, v in params.items()}
+        user_keys = ('username', 'user', 'login', 'email', 'user_email')
+        pwd_keys = ('password', 'passwd', 'pwd', 'pass', 'secret')
+        user_val = ''
+        pwd_val = ''
+        for uk in user_keys:
+            v = (params_lower.get(uk, [''])[0])
+            if v and len(v) > 2 and v.lower() not in JUNK_VALUES and not _has_template_variable(v):
+                user_val = v
+                break
+        for pk in pwd_keys:
+            v = (params_lower.get(pk, [''])[0])
+            if v and len(v) > 5 and v.lower() not in JUNK_VALUES and not _has_template_variable(v):
+                # Require password complexity: not pure lowercase alpha
+                if not v.isalpha() or not v.islower():
+                    pwd_val = v
+                    break
+        if user_val and pwd_val:
+            # Skip login form submissions to auth endpoints (expected)
+            path = urlparse(url).path.lower()
+            if not any(seg in path for seg in ('/login', '/signin', '/auth', '/signup')):
+                return f'PARAM_CREDS: {user_val}:{pwd_val[:30]}'
+
     return ''
 
 
@@ -733,7 +850,9 @@ def _check_jwt_in_url(url: str, params: dict) -> str:
 
     Exclusions:
     - AppsFlyer attribution params (af_sig, af_token) — deep-link attribution JWTs
-    - OAuth2 callback ?state= param — opaque state values sometimes encoded as JWT, expected
+    - OAuth2 callback ?code= with JWT-format auth codes — standard OAuth2 flow
+    - Invitation links — emails in invitation URLs are designed behavior
+    - Marketing subscription_center / preference links with JWT auth
     """
     # Skip AppsFlyer attribution URLs — they put JWTs in deep-links by design
     appsflyer_jwt_params = {'af_sig', 'af_token'}
@@ -742,12 +861,21 @@ def _check_jwt_in_url(url: str, params: dict) -> str:
                for k, v in params.items()):
             return ''
 
+    # Skip OAuth2 authorization code callbacks — JWT in ?code= is standard
+    if _is_oauth_callback_jwt(url, params):
+        return ''
+
+    # Skip invitation links — JWTs in invite URLs are by design
+    if _is_invitation_link(url, params):
+        return ''
+
     # Check URL body (path and query string combined)
     decoded = unquote(url)
     m = JWT_REGEX.search(decoded)
     if m:
         jwt = m.group(0)
-        return f'JWT in URL: {jwt[:60]}...'
+        # Enrich with decoded claims
+        return _jwt_evidence_with_claims(jwt)
     return ''
 
 
@@ -1519,9 +1647,14 @@ def _is_8x8_meeting_jwt(url: str) -> bool:
 
 HEURISTICS: Dict[str, dict] = {
 
+    # ══════════════════════════════════════════════════════════════════════════
+    # UNIVERSAL FINDINGS — accepted by ALL bug bounty programs
+    # ══════════════════════════════════════════════════════════════════════════
+
     # ── CRITICAL: Keycloak SSO action tokens (CONFIRMED REPORTABLE) ────────
     'Keycloak_Action_Token': {
         'severity': 'CRITICAL',
+        'universal': True,
         'description': (
             'Keycloak SSO action token (password reset or account linking) indexed on '
             'VirusTotal/Wayback Machine. If still valid (5-min TTL), allows direct '
@@ -1533,6 +1666,7 @@ HEURISTICS: Dict[str, dict] = {
     # ── CRITICAL/HIGH: Signed document URLs with time-limited tokens ────────
     'Signed_Document_URL': {
         'severity': 'HIGH',  # overridden to CRITICAL when still valid
+        'universal': True,
         'description': (
             'Signed invoice/document URL (s=issued, e=expiry, c=HMAC) indexed by a URL scanner. '
             'When still valid, grants direct unauthenticated access to the document — '
@@ -1549,6 +1683,7 @@ HEURISTICS: Dict[str, dict] = {
     # ── CRITICAL: Password reset token in query params ──────────────────────
     'Password_Reset_Param': {
         'severity': 'CRITICAL',
+        'universal': True,
         'description': (
             'Password reset token in query param on a reset/forgot-password endpoint. '
             'If still valid, allows direct account takeover without knowing the password. '
@@ -1560,16 +1695,18 @@ HEURISTICS: Dict[str, dict] = {
     # ── CRITICAL: Credentials ──────────────────────────────────────────────
     'Credential_In_URL': {
         'severity': 'CRITICAL',
+        'universal': True,
         'description': 'Plaintext username:password in URL — immediate ATO risk. '
                        'Common in VirusTotal submissions of authenticated sessions.',
-        'check': lambda url, params: _check_credential_in_url(url),
+        'check': _check_credential_in_url,
     },
 
     # ── CRITICAL: JWT anywhere in URL ─────────────────────────────────────
     'JWT_In_URL': {
         'severity': 'CRITICAL',
+        'universal': True,
         'description': 'JWT token found in URL path/query — gets logged in access logs, '
-                       'browser history, and Referer headers. Extract claims for user context.',
+                       'browser history, and Referer headers. Claims decoded for triage.',
         # Skip 8x8 vpaas-magic-cookie: public meeting room guest tokens (not secrets)
         'check': lambda url, params: (
             '' if _is_8x8_meeting_jwt(url) else _check_jwt_in_url(url, params)
@@ -1579,65 +1716,62 @@ HEURISTICS: Dict[str, dict] = {
     # ── CRITICAL: Auth token leaks ─────────────────────────────────────────
     'Token_Leak': {
         'severity': 'CRITICAL',
+        'universal': True,  # service-specific keys (Stripe, GitHub) are universal
         'description': 'Authentication token/API key leaked in URL — session hijack or '
                        'API abuse risk. Classified by type: autologin, OAuth, session+expiry, '
                        'service-specific (Stripe sk_live_, GitHub ghp_, GitLab glpat-, etc.).',
         # Skip known analytics/ad/noise domains, and 8x8 public meeting room JWTs
         'check': lambda url, params: (
-            '' if (_is_noise_domain(url) or _is_8x8_meeting_jwt(url))
+            '' if (_is_noise_domain(url) or _is_8x8_meeting_jwt(url)
+                   or _is_oauth_callback_jwt(url, params))
             else _classify_token(url, params)[1]
         ),
         '_get_severity': lambda url, params: (
-            '' if (_is_noise_domain(url) or _is_8x8_meeting_jwt(url))
+            '' if (_is_noise_domain(url) or _is_8x8_meeting_jwt(url)
+                   or _is_oauth_callback_jwt(url, params))
             else (_classify_token(url, params)[0] or 'HIGH')
         ),
     },
 
-    # Password_Reset_Token: REMOVED — v5.3
-    # Zero findings across all real scan outputs. All candidates filtered by
-    # camelCase/snake_case/auth-action-word guards. Removing to reduce overhead.
-
     # ── CRITICAL: SSRF ────────────────────────────────────────────────────
     'SSRF_Param': {
         'severity': 'CRITICAL',
+        'universal': True,
         'description': 'Server-side request forgery: param causes server to fetch external URL. '
                        'Test for internal network access, cloud metadata (169.254.169.254).',
         'check': _check_ssrf_param,
     },
 
-    # Debug_Admin_Panel: REMOVED — v5.3
-    # Passive URL analysis cannot confirm accessibility. Almost always 403/404.
-    # Zero actionable findings observed.
+    # -- CRITICAL: Password reset with UUID token --------------------------------
+    'Password_Reset_UUID': {
+        'severity': 'CRITICAL',
+        'universal': True,
+        'description': 'UUID token in password reset/activation path -- '
+                       'if still valid allows direct account takeover. '
+                       'UUIDs are system-generated; zero FP risk.',
+        'check': _check_password_reset_uuid,
+    },
 
-    # Config_File_Exposed: REMOVED — v5.2
-    # Rationale: All observed findings (.env, .git/config, .htpasswd) returned
-    # 401/403 (password protected). A URL alone cannot tell us whether the file
-    # is publicly accessible — requires actual HTTP request. Near-100% FP rate
-    # from URL-only passive analysis. Re-enable if active probing is added.
-    #
-    # Open_Redirect: REMOVED — v5.2
-    # Rationale: 138/229 (60%) of all findings were Open_Redirect FPs.
-    # Root causes:
-    #   1. app.adjust.com: 'redirect=' is Adjust's core mobile attribution product
-    #      feature. Every Adjust tracking link has redirect= by design. Not a bug.
-    #   2. mercadolibre.com partner URLs: redirect to affiliate/partner domains
-    #      is expected behavior in marketplace platforms.
-    #   3. bat.bing.net, mgid.com: ad network tracking — not in scope.
-    # Passive URL analysis cannot distinguish "unvalidated redirect" (bug) from
-    # "intentional partner redirect" (product feature) without active testing.
-    # Re-enable with active verification if HTTP probing is added.
+    # ══════════════════════════════════════════════════════════════════════════
+    # PROGRAM-SPECIFIC FINDINGS — only some programs accept these
+    # (e.g., Wix, eBay, Remitify accept PII leaks; others don't)
+    # ══════════════════════════════════════════════════════════════════════════
 
     # ── HIGH: PII email in URL ─────────────────────────────────────────────
     'PII_Email_Leak': {
         'severity': 'HIGH',
+        'universal': False,
         'description': 'Real email address in URL params — privacy violation (GDPR/CCPA). '
-                       'Reportable if on a non-email-marketing endpoint and gets logged.',
-        'check': lambda url, params: _has_real_email(params, url),
+                       'Reportable only to programs that accept PII disclosure findings.',
+        'check': lambda url, params: (
+            '' if _is_invitation_link(url, params) else _has_real_email(params, url)
+        ),
     },
 
     # ── HIGH: Cloud storage exposure ──────────────────────────────────────
     'Cloud_Storage_Exposure': {
         'severity': 'HIGH',
+        'universal': True,
         'description': 'Pre-signed S3/GCS URL or direct access to sensitive cloud file — '
                        'may expose private data, backups, or internal documents.',
         'check': _check_cloud_storage,
@@ -1646,23 +1780,16 @@ HEURISTICS: Dict[str, dict] = {
     # ── HIGH: Other PII in URL ─────────────────────────────────────────────
     'PII_Data_Leak': {
         'severity': 'HIGH',
+        'universal': False,
         'description': 'Non-email PII (SSN, card number, phone, DOB) in URL params — '
-                       'serious privacy violation, likely GDPR/PCI reportable.',
+                       'serious privacy violation. Report only to programs accepting PII.',
         'check': lambda url, params: _has_real_pii(params),
-    },
-
-    # -- CRITICAL: Password reset with UUID token --------------------------------
-    'Password_Reset_UUID': {
-        'severity': 'CRITICAL',
-        'description': 'UUID token in password reset/activation path -- '
-                       'if still valid allows direct account takeover. '
-                       'UUIDs are system-generated; zero FP risk.',
-        'check': _check_password_reset_uuid,
     },
 
     # -- HIGH: API spec exposed ---------------------------------------------------
     'API_Spec_Exposed': {
         'severity': 'HIGH',
+        'universal': True,
         'description': 'openapi.yaml/swagger.json on production -- reveals full '
                        'endpoint surface, parameters, and auth schemes.',
         'check': _check_api_spec_exposed,
@@ -1671,6 +1798,7 @@ HEURISTICS: Dict[str, dict] = {
     # -- HIGH: Prometheus metrics on production -----------------------------------
     'Metrics_Endpoint': {
         'severity': 'HIGH',
+        'universal': True,
         'description': 'Prometheus /metrics or Spring Actuator on production -- '
                        'leaks topology, error rates, KPIs, possibly secrets.',
         'check': _check_metrics_endpoint,
@@ -1679,15 +1807,11 @@ HEURISTICS: Dict[str, dict] = {
     # ── MEDIUM: IDOR endpoints ─────────────────────────────────────────────
     'IDOR_Endpoint': {
         'severity': 'MEDIUM',
+        'universal': False,
         'description': 'API endpoint with predictable user/order/account ID in path — '
                        'test for IDOR by accessing another user\'s object ID.',
         'check': _check_idor_endpoint,
     },
-
-    # GraphQL_Introspection: REMOVED — v5.3
-    # Rationale: High FP rate — most /graphql endpoints in URL archives
-    # are just API calls, not actual introspection queries being logged.
-    # Passive URL analysis cannot confirm introspection is enabled.
 }
 
 
@@ -1742,7 +1866,7 @@ class BountyScanner:
 
     def scan(self) -> Dict:
         start = time.time()
-        banner('Passive Bounty Scanner v6.0')
+        banner('Passive Bounty Scanner v7.0')
         log_info(f'Scanning {len(self.urls)} unique URLs against {len(HEURISTICS)} heuristics...')
 
         for raw_url in self.urls:
@@ -1863,6 +1987,7 @@ class BountyScanner:
                 finding = {
                     'type':        vuln_id,
                     'severity':    severity,
+                    'universal':   cfg.get('universal', True),
                     'description': cfg['description'],
                     'url':         url,
                     'count':       1,
@@ -1895,7 +2020,7 @@ class BountyScanner:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Passive Bounty URL Scanner v6.0')
+    parser = argparse.ArgumentParser(description='Passive Bounty URL Scanner v7.0')
     parser.add_argument('-l', '--list',   required=True, help='File of URLs to scan (unique_urls.txt)')
     parser.add_argument('-o', '--output', help='Output JSON file for findings')
     args = parser.parse_args()

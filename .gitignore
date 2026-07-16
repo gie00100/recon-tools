@@ -43,3 +43,6 @@ desktop.ini
 # ── Gemini AI / Agent metadata ──
 .gemini/
 .antigravityignore
+
+organized_scans/
+bugcrowd_inscope_raw.txt
