@@ -2144,6 +2144,7 @@ def main():
     parser = argparse.ArgumentParser(description='Passive Bounty URL Scanner v7.1')
     parser.add_argument('-l', '--list',   required=True, help='File of URLs to scan (unique_urls.txt)')
     parser.add_argument('-o', '--output', help='Output JSON file for findings')
+    parser.add_argument('--js-findings',  help='JS findings JSON (js_findings.json) to merge into output')
     args = parser.parse_args()
 
     urls = read_lines(args.list)
@@ -2153,6 +2154,30 @@ def main():
 
     scanner = BountyScanner(urls)
     results  = scanner.scan()
+
+    # Merge JS secrets if provided
+    if args.js_findings:
+        try:
+            with open(args.js_findings, 'r') as f:
+                js_data = json.load(f)
+            js_secrets = js_data.get('secrets', [])
+            if js_secrets:
+                for secret in js_secrets:
+                    js_finding = {
+                        'type':        f'JS_{secret["type"].replace(" ", "_")}',
+                        'severity':    secret.get('severity', 'INFO'),
+                        'universal':   True,
+                        'description': f'Secret found in JavaScript file: {secret["type"]}',
+                        'url':         secret.get('source', ''),
+                        'count':       1,
+                        'evidence':    secret.get('match', '')[:100],
+                        'source':      'js_extractor',
+                    }
+                    results['findings'].append(js_finding)
+                results['js_secrets_merged'] = len(js_secrets)
+                log_success(f'Merged {len(js_secrets)} JS secrets into findings')
+        except Exception as e:
+            log_warning(f'Could not merge JS findings: {e}')
 
     if args.output:
         with open(args.output, 'w') as f:

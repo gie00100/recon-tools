@@ -779,14 +779,42 @@ class ReconMaster:
         
         self.bounty_flags = len(verified_findings)
 
-        # Save findings
-        if verified_findings:
+        # ── Merge JS extractor secrets into findings ─────────────────────
+        # Convert JS secrets to the same format as bounty findings so
+        # everything appears in one file (bounty_targets.json)
+        js_secret_findings = []
+        for secret in self.js_findings.get("secrets", []):
+            js_finding = {
+                'type':        f'JS_{secret["type"].replace(" ", "_")}',
+                'severity':    secret.get('severity', 'INFO'),
+                'universal':   True,
+                'description': f'Secret found in JavaScript file: {secret["type"]}',
+                'url':         secret.get('source', ''),
+                'count':       1,
+                'evidence':    secret.get('match', '')[:100],
+                'source':      'js_extractor',
+                'context':     secret.get('context', '')[:200],
+            }
+            js_secret_findings.append(js_finding)
+
+        all_findings = verified_findings + js_secret_findings
+        total_js_secrets = len(js_secret_findings)
+        if total_js_secrets:
+            log_info(f"Merged {total_js_secrets} JS secrets into bounty findings")
+
+        # Save combined findings
+        if all_findings:
             output_file = self.output_dir / "bounty_targets.json"
             with open(output_file, "w", encoding="utf-8") as f:
-                json.dump({"findings": verified_findings, "stats": self.bounty_stats, "total_urls": len(self.unique_urls)}, f, indent=2)
+                json.dump({
+                    "findings": all_findings,
+                    "stats": self.bounty_stats,
+                    "total_urls": len(self.unique_urls),
+                    "js_secrets_merged": total_js_secrets,
+                }, f, indent=2)
 
         duration = elapsed_str(start)
-        self.phase_times.append(("Bounty Scanning", duration, self.bounty_flags))
+        self.phase_times.append(("Bounty Scanning", duration, len(all_findings)))
 
     async def _phase_report(self):
         """Phase 11: Report Generation."""
