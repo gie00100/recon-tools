@@ -1,0 +1,76 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║     BUGCROWD PROGRAMS                                           ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# === Pantheon (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/pantheon
+# Scope: Website targets
+# STATUS: PENDING
+dashboard.pantheon.io
+
+# === Sky UK/ROI (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/sky-plc-mbb-og
+# Scope: All internet facing Sky UK/ROI assets
+# STATUS: PENDING
+sky.com
+
+# === Sky Italy (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/sky-plc-mbb-og1
+# Scope: All internet facing Sky Italy assets
+# STATUS: PENDING
+sky.it
+
+# === Sky DACH (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/sky-plc-mbb-og2
+# Scope: All internet facing Sky DACH assets
+# STATUS: PENDING
+sky.de
+
+# === Ibotta (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/ibotta
+# Scope: Website targets
+# STATUS: PENDING
+ibotta.com
+app.ibotta.com
+backend.ibotta.com
+content-server.ibotta.com
+api.ibotta.com
+api.ibops.net
+api.int.ibops.net
+
+# === TRM Labs (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/trm-labs-public-mbb
+# Scope: Website targets
+# STATUS: PENDING
+chainabuse-staging.com
+api.chainabuse-staging.com
+
+# === QuintoAndar (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/quintoandar
+# Scope: Website targets
+# STATUS: PENDING
+quintoandar.com.br
+www.quintoandar.com.br
+www.user.quintoandar.com.br
+www.financeiro.quintoandar.com.br
+finance.quintoandar.com.br
+
+# === Prosus (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/prosus-og
+# Scope: Website targets
+# STATUS: PENDING
+dealflow.prosus.com
+analytics-admin.prosus.com
+analytics.prosus.com
+data.prosus.com
+hr.prosus.com
+tracker.naspers.com
+cfc.naspers.com
+peopleview.naspers.com
+nav.naspers.com
+
+# === EPAM Systems (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/epam-mbb-og
+# Scope: *.epam.com (wildcards)
+# STATUS: PENDING
+epam.com
