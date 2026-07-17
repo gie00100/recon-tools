@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module: Bounty Scanner (URL Heuristics) — v7.0
+Module: Bounty Scanner (URL Heuristics) — v7.1
 Passively analyzes massive URL collections for high-value bug bounty findings.
 
 ════════════════════════════════════════════════════════════════════════════════
@@ -57,6 +57,23 @@ WHAT'S NEW IN v5.0 (complete framework redesign)
   - Finding grouping: same type+host+path_prefix collapses to one finding with count
   - Confidence scoring: 0-100 per finding for triage prioritization
   - All v4.1 noise filters preserved and generalized into the architecture
+
+════════════════════════════════════════════════════════════════════════════════
+WHAT'S NEW IN v7.1 (BruteCat-inspired upgrades)
+════════════════════════════════════════════════════════════════════════════════
+Inspired by https://brutecat.com/articles/hacking-google-with-ai/ ($500K in
+Google bounties using AI-driven API fuzzing with discovery documents):
+
+  - API Spec Detection: added /$discovery/rest, /_catalog, /v2/api-docs,
+    /application.wadl, /grpc.reflection, /.well-known/openid-configuration,
+    plus GraphQL introspection detection in query params
+  - NEW Staging_Environment heuristic: flags staging/sandbox/test/preprod/dev
+    environments — these often have weaker access controls + prod data
+  - Metrics Endpoint: no longer skips staging domains (staging is actually
+    MORE valuable to flag — weaker controls, same data)
+  - Debug Handlers: added Google-style /flagz, /healthz, /statusz, /varz
+  - IDOR downgraded to INFO: existence enumeration alone is NOT reportable;
+    only flag when actual data access is confirmed
 """
 
 import argparse
@@ -1587,45 +1604,133 @@ def _check_password_reset_uuid(url: str, params: dict) -> str:
 
 
 def _check_api_spec_exposed(url: str, params: dict) -> str:
-    '''Detect exposed API spec files (openapi.yaml/swagger.json) on production.
+    '''Detect exposed API spec / discovery document files.
+    These are roadmaps to all API endpoints, parameters, and auth schemes.
+
+    v7.1: Added Google-style /$discovery/rest, /_catalog, /v2/api-docs,
+    /graphql introspection query detection.
+    Inspired by BruteCat's $500K Google research — discovery docs were the
+    single highest-value recon artifact enabling automated IDOR/ACL fuzzing.
     Confirmed real: trip.com/ai-resource/trip/openapi.yaml'''
     if _is_noise_domain(url) or _is_static_asset(url):
         return ''
     parsed = urlparse(url)
     host, path = parsed.netloc.lower(), parsed.path.lower()
-    if host.startswith(('docs.', 'developer.', 'dev.', 'swagger.', 'api-docs.')):
+    if host.startswith(('docs.', 'developer.', 'swagger.', 'api-docs.')):
         return ''
     if any(seg in path for seg in DOC_PATH_SEGMENTS):
         return ''
     spec_re = re.compile(
         r'/(?:openapi|swagger)\.(?:yaml|yml|json)(?:\?|$)'
         r'|/api-docs(?:/v\d+)?(?:\?|$)'
-        r'|/swagger-ui(?:\.html|/index\.html)?(?:\?|$)',
+        r'|/v\d+/api-docs(?:\?|$)'
+        r'|/swagger-ui(?:\.html|/index\.html)?(?:\?|$)'
+        # Google-style discovery documents (BruteCat approach)
+        r'|/\$discovery/rest(?:\?|$)'
+        r'|/\$discovery/rpc(?:\?|$)'
+        # REST catalog / service registry
+        r'|/_catalog(?:\?|$)'
+        r'|/v\d+/_catalog(?:\?|$)'
+        # WADL (older REST spec format)
+        r'|/application\.wadl(?:\?|$)'
+        # gRPC reflection / service listing
+        r'|/grpc\.reflection'
+        # .well-known OpenID/OAuth discovery
+        r'|/\.well-known/openid-configuration(?:\?|$)',
         re.I
     )
     m = spec_re.search(path)
     if m:
         return f'API spec exposed: {m.group(0)}'
+    # GraphQL introspection query in URL (query=...{__schema{...}})
+    query_val = unquote(params.get('query', [''])[0])
+    if '/graphql' in path and query_val:
+        if re.search(r'__schema|__type|IntrospectionQuery', query_val, re.I):
+            return f'GraphQL introspection: {query_val[:60]}'
     return ''
 
 
 def _check_metrics_endpoint(url: str, params: dict) -> str:
-    '''Detect Prometheus /metrics or Spring Boot Actuator on production.
+    '''Detect Prometheus /metrics or Spring Boot Actuator.
     Leaks topology, error rates, KPIs, possibly env var values.
+
+    v7.1: Removed staging environment skip filter — BruteCat research showed
+    that staging/sandbox environments often have WEAKER access controls but
+    connect to production data. Finding metrics on staging is actually MORE
+    valuable than on production.
     Confirmed real: tripgenie-openclaw-prod.trip.com/metrics'''
     if _is_noise_domain(url) or _is_static_asset(url):
         return ''
     parsed = urlparse(url)
-    host = parsed.netloc.lower()
     path = parsed.path.lower().rstrip('/')
-    non_prod = ('dev.', 'development.', 'staging.', 'stage.', 'sandbox.',
-                'test.', 'qa.', 'uat.', 'local.', 'preview.', 'canary.')
-    if any(host.startswith(p) or f'.{p[:-1]}.' in host for p in non_prod):
-        return ''
     if path in ('/metrics', '/metrics/json'):
         return '/metrics (Prometheus -- may expose topology/secrets)'
     if re.search(r'/actuator(?:/(?:env|heapdump|configprops|mappings|beans|loggers))?$', path):
         return f'Spring Boot Actuator: {path}'
+    # Internal debug endpoints (Google-style zhandlers)
+    if re.search(r'/(?:flagz|healthz|statusz|varz|rpcz|tracez|btz|configz)/?$', path):
+        return f'Internal debug handler: {path}'
+    return ''
+
+
+def _check_staging_environment(url: str, params: dict) -> str:
+    '''Detect staging/sandbox/test/preprod environments in URLs.
+
+    BruteCat research: staging environments are the HIGHEST-VALUE targets because:
+    1. They often have no access controls (or weaker ones)
+    2. They frequently connect to production data
+    3. They expose internal APIs not visible on prod
+
+    BruteCat found $30K+ bugs on test-adexchangebuyer-googleapis.sandbox.google.com
+    which had no auth but pointed to real advertiser data.
+
+    This heuristic flags URLs containing staging/sandbox/test environment
+    indicators so they can be prioritized for manual testing.'''
+    if _is_noise_domain(url) or _is_static_asset(url):
+        return ''
+    parsed = urlparse(url)
+    host = parsed.netloc.lower()
+    path = parsed.path.lower()
+    # Remove port
+    if ':' in host:
+        host = host.split(':')[0]
+
+    # Pattern 1: Staging/test/sandbox subdomain prefixes
+    staging_prefixes = (
+        'staging-', 'stage-', 'staging.', 'stage.',
+        'test-', 'test.', 'testing-', 'testing.',
+        'sandbox-', 'sandbox.',
+        'preprod-', 'preprod.', 'pre-prod.',
+        'dev-', 'dev.',
+        'uat-', 'uat.',
+        'qa-', 'qa.',
+        'autopush-', 'canary-', 'canary.',
+        'alpha-', 'alpha.', 'beta-', 'beta.',
+        'internal-', 'internal.',
+        'debug-', 'debug.',
+    )
+    for prefix in staging_prefixes:
+        if host.startswith(prefix):
+            return f'Staging/test environment: {host} (prefix: {prefix.rstrip(".-")})'
+
+    # Pattern 2: Staging in middle of hostname
+    staging_mid = ('.staging.', '.stage.', '.sandbox.', '.preprod.',
+                   '.test.', '.dev.', '.uat.', '.qa.', '.internal.')
+    for mid in staging_mid:
+        if mid in host:
+            return f'Staging/test environment: {host} (contains {mid.strip(".")})'
+
+    # Pattern 3: Google-style sandbox domains
+    if '.sandbox.' in host and 'google' in host:
+        return f'Google sandbox environment: {host}'
+
+    # Pattern 4: Non-standard ports (often staging/dev)
+    port = parsed.port
+    if port and port not in (80, 443, 8080, 8443):
+        dev_ports = (3000, 3001, 4200, 5000, 5173, 8000, 8081, 8888, 9090, 9200)
+        if port in dev_ports:
+            return f'Dev port detected: {host}:{port}'
+
     return ''
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1786,30 +1891,46 @@ HEURISTICS: Dict[str, dict] = {
         'check': lambda url, params: _has_real_pii(params),
     },
 
-    # -- HIGH: API spec exposed ---------------------------------------------------
+    # -- HIGH: API spec / discovery doc exposed ------------------------------------
     'API_Spec_Exposed': {
         'severity': 'HIGH',
         'universal': True,
-        'description': 'openapi.yaml/swagger.json on production -- reveals full '
-                       'endpoint surface, parameters, and auth schemes.',
+        'description': 'API spec/discovery doc exposed (openapi.yaml, swagger.json, '
+                       '$discovery/rest, .well-known/openid-configuration, GraphQL '
+                       'introspection). Reveals full endpoint surface, parameters, '
+                       'and auth schemes — roadmap to all bugs on the service.',
         'check': _check_api_spec_exposed,
     },
 
-    # -- HIGH: Prometheus metrics on production -----------------------------------
+    # -- HIGH: Prometheus metrics / debug handlers --------------------------------
     'Metrics_Endpoint': {
         'severity': 'HIGH',
         'universal': True,
-        'description': 'Prometheus /metrics or Spring Actuator on production -- '
-                       'leaks topology, error rates, KPIs, possibly secrets.',
+        'description': 'Prometheus /metrics, Spring Actuator, or internal debug handler '
+                       '(flagz, healthz, varz) exposed — leaks topology, error rates, '
+                       'KPIs, possibly secrets and configuration values.',
         'check': _check_metrics_endpoint,
     },
 
-    # ── MEDIUM: IDOR endpoints ─────────────────────────────────────────────
+    # -- HIGH: Staging/sandbox environment exposed --------------------------------
+    'Staging_Environment': {
+        'severity': 'HIGH',
+        'universal': True,
+        'description': 'Staging/sandbox/test/preprod environment detected in URL. '
+                       'These environments often have weaker access controls but '
+                       'connect to production data. Prioritize for manual testing. '
+                       'BruteCat found $30K+ bugs on Google sandbox domains.',
+        'check': _check_staging_environment,
+    },
+
+    # ── INFO: IDOR endpoints (requires active testing to confirm) ───────────
     'IDOR_Endpoint': {
-        'severity': 'MEDIUM',
+        'severity': 'INFO',
         'universal': False,
-        'description': 'API endpoint with predictable user/order/account ID in path — '
-                       'test for IDOR by accessing another user\'s object ID.',
+        'description': 'API endpoint with predictable user/order/account ID in path. '
+                       'NOTE: Existence enumeration alone is NOT a vulnerability — '
+                       'only report if you can actually ACCESS another user\'s data. '
+                       'Requires active testing to confirm.',
         'check': _check_idor_endpoint,
     },
 }
@@ -1866,7 +1987,7 @@ class BountyScanner:
 
     def scan(self) -> Dict:
         start = time.time()
-        banner('Passive Bounty Scanner v7.0')
+        banner('Passive Bounty Scanner v7.1')
         log_info(f'Scanning {len(self.urls)} unique URLs against {len(HEURISTICS)} heuristics...')
 
         for raw_url in self.urls:
@@ -2020,7 +2141,7 @@ class BountyScanner:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Passive Bounty URL Scanner v7.0')
+    parser = argparse.ArgumentParser(description='Passive Bounty URL Scanner v7.1')
     parser.add_argument('-l', '--list',   required=True, help='File of URLs to scan (unique_urls.txt)')
     parser.add_argument('-o', '--output', help='Output JSON file for findings')
     args = parser.parse_args()
