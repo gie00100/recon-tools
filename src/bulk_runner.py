@@ -21,7 +21,7 @@ try:
 except ImportError:
     aiohttp = None
 
-TARGETS_FILE = Path(__file__).parent.parent / "targets" / "targets.txt"
+DEFAULT_TARGETS_FILE = Path(__file__).parent.parent / "targets" / "targets.txt"
 OUTPUT_DIR = Path(__file__).parent.parent / "output"
 WEBHOOK_URL = Config.DISCORD_WEBHOOK_URL
 
@@ -43,11 +43,12 @@ async def send_discord(title, description, color=0x00FF00):
         print(f"[!] Discord notification failed: {e}")
 
 
-def get_targets():
-    """Read targets from targets.txt, skip comments and blanks."""
+def get_targets(targets_file=None):
+    """Read targets from targets file, skip comments and blanks."""
+    tfile = Path(targets_file) if targets_file else DEFAULT_TARGETS_FILE
     targets = []
-    if TARGETS_FILE.exists():
-        for line in TARGETS_FILE.read_text().splitlines():
+    if tfile.exists():
+        for line in tfile.read_text().splitlines():
             line = line.strip()
             if line and not line.startswith("#"):
                 targets.append(line)
@@ -121,11 +122,14 @@ async def main():
                         help="Only process targets containing this string (e.g. 'whatnot', 'twilio', 'anduril')")
     parser.add_argument("--worker", type=str, default="",
                         help="Worker name for Discord notifications")
+    parser.add_argument("--targets", type=str, default=None,
+                        help="Path to target file (default: targets/targets.txt)")
     args = parser.parse_args()
 
-    all_targets = get_targets()
+    all_targets = get_targets(args.targets)
     if not all_targets:
-        print("[!] No targets found in targets.txt")
+        tfile = args.targets or str(DEFAULT_TARGETS_FILE)
+        print(f"[!] No targets found in {tfile}")
         return
 
     # Filter targets if --filter is specified
