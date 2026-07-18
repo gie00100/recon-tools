@@ -53,7 +53,38 @@ _JS_NOISE_ENDPOINTS = {
     'http://www.w3.org/2000/svg', 'http://www.w3.org/2000/xmlns/',
     'http://www.w3.org/1998/Math/MathML',
     'http://www.w3.org/XML/1998/namespace',
+    # v8.0: MIME type strings extracted as URLs (false positives)
+    'text/css', 'text/html', 'text/plain', 'text/xml', 'text/javascript',
+    'application/json', 'application/xml', 'application/javascript',
+    'application/x-www-form-urlencoded', 'multipart/form-data',
+    'image/png', 'image/jpeg', 'image/gif', 'image/svg+xml',
+    'font/woff', 'font/woff2',
 }
+
+# v8.0: Library module path fragments — not real endpoints
+_JS_LIBRARY_PATH_FRAGMENTS = (
+    '/select2/', '/jquery-ui/', '/jquery/', '/sweetalert/',
+    '/bootstrap/', '/popper/', '/moment/', '/lodash/',
+    '/underscore/', '/backbone/', '/angular/', '/react/',
+    '/vue/', '/ember/', '/handlebars/', '/mustache/',
+    '/d3/', '/chart.js/', '/highcharts/', '/leaflet/',
+    '/tinymce/', '/ckeditor/', '/ace/',
+)
+
+# v8.0: SVG path data regex — false positive for Internal IP in icon fonts
+_SVG_PATH_DATA_RE = re.compile(r'\[\d+,\s*\d+,\s*\[\]')
+
+# v8.0: Known third-party S3 bucket domains (not target-owned)
+_THIRDPARTY_S3_DOMAINS = (
+    'centercode.com', 'cloudfront.net', 'amazonaws.com/common',
+    'aws-sdk', 'elasticmapreduce', 'cloudformation',
+)
+
+# v8.0: Known open-source author email domains
+_LIBRARY_EMAIL_DOMAINS = (
+    'brushd.com', 'bevis.me', 'github.com', 'npmjs.com',
+    'apache.org', 'jquery.com', 'mozilla.org', 'google.com',
+)
 
 
 def _shannon_entropy(data: str) -> float:
@@ -254,7 +285,16 @@ class JSExtractor:
             # Skip obvious non-endpoints
             if ep in ("//", "/", "./", "../"):
                 continue
-            if any(ep.endswith(ext) for ext in [".png", ".jpg", ".gif", ".svg", ".ico", ".woff", ".woff2", ".ttf", ".eot"]):
+            # v8.0: expanded static asset extension filter
+            if any(ep.endswith(ext) for ext in [
+                ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".webp",
+                ".woff", ".woff2", ".ttf", ".eot", ".otf",
+                ".css", ".less", ".scss", ".sass",
+                ".mp3", ".mp4", ".wav", ".avi", ".mov",
+            ]):
+                continue
+            # v8.0: Skip library module paths
+            if any(frag in ep_lower for frag in _JS_LIBRARY_PATH_FRAGMENTS):
                 continue
 
             # v6.1: Filter out noise endpoints from JS libraries
@@ -282,6 +322,7 @@ class JSExtractor:
     def _scan_secrets_in_content(self, content: str, source_url: str) -> List[Dict]:
         """Scan JS content for secrets and sensitive data."""
         findings = []
+        source_lower = source_url.lower()
 
         for secret_name, config in SECRET_PATTERNS.items():
             pattern = config["pattern"]
@@ -314,6 +355,33 @@ class JSExtractor:
                         if match in line:
                             context = line.strip()[:200]
                             break
+
+                    # ── v8.0: False positive filters ──────────────────
+                    # Internal IP: skip SVG path data in icon fonts
+                    if secret_name == 'Internal IP':
+                        if _SVG_PATH_DATA_RE.search(context):
+                            continue
+                        if any(kw in source_lower for kw in ('font-awesome', 'fontawesome', 'icons', 'icon')):
+                            continue
+
+                    # S3 Bucket: skip third-party platform buckets
+                    if secret_name == 'S3 Bucket':
+                        if any(tp in context.lower() for tp in _THIRDPARTY_S3_DOMAINS):
+                            continue
+                        # Only keep if the bucket name or context mentions the target domain
+                        if self.base_url:
+                            target_root = urlparse(self.base_url).netloc.split('.')[-2] if '.' in urlparse(self.base_url).netloc else ''
+                            if target_root and target_root not in context.lower():
+                                continue
+
+                    # Email: skip library author credits
+                    if secret_name == 'Email Address':
+                        if any(kw in context.lower() for kw in ('@author', 'copyright', 'license', 'created by', 'written by', 'maintainer')):
+                            continue
+                        email_domain = match.split('@')[-1].lower() if '@' in match else ''
+                        if any(email_domain.endswith(d) for d in _LIBRARY_EMAIL_DOMAINS):
+                            continue
+                    # ── End v8.0 filters ──────────────────────────────
 
                     findings.append({
                         "type": secret_name,
@@ -487,6 +555,17 @@ class JSExtractor:
             log_info(f"Sample endpoints (showing first 20 of {len(self.endpoints)}):")
             for ep in sorted(self.endpoints)[:20]:
                 console.print(f"    [dim]→[/dim] {ep}")
+
+        # v8.0: Deduplicate secrets by (type, match) — same S3 bucket from
+        # multiple .js.map files should only appear once
+        seen_secrets = set()
+        deduped_secrets = []
+        for s in self.secrets:
+            key = (s['type'], s['match'])
+            if key not in seen_secrets:
+                seen_secrets.add(key)
+                deduped_secrets.append(s)
+        self.secrets = deduped_secrets
 
         return {
             "endpoints": sorted(self.endpoints),

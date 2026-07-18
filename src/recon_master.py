@@ -720,6 +720,41 @@ class ReconMaster:
         except Exception:
             return False
 
+    async def _verify_staging_url(self, url: str) -> dict:
+        """Probe a staging URL to check if it's actually live and reachable.
+
+        Returns dict with 'status', 'live', 'note' keys.
+        - 200/301/302: live=True, keep as HIGH
+        - 403: live=True but WAF-blocked, downgrade to MEDIUM
+        - timeout/DNS/connection error: live=False, drop or downgrade to INFO
+        """
+        import aiohttp
+        import ssl
+        try:
+            ssl_ctx = ssl.create_default_context()
+            ssl_ctx.check_hostname = False
+            ssl_ctx.verify_mode = ssl.CERT_NONE
+            connector = aiohttp.TCPConnector(ssl=ssl_ctx)
+            timeout = aiohttp.ClientTimeout(total=5)
+            async with aiohttp.ClientSession(
+                connector=connector,
+                timeout=timeout,
+                headers={"User-Agent": Config.USER_AGENT}
+            ) as session:
+                async with session.get(url, allow_redirects=False) as resp:
+                    status = resp.status
+                    if status in (200, 201, 204, 301, 302, 307, 308):
+                        return {'status': status, 'live': True, 'note': f'HTTP {status} — live and reachable'}
+                    elif status == 403:
+                        return {'status': 403, 'live': True, 'note': 'HTTP 403 — WAF-blocked, may need auth bypass'}
+                    elif status in (401,):
+                        return {'status': 401, 'live': True, 'note': 'HTTP 401 — requires auth, worth testing'}
+                    else:
+                        return {'status': status, 'live': False, 'note': f'HTTP {status} — not useful'}
+        except Exception as e:
+            err_type = type(e).__name__
+            return {'status': 0, 'live': False, 'note': f'Unreachable ({err_type})'}
+
     async def _phase_bounty_scan(self):
         """Phase 10: Passive Bounty URL Scan."""
         if not self._should_run("bountyscan"):
@@ -776,7 +811,38 @@ class ReconMaster:
 
         # Run verification concurrently
         await asyncio.gather(*(verify_and_alert(f) for f in results["findings"]))
-        
+
+        # ── v8.0: Verify staging environment findings with HTTP probes ────
+        staging_findings = [f for f in verified_findings if f['type'] == 'Staging_Environment']
+        if staging_findings:
+            log_info(f"Verifying {len(staging_findings)} staging environments with HTTP probes...")
+            staging_sem = asyncio.Semaphore(20)
+
+            async def verify_staging(finding):
+                async with staging_sem:
+                    return await self._verify_staging_url(finding['url'])
+
+            probe_results = await asyncio.gather(*(verify_staging(f) for f in staging_findings))
+
+            kept = []
+            for finding, probe in zip(staging_findings, probe_results):
+                finding['live_status'] = probe
+                if probe['live'] and probe['status'] in (200, 201, 204, 301, 302, 307, 308, 401):
+                    # Keep as HIGH — live and reachable
+                    kept.append(finding)
+                elif probe['live'] and probe['status'] == 403:
+                    # Downgrade to MEDIUM — WAF blocked
+                    finding['severity'] = 'MEDIUM'
+                    finding['evidence'] = (finding.get('evidence', '') + f' [{probe["note"]}]').strip()
+                    kept.append(finding)
+                else:
+                    # Dead — drop from findings entirely
+                    log_warning(f"Dropped dead staging: {finding['url']} ({probe['note']})")
+
+            # Replace staging findings in verified_findings with only the live ones
+            verified_findings = [f for f in verified_findings if f['type'] != 'Staging_Environment'] + kept
+            log_info(f"Staging: {len(kept)}/{len(staging_findings)} live, {len(staging_findings) - len(kept)} dropped")
+
         self.bounty_flags = len(verified_findings)
 
         # ── Merge JS extractor secrets into findings ─────────────────────
