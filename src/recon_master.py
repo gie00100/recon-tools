@@ -831,10 +831,8 @@ class ReconMaster:
                     # Keep as HIGH — live and reachable
                     kept.append(finding)
                 elif probe['live'] and probe['status'] == 403:
-                    # Downgrade to MEDIUM — WAF blocked
-                    finding['severity'] = 'MEDIUM'
-                    finding['evidence'] = (finding.get('evidence', '') + f' [{probe["note"]}]').strip()
-                    kept.append(finding)
+                    # 403 = WAF-blocked, almost never accessible — drop it
+                    log_warning(f"Dropped 403 staging: {finding['url']} ({probe['note']})")
                 else:
                     # Dead — drop from findings entirely
                     log_warning(f"Dropped dead staging: {finding['url']} ({probe['note']})")
