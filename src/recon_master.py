@@ -419,6 +419,14 @@ class ReconMaster:
             ep_file = self.output_dir / "js_endpoints.txt"
             write_lines(str(ep_file), self.js_findings["endpoints"])
 
+        # v9.0: Feed sourcemap-discovered internal domains back for schema discovery
+        discovered = self.js_findings.get("discovered_domains", [])
+        if discovered:
+            log_info(f"Sourcemaps revealed {len(discovered)} internal domains: {', '.join(discovered[:5])}")
+            # Add to subdomains list so later phases (schema discovery, bounty scan) pick them up
+            if hasattr(self, 'subdomains') and isinstance(self.subdomains, set):
+                self.subdomains.update(discovered)
+
         total_findings = len(self.js_findings.get("endpoints", [])) + len(self.js_findings.get("secrets", []))
         duration = elapsed_str(start)
         self.phase_times.append(("JavaScript Analysis", duration, total_findings))

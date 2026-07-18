@@ -39,17 +39,46 @@ SWAGGER_PATHS = [
     '/swagger/v1/swagger.json', '/swagger/v2/swagger.json',
     '/api/v1/swagger.json', '/api/v2/swagger.json',
     '/_swagger', '/swagger-ui/swagger.json',
+    # v9.0 BruteCat-inspired: Google Discovery Documents
+    '/$discovery/rest', '/$discovery/rest?version=v1',
+    '/$discovery/rest?version=v2',
+    # WADL (XML-based API description)
+    '/application.wadl',
+    # OpenAPI v3 YAML variants
+    '/openapi.yaml', '/api/openapi.yaml',
 ]
 
 GRAPHQL_PATHS = [
     '/graphql', '/graphiql', '/v1/graphql',
     '/api/graphql', '/graphql/v1', '/gql',
+    # v9.0: Additional GraphQL paths
+    '/api/v1/graphql', '/api/v2/graphql',
+    '/query', '/api/query',
+]
+
+# v9.0 BruteCat-inspired: OIDC & Auth discovery
+OIDC_PATHS = [
+    '/.well-known/openid-configuration',
+    '/.well-known/oauth-authorization-server',
+    '/.well-known/jwks.json',
+]
+
+# v9.0 BruteCat-inspired: gRPC service reflection
+GRPC_PATHS = [
+    '/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo',
+    '/grpc.health.v1.Health/Check',
 ]
 
 FEATURE_FLAG_PATHS = [
     '/api/feature-flags', '/config', '/flags',
     '/api/config', '/api/v1/flags', '/api/v1/config',
+    # v9.0: LaunchDarkly / Unleash / Flagsmith common paths
+    '/api/client/features', '/api/frontend',
 ]
+
+# v9.0 BruteCat-inspired: Server headers indicating Google/Cloud API backends
+# Finding these means the host is a live API service worth deeper testing
+API_BACKEND_SERVERS = {'esf', 'gse', 'scaffolding on httpserver2', 'envoy', 'openresty'}
 
 # Infrastructure subdomains that never host real apps
 INFRA_PREFIXES = (
@@ -255,6 +284,70 @@ class SchemaDiscovery:
                 continue
         return results
 
+    async def _check_oidc(self, domain: str) -> List[Dict]:
+        """v9.0: Probe for OpenID Connect / OAuth discovery documents."""
+        results = []
+        session = await self._get_session()
+        base = f"https://{domain}"
+
+        for path in OIDC_PATHS:
+            url = f"{base}{path}"
+            try:
+                await self.rate_limiter.acquire()
+                async with session.get(url) as resp:
+                    if resp.status == 200:
+                        ct = resp.headers.get("Content-Type", "").lower()
+                        if "json" in ct:
+                            text = await resp.text(encoding="utf-8", errors="ignore")
+                            try:
+                                data = json.loads(text)
+                                if any(k in data for k in ('issuer', 'authorization_endpoint', 'token_endpoint', 'jwks_uri')):
+                                    log_finding(f"[🔐 OIDC DISCOVERY] {url}")
+                                    results.append({
+                                        "type": "OIDC Discovery",
+                                        "severity": "INFO",
+                                        "url": url,
+                                        "domain": domain,
+                                        "issuer": data.get("issuer", ""),
+                                    })
+                                    # Extract token/auth endpoints
+                                    for ep_key in ('authorization_endpoint', 'token_endpoint',
+                                                   'userinfo_endpoint', 'revocation_endpoint',
+                                                   'introspection_endpoint', 'jwks_uri'):
+                                        if data.get(ep_key):
+                                            self.api_endpoints.add(data[ep_key])
+                                    return results
+                            except json.JSONDecodeError:
+                                pass
+            except Exception:
+                continue
+        return results
+
+    async def _check_server_fingerprint(self, domain: str) -> List[Dict]:
+        """v9.0 BruteCat-inspired: Check if domain runs a Google-style API backend.
+        Server headers like ESF, GSE, scaffolding on HTTPServer2 indicate live
+        internal API services that are often misconfigured."""
+        results = []
+        session = await self._get_session()
+        url = f"https://{domain}/"
+        try:
+            await self.rate_limiter.acquire()
+            async with session.get(url) as resp:
+                server = resp.headers.get('Server', '').lower().strip()
+                if server in API_BACKEND_SERVERS:
+                    log_finding(f"[🔧 API BACKEND] {domain} (Server: {server})")
+                    results.append({
+                        "type": "API Backend Server",
+                        "severity": "INFO",
+                        "url": url,
+                        "domain": domain,
+                        "server_header": server,
+                        "note": f"Server: {server} — likely a dedicated API service, worth deeper endpoint fuzzing",
+                    })
+        except Exception:
+            pass
+        return results
+
     async def _scan_domain(self, domain: str):
         """Run all schema checks against a single domain."""
         if self._is_infra_subdomain(domain):
@@ -264,6 +357,8 @@ class SchemaDiscovery:
         results.extend(await self._check_swagger(domain))
         results.extend(await self._check_graphql(domain))
         results.extend(await self._check_feature_flags(domain))
+        results.extend(await self._check_oidc(domain))
+        results.extend(await self._check_server_fingerprint(domain))
         self.findings.extend(results)
 
     async def discover(self) -> Dict:
@@ -286,9 +381,17 @@ class SchemaDiscovery:
         swagger_count = len([f for f in self.findings if f["type"] == "Swagger/OpenAPI"])
         gql_count = len([f for f in self.findings if "GraphQL" in f["type"]])
         flag_count = len([f for f in self.findings if f["type"] == "Feature Flag Config"])
+        oidc_count = len([f for f in self.findings if f["type"] == "OIDC Discovery"])
+        backend_count = len([f for f in self.findings if f["type"] == "API Backend Server"])
 
         if self.findings:
-            log_success(f"Schema discovery complete: {swagger_count} Swagger, {gql_count} GraphQL, {flag_count} Feature Flags")
+            parts = []
+            if swagger_count: parts.append(f"{swagger_count} Swagger")
+            if gql_count: parts.append(f"{gql_count} GraphQL")
+            if flag_count: parts.append(f"{flag_count} Feature Flags")
+            if oidc_count: parts.append(f"{oidc_count} OIDC")
+            if backend_count: parts.append(f"{backend_count} API Backends")
+            log_success(f"Schema discovery complete: {', '.join(parts)}")
             log_success(f"Extracted {len(self.api_endpoints)} API endpoints from schemas")
         else:
             log_info("No exposed schemas or GraphQL endpoints found.")

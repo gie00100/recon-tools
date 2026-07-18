@@ -86,6 +86,30 @@ _LIBRARY_EMAIL_DOMAINS = (
     'apache.org', 'jquery.com', 'mozilla.org', 'google.com',
 )
 
+# v9.0 BruteCat-inspired: API Key provider classification
+# Maps key prefixes/patterns to provider names for triage prioritization
+_API_KEY_PROVIDERS = [
+    # (prefix_or_regex, provider_name, default_severity)
+    ('AIzaSy', 'Google API Key', 'INFO'),          # Often restricted Maps keys
+    ('AKIA', 'AWS Access Key', 'CRITICAL'),
+    ('sk_live_', 'Stripe Live Key', 'CRITICAL'),
+    ('sk_test_', 'Stripe Test Key', 'MEDIUM'),
+    ('rk_live_', 'Stripe Restricted Key', 'HIGH'),
+    ('ghp_', 'GitHub PAT', 'CRITICAL'),
+    ('gho_', 'GitHub OAuth', 'CRITICAL'),
+    ('ghu_', 'GitHub User-Server', 'CRITICAL'),
+    ('ghs_', 'GitHub Server-Server', 'CRITICAL'),
+    ('ghr_', 'GitHub Refresh', 'CRITICAL'),
+    ('xox', 'Slack Token', 'HIGH'),
+    ('SG.', 'SendGrid Key', 'HIGH'),
+    ('SK', 'Twilio Key', 'HIGH'),
+    ('sq0atp-', 'Square OAuth', 'HIGH'),
+    ('sq0csp-', 'Square Key', 'HIGH'),
+    ('EAAA', 'Facebook Token', 'HIGH'),
+    ('ya29.', 'Google OAuth Token', 'CRITICAL'),
+    ('AGE-SECRET-KEY-', 'Age Encryption Key', 'CRITICAL'),
+]
+
 
 def _shannon_entropy(data: str) -> float:
     """Calculate Shannon entropy of a string. Higher = more random (real secret)."""
@@ -239,6 +263,7 @@ class JSExtractor:
         self.base_url = base_url
         self.endpoints: Set[str] = set()
         self.secrets: List[Dict] = []
+        self.discovered_domains: Set[str] = set()  # v9.0: internal domains from sourcemaps
         self.rate_limiter = RateLimiter(Config.RATE_LIMIT_DEFAULT)
         self._session = None
 
@@ -293,12 +318,14 @@ class JSExtractor:
                 ".mp3", ".mp4", ".wav", ".avi", ".mov",
             ]):
                 continue
+
+            # v6.1: Filter out noise endpoints from JS libraries
+            ep_lower = ep.lower().strip('"\'')
+
             # v8.0: Skip library module paths
             if any(frag in ep_lower for frag in _JS_LIBRARY_PATH_FRAGMENTS):
                 continue
 
-            # v6.1: Filter out noise endpoints from JS libraries
-            ep_lower = ep.lower().strip('"\'')
             if ep_lower in _JS_NOISE_ENDPOINTS:
                 continue
             # Skip any endpoint starting with these test/doc prefixes
@@ -383,13 +410,32 @@ class JSExtractor:
                             continue
                     # ── End v8.0 filters ──────────────────────────────
 
-                    findings.append({
+                    # ── v9.0: API Key Classification ──────────────────
+                    provider = None
+                    for prefix, prov_name, default_sev in _API_KEY_PROVIDERS:
+                        if match.startswith(prefix):
+                            provider = prov_name
+                            # Upgrade severity if found in staging/test JS
+                            is_staging_js = any(kw in source_lower for kw in
+                                ('staging', 'stage.', 'test.', 'dev.', 'preprod',
+                                 'sandbox', 'uat.', 'beta.', 'alpha.'))
+                            if is_staging_js and default_sev != 'INFO':
+                                severity = 'CRITICAL'
+                            elif severity == 'MEDIUM' or severity == 'INFO':
+                                severity = default_sev
+                            break
+                    # ── End v9.0 Key Classification ───────────────────
+
+                    finding = {
                         "type": secret_name,
                         "severity": severity,
                         "match": match[:100],  # Truncate for safety
                         "source": source_url,
                         "context": context,
-                    })
+                    }
+                    if provider:
+                        finding["provider"] = provider
+                    findings.append(finding)
             except re.error:
                 continue
 
@@ -484,6 +530,29 @@ class JSExtractor:
                                         map_endpoints = self._extract_endpoints_from_content(source_content, map_url)
                                         result["endpoints"].extend(list(map_endpoints))
                                         self.endpoints.update(map_endpoints)
+
+                                    # ── v9.0: Mine internal domains from sourcemap 'sources' array ──
+                                    if isinstance(map_data, dict) and 'sources' in map_data:
+                                        for src_path in map_data.get('sources', []):
+                                            if not isinstance(src_path, str):
+                                                continue
+                                            # Extract hostnames from paths like
+                                            # webpack://corp.company.com/src/utils.js
+                                            # or //internal.staging.company.com/lib/...
+                                            for pattern in [
+                                                re.compile(r'(?:webpack|turbopack)://([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/'),
+                                                re.compile(r'//([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/'),
+                                                re.compile(r'https?://([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/'),
+                                            ]:
+                                                m = pattern.search(src_path)
+                                                if m:
+                                                    found_domain = m.group(1).lower()
+                                                    # Only keep if it looks like an internal/staging domain
+                                                    if any(kw in found_domain for kw in
+                                                           ('internal', 'corp', 'staging', 'dev', 'test',
+                                                            'local', 'preprod', 'sandbox', 'uat', 'intra')):
+                                                        self.discovered_domains.add(found_domain)
+                                    # ── End v9.0 sourcemap domain mining ──
                         except Exception:
                             pass
                 else:
@@ -572,6 +641,7 @@ class JSExtractor:
             "secrets": self.secrets,
             "files_processed": len(results),
             "files_with_errors": sum(1 for r in results if r["error"]),
+            "discovered_domains": sorted(self.discovered_domains),  # v9.0: internal domains from sourcemaps
         }
 
 

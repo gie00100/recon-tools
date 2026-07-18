@@ -1226,7 +1226,16 @@ def _check_idor_endpoint(url: str, params: dict) -> str:
         m = re.search(pattern, path, re.I)
         if m:
             obj_id = m.group(1)
-            return f'ID={obj_id} in {m.group(0)[:60]}'
+            # v9.0 BruteCat-inspired: Score numeric IDs higher + add enumeration guidance
+            evidence = f'ID={obj_id} in {m.group(0)[:60]}'
+            try:
+                numeric_id = int(obj_id)
+                # Sequential numeric IDs are much more exploitable than UUIDs
+                evidence += f' [NUMERIC — try {numeric_id-1}, {numeric_id+1}, 1, 2, 100]'
+            except (ValueError, TypeError):
+                if UUID_REGEX.match(obj_id):
+                    evidence += ' [UUID — lower priority]'
+            return evidence
 
     # ── Pattern 2: Order/Purchase status page with email param ──
     # e.g. /order/UUID/status?email=user@corp.com  OR  /orders/UUID?email=
@@ -1479,6 +1488,157 @@ def _check_graphql_introspection(url: str, params: dict) -> str:
     if re.search(r'__schema|__type|IntrospectionQuery', query, re.I):
         return f'Introspection: {query[:80]}'
     return ''
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# v9.0 BruteCat-inspired: API Error Response Classification
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# BruteCat's key insight: parse JSON error responses to classify WHY a request
+# failed, not just the HTTP status code. A 404 with "Method not found" (JSON)
+# means the endpoint EXISTS but needs a visibility label, while a 404 (HTML)
+# means it truly doesn't exist. A 403 "PERMISSION_DENIED" with a resource name
+# means you've found an IDOR candidate.
+#
+# This classification engine is used by recon_master.py to enrich schema_findings
+# and staging_environment findings with actionable triage information.
+
+# Standard API error types and what they mean for bug hunting
+API_ERROR_CLASSIFICATIONS = {
+    # Auth issues (endpoint exists, needs credentials)
+    'SESSION_COOKIE_INVALID': {
+        'meaning': 'Endpoint exists, needs valid auth cookie — try different origins',
+        'action': 'worth_testing',
+    },
+    'ACCESS_TOKEN_SCOPE_INSUFFICIENT': {
+        'meaning': 'Auth works but token lacks scope — escalation candidate',
+        'action': 'escalation',
+    },
+    'UNAUTHENTICATED': {
+        'meaning': 'No auth provided — endpoint exists and may accept keys',
+        'action': 'worth_testing',
+    },
+
+    # Key issues (endpoint exists, needs different key)
+    'API_KEY_INVALID': {
+        'meaning': 'Key invalid — try other keys from JS files',
+        'action': 'try_other_keys',
+    },
+    'API_KEY_HTTP_REFERRER_BLOCKED': {
+        'meaning': 'Key has referrer restriction — try matching Referer header',
+        'action': 'try_referer',
+    },
+    'API_KEY_ANDROID_APP_BLOCKED': {
+        'meaning': 'Key restricted to Android — add X-Android-Package/Cert headers',
+        'action': 'try_android_headers',
+    },
+    'API_KEY_IOS_APP_BLOCKED': {
+        'meaning': 'Key restricted to iOS — add X-Ios-Bundle-Identifier header',
+        'action': 'try_ios_headers',
+    },
+
+    # Permission issues (IDOR candidates!)
+    'PERMISSION_DENIED': {
+        'meaning': 'Auth works, resource exists, but access denied — IDOR candidate',
+        'action': 'idor_candidate',
+    },
+
+    # Not found (needs visibility label or truly missing)
+    'NOT_FOUND': {
+        'meaning': 'Resource or method not found — may need visibility label',
+        'action': 'needs_label',
+    },
+}
+
+
+def classify_api_error(status_code: int, response_body: str, content_type: str = '') -> dict:
+    """Classify an API error response into an actionable category.
+
+    Returns dict with:
+        - error_type: str (e.g. 'PERMISSION_DENIED', 'API_KEY_INVALID')
+        - meaning: str (human-readable explanation)
+        - action: str (what to do next)
+        - raw_message: str (original error message)
+    """
+    result = {
+        'error_type': 'UNKNOWN',
+        'meaning': '',
+        'action': 'skip',
+        'raw_message': '',
+    }
+
+    if not response_body:
+        return result
+
+    # Only classify JSON responses — HTML errors are generic web server responses
+    ct = content_type.lower()
+    if 'json' not in ct and not response_body.strip().startswith('{'):
+        return result
+
+    try:
+        data = json.loads(response_body)
+    except (json.JSONDecodeError, ValueError):
+        return result
+
+    # Extract the error object (Google/standard API format)
+    error = data.get('error', data)
+    if isinstance(error, dict):
+        message = str(error.get('message', ''))
+        status = str(error.get('status', ''))
+        reason = ''
+
+        # Extract reason from details array (Google API format)
+        details = error.get('details', [])
+        for detail in details:
+            if isinstance(detail, dict):
+                reason = detail.get('reason', reason)
+
+        result['raw_message'] = message[:200]
+
+        # Classify by reason first (most specific)
+        if reason and reason in API_ERROR_CLASSIFICATIONS:
+            cls = API_ERROR_CLASSIFICATIONS[reason]
+            result['error_type'] = reason
+            result['meaning'] = cls['meaning']
+            result['action'] = cls['action']
+            return result
+
+        # Classify by status field
+        if status in API_ERROR_CLASSIFICATIONS:
+            cls = API_ERROR_CLASSIFICATIONS[status]
+            result['error_type'] = status
+            result['meaning'] = cls['meaning']
+            result['action'] = cls['action']
+            return result
+
+        # Classify by message patterns
+        msg_lower = message.lower()
+        if 'has not been used in project' in msg_lower:
+            result['error_type'] = 'API_NOT_ENABLED'
+            result['meaning'] = 'API exists but not enabled for this key — try other keys'
+            result['action'] = 'try_other_keys'
+        elif 'api key not valid' in msg_lower or 'api key expired' in msg_lower:
+            result['error_type'] = 'API_KEY_INVALID'
+            result['meaning'] = 'Key invalid or expired — try other keys'
+            result['action'] = 'try_other_keys'
+        elif 'permission' in msg_lower and 'denied' in msg_lower:
+            result['error_type'] = 'PERMISSION_DENIED'
+            result['meaning'] = 'Access denied — IDOR candidate if resource ID is in the request'
+            result['action'] = 'idor_candidate'
+        elif 'method not found' in msg_lower and 'json' in ct:
+            result['error_type'] = 'MISSING_VISIBILITY_LABEL'
+            result['meaning'] = 'Method exists but hidden behind visibility label — try labels param'
+            result['action'] = 'try_labels'
+        elif 'invalid authentication' in msg_lower or 'unauthenticated' in msg_lower:
+            result['error_type'] = 'UNAUTHENTICATED'
+            result['meaning'] = 'Endpoint exists, needs valid authentication'
+            result['action'] = 'worth_testing'
+        elif 'invalid argument' in msg_lower:
+            result['error_type'] = 'INVALID_ARGUMENT'
+            result['meaning'] = 'Endpoint exists and processes requests — fix parameters'
+            result['action'] = 'worth_testing'
+
+    return result
 
 
 # Common auth page names that are NOT tokens (used in /auth/<name> pattern)
