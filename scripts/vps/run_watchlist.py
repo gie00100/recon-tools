@@ -35,17 +35,34 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 
 def parse_targets(filepath: Path) -> list:
-    """Extract active (uncommented) domain list from targets file."""
+    """Extract active (uncommented) domain list from targets file.
+    
+    Handles both plain domains (example.com) and full URLs (https://example.com/path).
+    Skips marketplace.atlassian.com entries (plugin targets, not web domains).
+    """
     domains = []
+    seen = set()
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
             # Strip pipe-separated metadata: "domain | type | date" → "domain"
-            domain = line.split("|")[0].strip()
-            if domain and "." in domain:
-                domains.append(domain)
+            entry = line.split("|")[0].strip()
+            
+            # Handle full URLs: extract hostname
+            if entry.startswith("http://") or entry.startswith("https://"):
+                from urllib.parse import urlparse
+                parsed = urlparse(entry)
+                entry = parsed.hostname or entry
+            
+            # Skip Atlassian marketplace targets (plugins, not scannable domains)
+            if "marketplace.atlassian.com" in entry:
+                continue
+            
+            if entry and "." in entry and entry not in seen:
+                seen.add(entry)
+                domains.append(entry)
     return domains
 
 
@@ -111,10 +128,13 @@ def main():
         # do not work there. We upload key files directly via SFTP instead.
         print(f"\n[*] Uploading latest code to VPS via SFTP...")
         files_to_deploy = [
-            (PROJECT_ROOT / "src" / "recon" / "port_scanner.py",  f"{remote_path}/src/recon/port_scanner.py"),
-            (PROJECT_ROOT / "src" / "recon" / "bounty_scanner.py", f"{remote_path}/src/recon/bounty_scanner.py"),
-            (PROJECT_ROOT / "src" / "recon_master.py",              f"{remote_path}/src/recon_master.py"),
-            (PROJECT_ROOT / "run_sequential.sh",                    f"{remote_path}/run_sequential.sh"),
+            (PROJECT_ROOT / "src" / "recon" / "port_scanner.py",     f"{remote_path}/src/recon/port_scanner.py"),
+            (PROJECT_ROOT / "src" / "recon" / "bounty_scanner.py",   f"{remote_path}/src/recon/bounty_scanner.py"),
+            (PROJECT_ROOT / "src" / "recon" / "js_extractor.py",     f"{remote_path}/src/recon/js_extractor.py"),
+            (PROJECT_ROOT / "src" / "recon" / "schema_discovery.py", f"{remote_path}/src/recon/schema_discovery.py"),
+            (PROJECT_ROOT / "src" / "recon_master.py",               f"{remote_path}/src/recon_master.py"),
+            (PROJECT_ROOT / "src" / "discord_bot.py",                f"{remote_path}/src/discord_bot.py"),
+            (PROJECT_ROOT / "run_sequential.sh",                     f"{remote_path}/run_sequential.sh"),
         ]
         deploy_sftp = ssh.open_sftp()
         for local, remote_file in files_to_deploy:

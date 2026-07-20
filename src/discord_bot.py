@@ -418,6 +418,12 @@ async def cmd_results(domain=None):
             info["stats"].append(f"🎯 **{n} bounty flags**")
             info["score"] += n * 50
 
+        # Staging environments
+        n = _json_count("staging_environments.json", "environments")
+        if n:
+            info["stats"].append(f"🏗️ {n} staging envs")
+            info["score"] += n * 5
+
         # Credentials — highest weight
         n = _json_count("credentials_found.json")
         if n:
@@ -623,7 +629,7 @@ async def cmd_help():
 def _get_scan_findings(scan_dir: Path) -> dict:
     """
     Check a completed scan dir for REAL bounty findings only.
-    Triggers only on: bounty_targets.json, credentials_found.json, js_findings.json.
+    Triggers only on: bounty_targets.json, credentials_found.json, confirmed_access.json, js_findings.json.
     Does NOT trigger on live_urls.txt or js_endpoints.txt — those exist in every scan.
     Returns {category: count} or empty dict if nothing meaningful.
     """
@@ -631,15 +637,29 @@ def _get_scan_findings(scan_dir: Path) -> dict:
 
     # bounty_targets.json — scanner flagged URLs/subdomains as bounty-worthy
     bt = scan_dir / "bounty_targets.json"
-    if bt.exists() and bt.stat().st_size > 2:  # more than just '[]'
+    if bt.exists() and bt.stat().st_size > 2:  # more than just '{}'
         try:
             data = json.loads(bt.read_text(encoding="utf-8", errors="replace"))
-            count = len(data) if isinstance(data, list) else (
-                sum(len(v) for v in data.values() if isinstance(v, list))
-                if isinstance(data, dict) else 0
-            )
+            # v9.1 format: {"findings": [...], "stats": {...}, ...}
+            if isinstance(data, dict) and "findings" in data:
+                count = len(data["findings"])
+            elif isinstance(data, list):
+                count = len(data)
+            else:
+                count = 0
             if count > 0:
                 findings["🎯 Bounty Targets"] = count
+        except Exception:
+            pass
+
+    # confirmed_access.json — default credential check confirmed access
+    ca = scan_dir / "confirmed_access.json"
+    if ca.exists() and ca.stat().st_size > 2:
+        try:
+            data = json.loads(ca.read_text(encoding="utf-8", errors="replace"))
+            count = len(data) if isinstance(data, list) else 0
+            if count > 0:
+                findings["🚨 Confirmed Access"] = count
         except Exception:
             pass
 
@@ -654,14 +674,24 @@ def _get_scan_findings(scan_dir: Path) -> dict:
         except Exception:
             pass
 
-    # js_findings.json — hardcoded secrets / API keys found in JS
+    # js_findings.json — only count real API keys, not emails/IPs
+    # (The noisy secrets are now separated into api_intel.json)
     jf = scan_dir / "js_findings.json"
     if jf.exists() and jf.stat().st_size > 2:
         try:
             data = json.loads(jf.read_text(encoding="utf-8", errors="replace"))
-            count = len(data) if isinstance(data, list) else len(data.get("findings", []))
+            secrets = data.get("secrets", []) if isinstance(data, dict) else []
+            # Only count real API keys, not emails/IPs
+            api_key_types = {
+                'Google API Key', 'AWS Access Key', 'Stripe API Key',
+                'Slack Token', 'GitHub Token', 'Firebase API Key',
+                'Twilio API Key', 'SendGrid API Key', 'Mailgun API Key',
+                'Discord Webhook', 'Slack Webhook', 'URL with Credentials',
+                'Basic Auth Header',
+            }
+            count = sum(1 for s in secrets if s.get("type") in api_key_types)
             if count > 0:
-                findings["📜 JS Secrets"] = count
+                findings["🔑 JS API Keys"] = count
         except Exception:
             pass
 

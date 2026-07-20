@@ -19,6 +19,7 @@ echo    [6]  Scan Single Domain    (recon on one domain)
 echo    [7]  Dry Run               (preview targets, no scan)
 echo    [8]  Setup / Install       (install deps and configure)
 echo    [9]  Scan Dashboard        (scans done vs remaining)
+echo    [10] Bugcrowd Scan         (scan targets_bugcrowd.txt)
 echo    [Q]  Quit
 echo.
 echo  ================================================================
@@ -42,8 +43,8 @@ if /i "%CHOICE%"=="6" goto :SINGLE
 if /i "%CHOICE%"=="7" goto :DRYRUN
 if /i "%CHOICE%"=="8" goto :SETUP
 if /i "%CHOICE%"=="9" goto :DASHBOARD
+if /i "%CHOICE%"=="10" goto :BUGCROWD
 if /i "%CHOICE%"=="Q" goto :EOF
-if /i "%CHOICE%"=="q" goto :EOF
 
 echo  [!] Invalid option. Try again.
 timeout /t 1 >nul
@@ -218,3 +219,37 @@ echo.
 set /p BACK="  Press Enter to return to menu, or Q to quit: "
 if /i "%BACK%"=="Q" goto :EOF
 goto :MENU
+
+
+REM ================================================================
+:BUGCROWD
+cls
+echo.
+echo  ================================================================
+echo    [10] Bugcrowd Targets Scan
+echo  ================================================================
+echo.
+echo  This will scan all active (uncommented) domains from
+echo  targets\targets_bugcrowd.txt on the VPS.
+echo.
+echo  Marketplace plugin targets (commented) are skipped.
+echo.
+echo  Options:
+echo    [1] Full run (clean + update + scan)
+echo    [2] Skip VPS output cleanup  (--no-clean)
+echo    [3] Dry run (preview targets only)
+echo    [B] Back to menu
+echo.
+set /p BC_CHOICE="  Select: "
+
+if /i "%BC_CHOICE%"=="B" goto :MENU
+if /i "%BC_CHOICE%"=="3" (
+    venv\Scripts\python.exe scripts\vps\run_watchlist.py --file targets_bugcrowd.txt --dry-run
+    goto :DONE
+)
+if /i "%BC_CHOICE%"=="2" (
+    venv\Scripts\python.exe scripts\vps\run_watchlist.py --file targets_bugcrowd.txt --no-clean --no-bot-restart
+    goto :DONE
+)
+venv\Scripts\python.exe scripts\vps\run_watchlist.py --file targets_bugcrowd.txt --no-bot-restart
+goto :DONE

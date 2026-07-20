@@ -20,7 +20,11 @@ SMALL_FILES = [
     "live_urls.txt",
     "exposed_ports.json",
     "bounty_targets.json",
+    "staging_environments.json",
+    "api_intel.json",
+    "confirmed_access.json",
     "credentials_found.json",
+    "schema_findings.json",
     "js_findings.json",
     "subdomains.txt",
     "virustotal_urls.txt",
@@ -205,6 +209,87 @@ def _fetch_large_chunked(ssh, remote_path: str, local_path: str, fname: str, fil
         return False
 
 
+def _print_intel_summary(local_dir: str, domain: str):
+    """Print a quick summary of key intel files after fetch."""
+    import json as _json
+
+    has_intel = False
+
+    # Bounty targets
+    bt_path = os.path.join(local_dir, "bounty_targets.json")
+    if os.path.exists(bt_path) and os.path.getsize(bt_path) > 2:
+        try:
+            data = _json.loads(open(bt_path, 'r', encoding='utf-8', errors='replace').read())
+            findings = data.get("findings", [])
+            if findings:
+                has_intel = True
+                types = {}
+                for f in findings:
+                    t = f["type"]
+                    types[t] = types.get(t, 0) + 1
+                crits = sum(1 for f in findings if f.get("severity") == "CRITICAL")
+                highs = sum(1 for f in findings if f.get("severity") == "HIGH")
+                print(f"  🎯 Bounty: {len(findings)} findings ({crits} CRITICAL, {highs} HIGH)")
+                for t, c in sorted(types.items(), key=lambda x: -x[1])[:5]:
+                    print(f"     {t}: {c}")
+        except Exception:
+            pass
+
+    # Staging environments
+    se_path = os.path.join(local_dir, "staging_environments.json")
+    if os.path.exists(se_path) and os.path.getsize(se_path) > 2:
+        try:
+            data = _json.loads(open(se_path, 'r', encoding='utf-8', errors='replace').read())
+            envs = data.get("environments", [])
+            if envs:
+                has_intel = True
+                print(f"  🏗️  Staging: {len(envs)} live environments")
+                for e in envs[:3]:
+                    print(f"     → {e['url'][:80]}")
+                if len(envs) > 3:
+                    print(f"     ... and {len(envs) - 3} more")
+        except Exception:
+            pass
+
+    # API intelligence
+    ai_path = os.path.join(local_dir, "api_intel.json")
+    if os.path.exists(ai_path) and os.path.getsize(ai_path) > 2:
+        try:
+            data = _json.loads(open(ai_path, 'r', encoding='utf-8', errors='replace').read())
+            interesting = data.get("interesting_endpoints", [])
+            secrets = data.get("all_js_secrets", [])
+            specs = data.get("exposed_specs_and_metrics", [])
+            schema = data.get("schema_findings", {})
+            has_intel = True
+
+            parts = []
+            if interesting:
+                parts.append(f"{len(interesting)} API endpoints")
+            if secrets:
+                parts.append(f"{len(secrets)} JS secrets")
+            if specs:
+                parts.append(f"{len(specs)} exposed specs")
+            print(f"  🔍 API Intel: {', '.join(parts)}")
+
+            # Show exposed specs/metrics (most actionable)
+            for s in specs:
+                print(f"     [{s['type']}] {s['url'][:80]}")
+
+            # Show GraphQL/Swagger schema hits
+            if isinstance(schema, dict):
+                for cat in ['graphql', 'swagger', 'openapi']:
+                    hits = schema.get(cat, [])
+                    if hits:
+                        for h in hits[:3]:
+                            url = h if isinstance(h, str) else h.get('url', str(h))
+                            print(f"     [SCHEMA:{cat.upper()}] {url[:80]}")
+        except Exception:
+            pass
+
+    if not has_intel:
+        print(f"  [~] No actionable findings for {domain}")
+
+
 def fetch_all():
     print(f"[*] Connecting to VPS ({IP})...")
     try:
@@ -295,6 +380,9 @@ def fetch_all():
             if downloaded or skipped:
                 fetched_count += 1
                 print(f"  [+] Status: {len(downloaded)} new, {len(skipped)} skipped.")
+
+            # ── Quick intel summary from fetched files ───────────────────
+            _print_intel_summary(local_target_dir, domain)
 
         return fetched_count > 0
 

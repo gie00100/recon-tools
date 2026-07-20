@@ -34,7 +34,7 @@ from recon.backup_gen import BackupGenerator
 from recon.js_extractor import JSExtractor
 from recon.url_dedup import URLDeduplicator
 from recon.bounty_scanner import BountyScanner
-from recon.port_scanner import PortScanner, resolve_hostnames
+from recon.port_scanner import PortScanner, resolve_hostnames, DefaultCredChecker
 from recon.cred_hunter import CredentialHunter
 from recon.report_gen import ReportGenerator
 from recon.schema_discovery import SchemaDiscovery
@@ -94,6 +94,7 @@ class ReconMaster:
         self.exposed_ports = []
         self.js_findings = {}
         self.cred_findings = []
+        self.confirmed_access = []
         self.backup_wordlist = []
         self.unique_urls = []
         self.schema_findings = {}
@@ -102,7 +103,8 @@ class ReconMaster:
         self.passive_collected_urls = set()  # Multi-source passive URLs
         self.bounty_flags = 0
         self.bounty_stats = {}
-        self.report = None
+        self.confirmed_access = []
+        self._bounty_api_findings = []
 
         # Phase timing
         self.phase_times = []
@@ -303,6 +305,48 @@ class ReconMaster:
                     
         duration = elapsed_str(start)
         self.phase_times.append(("Port Scanning", duration, len(results)))
+
+    async def _phase_cred_check(self):
+        """Phase 4.5: Default Credential Checking on exposed services."""
+        if not self.exposed_ports:
+            return
+
+        start = time.time()
+        log_phase("4.5", len(self.modules), "Default Credential Checking")
+
+        cred_results = []
+        try:
+            checker = DefaultCredChecker(self.exposed_ports, timeout=5.0)
+            cred_results = await checker.check()
+        except Exception as e:
+            log_error(f"Credential check failed: {e}")
+
+        if cred_results:
+            # Save confirmed access findings
+            output_file = self.output_dir / "confirmed_access.json"
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(cred_results, f, indent=2)
+
+            # Alert on confirmed access — this is CRITICAL
+            for finding in cred_results:
+                domains_str = ", ".join(finding.get("domains", [])) or finding["ip"]
+                await self._send_alert(
+                    f"🚨 CRITICAL: {finding['service']} DEFAULT CREDS — {self.domain}",
+                    (
+                        f"**Host:** {domains_str}\n"
+                        f"**IP:** {finding['ip']}\n"
+                        f"**Port:** {finding['port']}\n"
+                        f"**Service:** {finding['service']}\n"
+                        f"**Access:** CONFIRMED ✅\n"
+                        f"**Method:** {finding.get('method', 'unknown')}\n"
+                        f"**Detail:** {finding.get('detail', 'N/A')}"
+                    ),
+                    16711680  # Red
+                )
+
+        self.confirmed_access = cred_results
+        duration = elapsed_str(start)
+        self.phase_times.append(("Credential Check", duration, len(cred_results)))
 
     async def _phase_backup_gen(self):
         """Phase 5: Backup File Wordlist Generation."""
@@ -773,6 +817,8 @@ class ReconMaster:
 
         if not self.unique_urls:
             log_warning("No unique URLs available for bounty scanning.")
+            # Still save API intelligence from JS analysis (always useful)
+            self._save_api_intel()
             return
 
         scanner = BountyScanner(self.unique_urls)
@@ -851,42 +897,141 @@ class ReconMaster:
 
         self.bounty_flags = len(verified_findings)
 
-        # ── Merge JS extractor secrets into findings ─────────────────────
-        # Convert JS secrets to the same format as bounty findings so
-        # everything appears in one file (bounty_targets.json)
-        js_secret_findings = []
+        # ── v9.1: Only merge REAL API keys from JS, not noise ─────────────
+        # JS extractor finds tons of emails, internal IPs, and Sentry DSNs
+        # that are false positives. Only merge findings classified as actual
+        # API keys (Google Maps, AWS, Stripe, etc.) — not emails/IPs/generic.
+        _API_KEY_TYPES = {
+            'Google API Key', 'AWS Access Key', 'Stripe API Key',
+            'Slack Token', 'GitHub Token', 'Firebase API Key',
+            'Twilio API Key', 'SendGrid API Key', 'Mailgun API Key',
+            'Square Access Token', 'PayPal/Braintree Token',
+            'Heroku API Key', 'Discord Webhook', 'Slack Webhook',
+            'URL with Credentials', 'Basic Auth Header',
+        }
+        
+        js_key_findings = []
         for secret in self.js_findings.get("secrets", []):
-            js_finding = {
-                'type':        f'JS_{secret["type"].replace(" ", "_")}',
-                'severity':    secret.get('severity', 'INFO'),
-                'universal':   True,
-                'description': f'Secret found in JavaScript file: {secret["type"]}',
-                'url':         secret.get('source', ''),
-                'count':       1,
-                'evidence':    secret.get('match', '')[:100],
-                'source':      'js_extractor',
-                'context':     secret.get('context', '')[:200],
-            }
-            js_secret_findings.append(js_finding)
+            if secret.get("type") in _API_KEY_TYPES:
+                js_finding = {
+                    'type':        f'JS_{secret["type"].replace(" ", "_")}',
+                    'severity':    secret.get('severity', 'MEDIUM'),
+                    'universal':   True,
+                    'description': f'API key found in JavaScript: {secret["type"]}',
+                    'url':         secret.get('source', ''),
+                    'count':       1,
+                    'evidence':    secret.get('match', '')[:100],
+                    'source':      'js_extractor',
+                    'context':     secret.get('context', '')[:200],
+                }
+                js_key_findings.append(js_finding)
 
-        all_findings = verified_findings + js_secret_findings
-        total_js_secrets = len(js_secret_findings)
-        if total_js_secrets:
-            log_info(f"Merged {total_js_secrets} JS secrets into bounty findings")
+        all_findings = verified_findings + js_key_findings
+        if js_key_findings:
+            log_info(f"Merged {len(js_key_findings)} JS API keys into bounty findings")
 
-        # Save combined findings
-        if all_findings:
+        # ── v9.2: Split findings into separate files for clean triage ──────
+        # Types that go to separate dedicated files instead of bounty_targets:
+        _STAGING_TYPES = {'Staging_Environment'}
+        _API_TYPES = {'API_Spec_Exposed', 'Metrics_Endpoint'}
+
+        staging_findings = [f for f in all_findings if f['type'] in _STAGING_TYPES]
+        api_findings = [f for f in all_findings if f['type'] in _API_TYPES]
+        bounty_findings = [f for f in all_findings if f['type'] not in _STAGING_TYPES and f['type'] not in _API_TYPES]
+
+        # 1. Save clean bounty findings (actionable only — no staging/API noise)
+        if bounty_findings:
             output_file = self.output_dir / "bounty_targets.json"
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump({
-                    "findings": all_findings,
+                    "findings": bounty_findings,
                     "stats": self.bounty_stats,
                     "total_urls": len(self.unique_urls),
-                    "js_secrets_merged": total_js_secrets,
+                    "js_api_keys_merged": len(js_key_findings),
                 }, f, indent=2)
+            log_info(f"Bounty targets: {len(bounty_findings)} actionable findings")
+
+        # 2. Save staging environments to separate file for deep-dive
+        if staging_findings:
+            staging_file = self.output_dir / "staging_environments.json"
+            with open(staging_file, "w", encoding="utf-8") as f:
+                json.dump({
+                    "domain": self.domain,
+                    "total": len(staging_findings),
+                    "note": "Staging/sandbox/test/preprod environments for manual deep-dive. "
+                            "These often have weaker access controls but connect to production data.",
+                    "environments": staging_findings,
+                }, f, indent=2)
+            log_info(f"Staging environments: {len(staging_findings)} live environments saved")
+
+        # Store API findings so _save_api_intel can merge them
+        self._bounty_api_findings = api_findings
+
+        # Save API intelligence (always, regardless of URL findings)
+        self._save_api_intel()
 
         duration = elapsed_str(start)
         self.phase_times.append(("Bounty Scanning", duration, len(all_findings)))
+
+    def _save_api_intel(self):
+        """Save API intelligence to a separate file for manual triage.
+        
+        This file stores all API-related data for reference:
+         - JS endpoints (from js_extractor)
+         - Schema/Swagger discoveries
+         - Internal domains from sourcemaps
+         - All JS secrets (including FPs) for manual review if needed
+        This data is useful for deciding whether to manually test a domain.
+        """
+        api_intel = {
+            "domain": self.domain,
+            "js_endpoints_count": len(self.js_findings.get("endpoints", [])),
+            "js_files_processed": self.js_findings.get("files_processed", 0),
+            "internal_domains_from_sourcemaps": self.js_findings.get("discovered_domains", []),
+            "interesting_endpoints": [],
+            "all_js_secrets": self.js_findings.get("secrets", []),
+        }
+        
+        # Filter JS endpoints to only interesting ones (APIs, not XML schemas)
+        for ep in self.js_findings.get("endpoints", []):
+            ep_lower = ep.lower()
+            # Skip XML namespaces, w3.org specs, and clearly non-API endpoints
+            if any(skip in ep_lower for skip in [
+                'w3.org', 'schemas.openxmlformats', 'schemas.microsoft',
+                'openoffice.org', 'purl.org', 'oasis-open.org',
+                'xmlns', 'xml-events', 'mathml', 'file:///',
+                'app:///', 'macvmlschemauri'
+            ]):
+                continue
+            # Keep if it looks like a real API endpoint
+            if any(sig in ep_lower for sig in [
+                '/api/', '/v1/', '/v2/', '/v3/', 'gateway',
+                'graphql', 'rest/', 'internal-', 'admin/',
+                'oauth', '/token', 'webhook', '.env',
+                'sentry', 'firebase', 'contentful',
+            ]) or ('http' in ep_lower and self.domain in ep_lower):
+                api_intel["interesting_endpoints"].append(ep)
+        
+        # Add schema findings if available
+        schema_file = self.output_dir / "schema_findings.json"
+        if schema_file.exists():
+            try:
+                with open(schema_file, "r") as sf:
+                    api_intel["schema_findings"] = json.load(sf)
+            except Exception:
+                pass
+
+        # Merge API bounty findings (API_Spec_Exposed, Metrics_Endpoint)
+        # These were separated from bounty_targets.json for cleaner triage
+        api_bounty = getattr(self, '_bounty_api_findings', [])
+        if api_bounty:
+            api_intel["exposed_specs_and_metrics"] = api_bounty
+
+        api_intel_file = self.output_dir / "api_intel.json"
+        with open(api_intel_file, "w", encoding="utf-8") as f:
+            json.dump(api_intel, f, indent=2)
+        specs_count = len(api_bounty)
+        log_info(f"Saved API intelligence: {len(api_intel['interesting_endpoints'])} interesting endpoints, {len(api_intel['all_js_secrets'])} JS secrets, {specs_count} exposed specs/metrics")
 
     async def _phase_report(self):
         """Phase 11: Report Generation."""
@@ -933,6 +1078,7 @@ class ReconMaster:
         await self._phase_asn_discovery()
         await self._phase_live_probe()
         await self._phase_port_scan()
+        await self._phase_cred_check()
         await self._phase_backup_gen()
         await self._phase_cred_hunt()
         await self._phase_js_extract()
@@ -958,6 +1104,7 @@ class ReconMaster:
              f"**Subdomains:** {len(self.subdomains)}\n"
              f"**Live Hosts:** {len(self.live_hosts)}\n"
              f"**Exposed Ports:** {len(self.exposed_ports)}\n"
+             f"**Confirmed Access:** {len(self.confirmed_access)}\n"
              f"**Credentials:** {len(self.cred_findings)}\n"
              f"**JS Endpoints:** {len(self.js_findings.get('endpoints', []))}\n"
              f"**Waymore URLs:** {len(self.waymore_urls)}\n"
@@ -966,7 +1113,6 @@ class ReconMaster:
              f"**Crawled Endpoints:** {len(self.crawled_endpoints)}\n"
              f"**Schema APIs:** {len(self.schema_findings.get('api_endpoints', []))}\n"
              f"**Unique URLs:** {len(self.unique_urls)}\n"
-             f"**Secrets Found:** {len(self.js_findings.get('secrets', []))}\n"
              f"**Bounty Flags:** {self.bounty_flags}"),
             65280,
             is_finding=False
@@ -990,7 +1136,7 @@ class ReconMaster:
                 f"[bold green]Schema APIs:[/bold green] {len(self.schema_findings.get('api_endpoints', []))}",
                 f"[bold green]Waymore URLs:[/bold green] {len(self.waymore_urls)}",
                 f"[bold green]Passive Collected:[/bold green] {len(self.passive_collected_urls)}",
-                f"[bold green]Secrets:[/bold green] {len(self.js_findings.get('secrets', []))}",
+                f"[bold green]Confirmed Access:[/bold green] {len(self.confirmed_access)}",
                 f"[bold green]Backup Paths:[/bold green] {len(self.backup_wordlist)}",
                 f"[bold green]Unique URLs:[/bold green] {len(self.unique_urls)}",
             ]
