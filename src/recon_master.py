@@ -851,17 +851,20 @@ class ReconMaster:
             verified_findings.append(finding)
             
             if sev in severity_colors:
-                self._add_to_watchlist(url, finding['type'], f"Bounty Scan: {sev} finding")
-                emoji = "🚨" if sev == "CRITICAL" else "🎯"
-                await self._send_alert(
-                    f"{emoji} {sev}: {finding['type']} — {self.domain}",
-                    (f"**Severity:** {sev}\n"
-                     f"**Type:** {finding['type']}\n"
-                     f"**Why:** {finding['description']}\n\n"
-                     f"**Evidence URL:**\n```\n{finding['url']}\n```\n"
-                     f"👆 Open this URL to verify the finding."),
-                    severity_colors[sev]
-                )
+                # v9.2: Don't send Discord alerts for staging/API — they're collected silently
+                _SILENT_TYPES = {'Staging_Environment', 'API_Spec_Exposed', 'Metrics_Endpoint'}
+                if finding['type'] not in _SILENT_TYPES:
+                    self._add_to_watchlist(url, finding['type'], f"Bounty Scan: {sev} finding")
+                    emoji = "🚨" if sev == "CRITICAL" else "🎯"
+                    await self._send_alert(
+                        f"{emoji} {sev}: {finding['type']} — {self.domain}",
+                        (f"**Severity:** {sev}\n"
+                         f"**Type:** {finding['type']}\n"
+                         f"**Why:** {finding['description']}\n\n"
+                         f"**Evidence URL:**\n```\n{finding['url']}\n```\n"
+                         f"👆 Open this URL to verify the finding."),
+                        severity_colors[sev]
+                    )
 
         # Run verification concurrently
         await asyncio.gather(*(verify_and_alert(f) for f in results["findings"]))
