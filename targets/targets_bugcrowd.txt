@@ -520,46 +520,50 @@
 # === SnapNames Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/snapnames
 # Scope: Website targets
-snapnames.com
-namejet.com
+# STATUS: SCANNED - DONE
+# snapnames.com
+# namejet.com
 
 # === Internet Brands Public (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/internetbrands-public
 # Scope: Website targets
-carsdirect.com
-pets.webmd.com
-member.webmd.com
-mdedge.com
-accounts.webmd.com
-powerpak.com
-profreg.medscape.com
-globalacademycme.com
-webmd.com
-login.medscape.com
-portalv2.lh360.com
-demandforced3.com
+# STATUS: SCANNED - DONE
+# carsdirect.com
+# pets.webmd.com
+# member.webmd.com
+# mdedge.com
+# accounts.webmd.com
+# powerpak.com
+# profreg.medscape.com
+# globalacademycme.com
+# webmd.com
+# login.medscape.com
+# portalv2.lh360.com
+# demandforced3.com
 # internetbrands.com # Pending - Marketplace/Plugin
 # ibconnect.internetbrands.com # Pending - Marketplace/Plugin
-exchange.pulsepoint.com
-life.pulsepoint.com
-signal.pulsepoint.com
-lifeapi.pulsepoint.com
-openapi.pulsepoint.com
-openapitest.pulsepoint.com
+# exchange.pulsepoint.com
+# life.pulsepoint.com
+# signal.pulsepoint.com
+# lifeapi.pulsepoint.com
+# openapi.pulsepoint.com
+# openapitest.pulsepoint.com
 
 # === Quizlet (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/quizlet
 # Scope: Website targets
-quizlet.com
+# STATUS: SCANNED - DONE
+# quizlet.com
 # https://itunes.apple.com/us/app/quizlet-flashcards/id546473125 # Mobile App
 # https://play.google.com/store/apps/details?id=com.quizlet.quizletandroid # Mobile App 3.0 api
 
 # === Wyze Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/wyze
 # Scope: Website targets
-auth.wyze.com
-my.wyze.com
-api.wyzecam.com
+# STATUS: SCANNED - DONE
+# auth.wyze.com
+# my.wyze.com
+# api.wyzecam.com
 # Wyze Cam V3 # hardware
 # https://www.wyze.com/products/wyze-cam # hardware
 
@@ -571,50 +575,144 @@ api.wyzecam.com
 # mattermost.com # Pending - Marketplace/Plugin
 # bugcrowd-*your-own-instance*.cloud.mattermost.com
 # github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
-# github.com # Pending - Marketplace/Plugin
 
 # === Easy Agile (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/easyagile
 # Scope: Website targets
 # marketplace.atlassian.com # Pending - Marketplace/Plugin
-# marketplace.atlassian.com # Pending - Marketplace/Plugin
-# marketplace.atlassian.com # Pending - Marketplace/Plugin
-# marketplace.atlassian.com # Pending - Marketplace/Plugin
-# marketplace.atlassian.com # Pending - Marketplace/Plugin
 
 # === Council on Foreign Relations (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/cfr
 # Scope: Website targets
-cfr.org
-thinkglobalhealth.org
-education.cfr.org
+# STATUS: SCANNED - DONE
+# cfr.org
+# thinkglobalhealth.org
+# education.cfr.org
 
 # === Jora (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/jora
 # Scope: Website targets
-jora.com
-jora.xyz
+# STATUS: SCANNED - DONE
+# jora.com
+# jora.xyz
 # https://apps.apple.com/us/app/jora-jobs-job-search-app/id917565665	 # Mobile App
 # https://play.google.com/store/apps/details?id=com.jora.android&hl=en_US	 # Mobile App
 
 # === Refined (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/refined2
 # Scope: Website targets
+# STATUS: SCANNED - DONE
 # marketplace.atlassian.com # Pending - Marketplace/Plugin
-refined.site
-refinedsites.refinedwiki.com
+# refined.site
+# refinedsites.refinedwiki.com
+# bugbounty-refined-test-<bugcrowd-name>.refined.site
+
+# === Unilever Managed Bug Bounty (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/unilever-mbb
+# Scope: Website targets
+# STATUS: CLOSED / NOT FOUND
+
+# === Izymes (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/izymes
+# Scope: Website targets
 # marketplace.atlassian.com # Pending - Marketplace/Plugin
+
+# === ClassDojo (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/classdojo
+# Scope: Website targets
+classdojo.com
+
+# === Code.org (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/codeorg
+# Scope: Website targets
+code.org
+support.code.org
+
+# === Under Armour Corporate (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/underarmour-corp
+# Scope: Website targets
+underarmour.com
+
+# === Majid Al Futtaim Properties (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/mallofemirates
+# Scope: Website targets
+malloftheemirates.com
+majidalfuttaim.com
+
+# === Tamedia (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/tamedia
+# Scope: Website targets
+tamedia.ch
+
+# === Rec Room Video Games (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/recroom-og
+# Scope: Website targets
+recroom.com
+
+# === Under Armour Product Security (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/underarmour
+# Scope: Website targets
+careers.underarmour.com
+
+# === HostGator LATAM Bug Bounty (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/hostgator-latam-bb
+# Scope: Website targets
+hostgator.com.br
+hostgator.co
+hostgator.cl
+hostgator.mx
+
+# === Dell Technologies Application Bug Bounty (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/dell-com
+# Scope: Website targets
+dell.com
+delltechnologies.com
+
+# === ClickHouse (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/clickhouse
+# Scope: Website targets
+clickhouse.com
+
+# === The Hut Group: Public Managed Bug Bounty Engagement (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/hutgroup-public
+# Scope: Website targets
+thg.com
+thehutgroup.com
+
+# === SecureDrop (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/freedomofpress
+# Scope: Website targets
+securedrop.org
+docs.securedrop.org
+
+# === Imperva - Thales Bug Bounty (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/imperva-mbb
+# Scope: Website targets
+imperva.com
+
+# === Volkswagen (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/volkswagen-og
+# Scope: Website targets
+volkswagen.com
+vw.com
+
+# === Majid Al Futtaim Entertainment (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/vox
+# Scope: Website targets
+voxcinemas.com
+
+# === Majid Al Futtaim Loyalty Program (Share Rewards) and MPASS (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/majidalfuttaim-loyalty
+# Scope: Website targets
+share-rewards.com
+
+# === Origin Energy (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/originenergy-og1
+# Scope: Website targets
+originenergy.com.au
+
+# === Stiltsoft (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/stiltsoft
+# Scope: Website targets
 # marketplace.atlassian.com # Pending - Marketplace/Plugin
-bugbounty-refined-test-<bugcrowd-name>.refined.site
-# marketplace.atlassian.com # Pending - Marketplace/Plugin
-# marketplace.atlassian.com # Pending - Marketplace/Plugin
+
