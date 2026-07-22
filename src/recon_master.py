@@ -851,8 +851,8 @@ class ReconMaster:
             verified_findings.append(finding)
             
             if sev in severity_colors:
-                # v9.2: Don't send Discord alerts for staging/API — they're collected silently
-                _SILENT_TYPES = {'Staging_Environment', 'API_Spec_Exposed', 'Metrics_Endpoint'}
+                # v9.2: Don't send Discord alerts for staging/API/JS URL creds — they're collected silently
+                _SILENT_TYPES = {'Staging_Environment', 'API_Spec_Exposed', 'Metrics_Endpoint', 'JS_URL_with_Credentials', 'URL with Credentials'}
                 if finding['type'] not in _SILENT_TYPES:
                     self._add_to_watchlist(url, finding['type'], f"Bounty Scan: {sev} finding")
                     emoji = "🚨" if sev == "CRITICAL" else "🎯"
@@ -937,12 +937,20 @@ class ReconMaster:
         # Types that go to separate dedicated files instead of bounty_targets:
         _STAGING_TYPES = {'Staging_Environment'}
         _API_TYPES = {'API_Spec_Exposed', 'Metrics_Endpoint'}
+        _JS_CRED_TYPES = {'JS_URL_with_Credentials', 'URL with Credentials'}
 
         staging_findings = [f for f in all_findings if f['type'] in _STAGING_TYPES]
         api_findings = [f for f in all_findings if f['type'] in _API_TYPES]
-        bounty_findings = [f for f in all_findings if f['type'] not in _STAGING_TYPES and f['type'] not in _API_TYPES]
+        js_url_cred_findings = [f for f in all_findings if f['type'] in _JS_CRED_TYPES]
 
-        # 1. Save clean bounty findings (actionable only — no staging/API noise)
+        bounty_findings = [
+            f for f in all_findings
+            if f['type'] not in _STAGING_TYPES
+            and f['type'] not in _API_TYPES
+            and f['type'] not in _JS_CRED_TYPES
+        ]
+
+        # 1. Save clean bounty findings (actionable only — no staging/API/JS URL creds noise)
         if bounty_findings:
             output_file = self.output_dir / "bounty_targets.json"
             with open(output_file, "w", encoding="utf-8") as f:
@@ -966,6 +974,18 @@ class ReconMaster:
                     "environments": staging_findings,
                 }, f, indent=2)
             log_info(f"Staging environments: {len(staging_findings)} live environments saved")
+
+        # 3. Save JS URL credentials to separate file for manual inspection
+        if js_url_cred_findings:
+            cred_file = self.output_dir / "js_url_credentials.json"
+            with open(cred_file, "w", encoding="utf-8") as f:
+                json.dump({
+                    "domain": self.domain,
+                    "total": len(js_url_cred_findings),
+                    "note": "JS extracted URLs with credentials (unverified / high false positive rate). Manual review required.",
+                    "findings": js_url_cred_findings,
+                }, f, indent=2)
+            log_info(f"JS URL credentials: {len(js_url_cred_findings)} unverified findings saved to js_url_credentials.json")
 
         # Store API findings so _save_api_intel can merge them
         self._bounty_api_findings = api_findings

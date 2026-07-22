@@ -408,6 +408,14 @@ class JSExtractor:
                         email_domain = match.split('@')[-1].lower() if '@' in match else ''
                         if any(email_domain.endswith(d) for d in _LIBRARY_EMAIL_DOMAINS):
                             continue
+
+                    # URL with Credentials: skip schema.org / JSON-LD / JS string syntax false positives
+                    if secret_name == 'URL with Credentials':
+                        match_lower = match.lower()
+                        if any(kw in match_lower or kw in context.lower() for kw in ('schema.org', 'w3.org', '@type', '@id', '@context', 'xml-events')):
+                            continue
+                        if any(bad in match for bad in ('"', "'", '\\', ',', '{', '}', '[', ']', '`', '$', ';')):
+                            continue
                     # ── End v8.0 filters ──────────────────────────────
 
                     # ── v9.0: API Key Classification ──────────────────

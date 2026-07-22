@@ -686,8 +686,7 @@ def _get_scan_findings(scan_dir: Path) -> dict:
                 'Google API Key', 'AWS Access Key', 'Stripe API Key',
                 'Slack Token', 'GitHub Token', 'Firebase API Key',
                 'Twilio API Key', 'SendGrid API Key', 'Mailgun API Key',
-                'Discord Webhook', 'Slack Webhook', 'URL with Credentials',
-                'Basic Auth Header',
+                'Discord Webhook', 'Slack Webhook', 'Basic Auth Header',
             }
             count = sum(1 for s in secrets if s.get("type") in api_key_types)
             if count > 0:

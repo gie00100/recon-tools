@@ -21,6 +21,7 @@ SMALL_FILES = [
     "exposed_ports.json",
     "bounty_targets.json",
     "staging_environments.json",
+    "js_url_credentials.json",
     "api_intel.json",
     "confirmed_access.json",
     "credentials_found.json",
@@ -283,6 +284,18 @@ def _print_intel_summary(local_dir: str, domain: str):
                         for h in hits[:3]:
                             url = h if isinstance(h, str) else h.get('url', str(h))
                             print(f"     [SCHEMA:{cat.upper()}] {url[:80]}")
+        except Exception:
+            pass
+
+    # JS URL credentials
+    jc_path = os.path.join(local_dir, "js_url_credentials.json")
+    if os.path.exists(jc_path) and os.path.getsize(jc_path) > 2:
+        try:
+            data = _json.loads(open(jc_path, 'r', encoding='utf-8', errors='replace').read())
+            c_findings = data.get("findings", [])
+            if c_findings:
+                has_intel = True
+                print(f"  🔐 JS URL Credentials: {len(c_findings)} unverified findings (saved to js_url_credentials.json)")
         except Exception:
             pass
 
