@@ -620,99 +620,223 @@
 # === ClassDojo (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/classdojo
 # Scope: Website targets
-classdojo.com
+# STATUS: SCANNED - DONE
+# classdojo.com
 
 # === Code.org (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/codeorg
 # Scope: Website targets
-code.org
-support.code.org
+# STATUS: SCANNED - DONE
+# code.org
+# support.code.org
 
 # === Under Armour Corporate (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/underarmour-corp
 # Scope: Website targets
-underarmour.com
+# STATUS: SCANNED - DONE
+# underarmour.com
 
 # === Majid Al Futtaim Properties (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/mallofemirates
 # Scope: Website targets
-malloftheemirates.com
-majidalfuttaim.com
+# STATUS: SCANNED - DONE
+# malloftheemirates.com
+# majidalfuttaim.com
 
 # === Tamedia (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/tamedia
 # Scope: Website targets
-tamedia.ch
+# STATUS: SCANNED - DONE
+# tamedia.ch
 
 # === Rec Room Video Games (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/recroom-og
 # Scope: Website targets
-recroom.com
+# STATUS: SCANNED - DONE
+# recroom.com
 
 # === Under Armour Product Security (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/underarmour
 # Scope: Website targets
-careers.underarmour.com
+# STATUS: SCANNED - DONE
+# careers.underarmour.com
 
 # === HostGator LATAM Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/hostgator-latam-bb
 # Scope: Website targets
-hostgator.com.br
-hostgator.co
-hostgator.cl
-hostgator.mx
+# STATUS: SCANNED - DONE
+# hostgator.com.br
+# hostgator.co
+# hostgator.cl
+# hostgator.mx
 
 # === Dell Technologies Application Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/dell-com
 # Scope: Website targets
-dell.com
-delltechnologies.com
+# STATUS: SCANNED - DONE
+# dell.com
+# delltechnologies.com
 
 # === ClickHouse (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/clickhouse
 # Scope: Website targets
-clickhouse.com
+# STATUS: SCANNED - DONE
+# clickhouse.com
 
 # === The Hut Group: Public Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/hutgroup-public
 # Scope: Website targets
-thg.com
-thehutgroup.com
+# STATUS: SCANNED - DONE
+# thg.com
+# thehutgroup.com
 
 # === SecureDrop (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/freedomofpress
 # Scope: Website targets
-securedrop.org
-docs.securedrop.org
+# STATUS: SCANNED - DONE
+# securedrop.org
+# docs.securedrop.org
 
 # === Imperva - Thales Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/imperva-mbb
 # Scope: Website targets
-imperva.com
+# STATUS: SCANNED - DONE
+# imperva.com
 
 # === Volkswagen (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/volkswagen-og
 # Scope: Website targets
-volkswagen.com
-vw.com
+# STATUS: SCANNED - DONE
+# volkswagen.com
+# vw.com
 
 # === Majid Al Futtaim Entertainment (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/vox
 # Scope: Website targets
-voxcinemas.com
+# STATUS: SCANNED - DONE
+# voxcinemas.com
 
 # === Majid Al Futtaim Loyalty Program (Share Rewards) and MPASS (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/majidalfuttaim-loyalty
 # Scope: Website targets
-share-rewards.com
+# STATUS: SCANNED - DONE
+# share-rewards.com
 
 # === Origin Energy (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/originenergy-og1
 # Scope: Website targets
-originenergy.com.au
+# STATUS: SCANNED - DONE
+# originenergy.com.au
 
 # === Stiltsoft (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/stiltsoft
 # Scope: Website targets
 # marketplace.atlassian.com # Pending - Marketplace/Plugin
+
+# === YNAB (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/ynab
+# Scope: Website targets
+ynab.com
+youneedabudget.com
+
+# === Directly (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/directly
+# Scope: Website targets
+directly.com
+
+# === Web.com Bug Bounty (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/webdotcom
+# Scope: Website targets
+web.com
+
+# === eazyBI (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/eazybi
+# Scope: Website targets
+eazybi.com
+# marketplace.atlassian.com # Pending - Marketplace/Plugin
+
+# === Unity Technologies (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/unity
+# Scope: Website targets
+unity.com
+unity3d.com
+
+# === Magic Labs Managed Bug Bounty Engagement (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/magiclabs-mbb-og
+# Scope: Website targets
+magic.link
+
+# === PlanetHoster Bug Bounty (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/planethosterinc
+# Scope: Website targets
+planethoster.com
+
+# === TheFork - B2B - TFM3 (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/lafourchette
+# Scope: Website targets
+thefork.com
+lafourchette.com
+
+# === City of Vienna Managed Bug Bounty (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/city-of-vienna-mbb-og
+# Scope: Website targets
+wien.gv.at
+
+# === NEOGOV Public Assets (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/neohrms
+# Scope: Website targets
+neogov.com
+
+# === Majid Al Futtaim Lifestyle (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/maffashion
+# Scope: Website targets
+mafidalfuttaim.com
+
+# === Optimizely (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/optimizely
+# Scope: Website targets
+optimizely.com
+
+# === Comcast Xfinity Vulnerability Disclosure Program (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/comcastvdp
+# Scope: Website targets
+xfinity.com
+comcast.com
+
+# === TheFork - B2C - WNG (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/thefork-b2c-wng
+# Scope: Website targets
+thefork.com
+
+# === Ultra Mobile Retailer Portal Bug Bounty Engagement (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/ultramobile-retailer-portal
+# Scope: Website targets
+ultramobile.com
+
+# === Tyler Technologies Data & Insights (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/tyler-tech-data-insights
+# Scope: Website targets
+tylertech.com
+socrata.com
+
+# === TheFork Managed Bug Bounty Engagement (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/thefork-mbb-og
+# Scope: Website targets
+thefork.com
+
+# === Klaviyo Managed Bug Bounty (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/klaviyo-og
+# Scope: Website targets
+klaviyo.com
+
+# === iFood: Bug Bounty Program (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/ifood-og
+# Scope: Website targets
+ifood.com.br
+
+# === Cloudinary (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/cloudinary
+# Scope: Website targets
+cloudinary.com
+
 
