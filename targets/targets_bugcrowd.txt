@@ -3,10 +3,10 @@
 # ╚══════════════════════════════════════════════════════════════════╝
 
 # ════════════════════════════════════════════════════════════════════
-# 🔴 SECTION 1: PENDING PROGRAM TARGETS (READY FOR SCANNING)
+# SECTION 1: PENDING PROGRAM TARGETS
 # ════════════════════════════════════════════════════════════════════
 
-# === 20 Minuten (Bugcrowd) ===
+# === 20 Minuten ===
 # Program: https://bugcrowd.com/engagements/twentyminuten
 # Scope: Website targets
 # STATUS: PENDING
@@ -18,23 +18,13 @@ screenplayer.20min.ch
 videoplayer.20min.ch
 www.20min.ch
 
-# === 55 Degrees (Bugcrowd) ===
+# === 55 Degrees ===
 # Program: https://bugcrowd.com/engagements/fiftyfivedegrees
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: NOTE: .net subdomain is in scope per program description
-# Non-web target: https://marketplace.atlassian.com/apps/1216661/actionableagile-for-jira-agile-metrics?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1216661/actionableagile-for-jira-agile-metrics?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1216661/actionableagile-for-jira-agile-metrics?hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/1216661/actionableagile-for-jira-agile-metrics?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1216661/actionableagile-for-jira-agile-metrics?hosting=server
-# Non-web target: https://marketplace.atlassian.com/apps/1216661/actionableagile-for-jira-agile-metrics?hosting=server&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1220160/issue-analyzer-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1224766/portfolio-forecaster?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1224766/portfolio-forecaster?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1227773/klar-issue-refinement-for-jira?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Afterpay Bug Bounty Program (Bugcrowd) ===
+# === Afterpay Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/afterpay
 # Scope: Website targets
 # STATUS: PENDING
@@ -50,38 +40,20 @@ portal.clearpay.co.uk
 portal.clearpay.com
 portalapi.eu.clearpay.co.uk
 portalapi.us.afterpay.com
-# Non-web target: https://apps.apple.com/au/app/afterpay-shop-now-pay-later/id1230286588
-# Non-web target: https://apps.apple.com/gb/app/clearpay-buy-now-pay-later/id1474022186
-# Non-web target: https://play.google.com/store/apps/details?id=com.afterpaymobile.uk
-# Non-web target: https://play.google.com/store/apps/details?id=com.afterpaymobile.us&hl=en_US&gl=US
 
-# === AgilePulse Marketplace Bug Bounty Program (Bugcrowd) ===
+# === AgilePulse Marketplace Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/agile-pulse
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1143291390/sprintpoker-planning-poker-async-estimation?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1233038/agility-poker-planning?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/187209184/sprintretro-free-retrospective-metrics-suite?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/2903137599/sprintretro-pro-retrospective-metrics-suite?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/3684126567/laya-workflowos-ai-automation-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/3780102417/sprintpoker-free-planning-poker-async-estimation?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/4076194710/laya-export-studio-for-jira-and-confluence?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Agilis LT Bug Bounty (Bugcrowd) ===
+# === Agilis LT Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/agilislt
 # Scope: Website targets
 # STATUS: PENDING
 app.simple-reports.com
-# Non-web target: https://marketplace.atlassian.com/apps/1218888/simple-custom-reports-charts-time-in-status-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1219429/status-progress-report-structure-jira-dashboard-gadget?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1219487/simple-timesheet-worklog-dashboard-gadget-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1219703/time-tracking-estimation-report-dashboard-gadget-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1219761/individual-velocity-report-chart-dashboard-gadget-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1219872/advanced-burndown-chart-dashboard-gadget-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1230997/time-in-status-report-dashboard-gadget-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/3747688267/simple-gantt-roadmap-timeline-dashboard-gadget-for-jira?hosting=cloud&tab=overview
 
-# === Aiven Managed Bug Bounty (Bugcrowd) ===
+# === Aiven Managed Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/aiven-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -90,47 +62,32 @@ api.aiven.io
 console.aiven.io
 falcon-bug-bounty-flag-pgsql-dev-sandbox.aivencloud.com
 regatta.aiven.io
-# Non-web target: Aiven for Apache Kafka
-# Non-web target: Aiven for Grafana
-# Non-web target: Aiven for MySQL
-# Non-web target: Aiven for OpenSearch
-# Non-web target: Aiven for PostgreSQL
 
-# === AppFox (Bugcrowd) ===
+# === AppFox ===
 # Program: https://bugcrowd.com/engagements/automationconsultants
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1216387/approvals-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1217194/optimizer-for-jira-cleaner-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1218474/compliance-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1222276/workflows-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1237517/captionizer-ai-image-analyzer
+# Non-web targets only
 
-# === AppLiger (Bugcrowd) ===
+# === AppLiger ===
 # Program: https://bugcrowd.com/engagements/appliger
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1219112/easy-templates-for-jira-issues?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1236389/easy-progress-hill-charts-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1236512/easy-action-items-checklist-templates-and-automation?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/2576221793/easy-markdown-exporter-for-confluence?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Appsvio Marketplace Bug Bounty (Bugcrowd) ===
+# === Appsvio Marketplace Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/appsvio
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1218221/feature-bundle-for-jira-service-management?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1224654/multilevel-select-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1229162/issue-templates-agent-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1238103/appsvio-test-management-for-jira?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Arlo Technologies (Bugcrowd) ===
+# === Arlo Technologies ===
 # Program: https://bugcrowd.com/engagements/arlo
 # Scope: Website targets
 # STATUS: PENDING
 arlo.com
 
-# === Asana (Bugcrowd) ===
+# === Asana ===
 # Program: https://bugcrowd.com/engagements/asana
 # Scope: Website targets
 # STATUS: PENDING
@@ -138,21 +95,15 @@ app.asana.com
 asana.biz
 asana.com
 form.asana.com
-subdomain takeover at *asana.biz
-# Non-web target: https://apps.apple.com/us/app/asana-mobile/id489969512
-# Non-web target: https://play.google.com/store/apps/details?id=com.asana.app&hl=en
 
-# === Atlassian (Bugcrowd) ===
+# === Atlassian ===
 # Program: https://bugcrowd.com/engagements/atlassian
 # Scope: Website targets
 # STATUS: PENDING
 admin.atlassian.com
-any associated *.atlassian.com or *.atl-paas.net domain that can be exploited directly from the *.atlassian.net instance
-any other *.atlassian.com or *.atl-paas.net domain that cannot be exploited directly from a *.atlassian.net instance
 atlastunnel.com
 bitbucket.org
 confluence.atlassian.com
-graphql api (bugbounty-test-<bugcrowd-name>.atlassian.net
 id.atlassian.com
 mcp.atlassian.com
 start.atlassian.com
@@ -161,14 +112,8 @@ www.atlassian.com
 www.loom.com
 www.npmjs.com
 www.sourcetreeapp.com
-# Non-web target: Forge Platform
-# Non-web target: Other - (all other Atlassian targets)
-# Non-web target: chromewebstore.google.com
-# Non-web target: https://apps.apple.com/us/app/confluence-cloud/id1006971684
-# Non-web target: https://apps.apple.com/us/app/confluence-server/id1288365159
-# Non-web target: https://apps.apple.com/us/app/jira-cloud-by-atlassian/id1006972087
 
-# === Auth0 by Okta (Bugcrowd) ===
+# === Auth0 by Okta ===
 # Program: https://bugcrowd.com/engagements/auth0-okta
 # Scope: Website targets
 # STATUS: PENDING
@@ -186,40 +131,27 @@ openidconnect.net
 play.fga.dev
 samltool.io
 webauthn.me
-# Non-web target: MFA Integrations
-# Non-web target: https://apps.apple.com/us/app/auth0-guardian/id1093447833
-# Non-web target: https://github.com/auth0/Auth0.Net
-# Non-web target: https://github.com/auth0/auth0-java
-# Non-web target: https://github.com/auth0/auth0-php
 
-# === AXIS OS (Bugcrowd) ===
+# === AXIS OS ===
 # Program: https://bugcrowd.com/engagements/axis-os-public
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: AXIS OS
+# Non-web targets only
 
-# === Backblaze (Bugcrowd) ===
+# === Backblaze ===
 # Program: https://bugcrowd.com/engagements/backblaze
 # Scope: Website targets
 # STATUS: PENDING
 backblaze.com
 backblazeb2.com
-# Non-web target: Git Repositories (b2-sdk-java & B2 Command Line Tool)
-# Non-web target: Mac Personal Backup Clients
-# Non-web target: Mac Restore Downloaders
-# Non-web target: Windows Personal Backup Clients
-# Non-web target: Windows Restore Downloaders
 
-# === Balsamiq for Atlassian Products (Bugcrowd) ===
+# === Balsamiq for Atlassian Products ===
 # Program: https://bugcrowd.com/engagements/balsamiq
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1212796/balsamiq-wireframes-for-jira-cloud?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1213404/balsamiq-wireframes-for-confluence-cloud?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/256/balsamiq-wireframes-for-confluence?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/5161/balsamiq-wireframes-for-jira?hosting=datacenter&tab=overview
+# Non-web targets only
 
-# === Binance (Bugcrowd) ===
+# === Binance ===
 # Program: https://bugcrowd.com/engagements/binance
 # Scope: Website targets
 # STATUS: PENDING
@@ -233,29 +165,22 @@ pro-api.coinmarketcap.com
 pro.coinmarketcap.com
 www.binance.com
 www.binance.us
-# Non-web target: Binance Desktop Application
-# Non-web target: Binance Mobile Application for Android
-# Non-web target: Binance Mobile Application for iOS
-# Non-web target: Binance macOS Application
-# Non-web target: CoinMarketCap Android app
 
-# === Bitdefender (Bugcrowd) ===
+# === Bitdefender ===
 # Program: https://bugcrowd.com/engagements/bitdefender
 # Scope: Website targets
 # STATUS: PENDING
 bitdefender.com
 bitdefender.net
 www.bitdefender.com
-# Non-web target: Bitdefender Antimalware Engines
-# Non-web target: Bitdefender Total Security
 
-# === Bitdefender Box v2 (Bugcrowd) ===
+# === Bitdefender Box v2 ===
 # Program: https://bugcrowd.com/engagements/bitdefenderbox2
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: Bitdefender BOX v2
+# Non-web targets only
 
-# === BitGo Managed Public Bug Bounty Engagement (Bugcrowd) ===
+# === BitGo Managed Public Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/bitgo-mbb-og-public
 # Scope: Website targets
 # STATUS: PENDING
@@ -265,16 +190,13 @@ bitgo.ae
 bitgo.com
 usdstandard.com
 
-# === BitGo Mobile Apps Bug Bounty Engagement (Bugcrowd) ===
+# === BitGo Mobile Apps Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/bitgo-mobileapps-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://apps.apple.com/us/app/bitgo-verify/id1608937235
-# Non-web target: https://apps.apple.com/us/app/bitgo/id6739010408
-# Non-web target: https://play.google.com/store/apps/details?id=com.bitgo.mobileapp
-# Non-web target: https://play.google.com/store/apps/details?id=com.bitgo.verify&hl=en_US
+# Non-web targets only
 
-# === Bitpanda Ongoing Bug Bounty (Bugcrowd) ===
+# === Bitpanda Ongoing Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/bitpanda-og-bb
 # Scope: Website targets
 # STATUS: PENDING
@@ -283,95 +205,69 @@ api.bitpanda.com
 blog.bitpanda.com
 web.bitpanda.com
 www.bitpanda.com
-# Non-web target: All the Blockchain Infrastructure
-# Non-web target: https://apps.apple.com/app/bitpanda-buy-bitcoin-crypto/id1449018960
-# Non-web target: https://play.google.com/store/apps/details?id=com.bitpanda.bitpanda
-# Non-web target: wss://socket.bitpanda.com
 
-# === Bitso Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Bitso Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/bitso-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 bitso.com
 nvio.ar
 nvio.mx
-# Non-web target: https://apps.apple.com/us/app/bitso-alpha-crypto-trade-pro/id1539469172
-# Non-web target: https://apps.apple.com/us/app/bitso-buy-bitcoin-easily/id1292836438
-# Non-web target: https://play.google.com/store/apps/details?id=com.bitso.alpha
-# Non-web target: https://play.google.com/store/apps/details?id=com.bitso.wallet&pcampaignid=web_share
 
-# === Block Open Source (Bugcrowd) ===
+# === Block Open Source ===
 # Program: https://bugcrowd.com/engagements/blockopensource
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://github.com/afterpay/sdk-android
-# Non-web target: https://github.com/afterpay/sdk-ios
-# Non-web target: https://github.com/cashapp/cash-app-pay-android-sdk
-# Non-web target: https://github.com/cashapp/cash-app-pay-ios-sdk
-# Non-web target: https://github.com/cashapp/hermit
+# Non-web targets only
 
-# === Blockchain.com Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Blockchain.com Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/blockchain-dot-com
 # Scope: Website targets
 # STATUS: PENDING
 api.blockchain.info
 ws.blockchain.info
 www.blockchain.com
-# Non-web target: https://apps.apple.com/us/app/blockchain-com-buy-btc-sol/id493253309
-# Non-web target: https://play.google.com/store/apps/details?id=piuk.blockchain.android
 
-# === BOJA Consulting Bug Bounty (Bugcrowd) ===
+# === BOJA Consulting Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/boja
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1218036/agile-project-forecast-metrics-roadmap-portfolio?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1218555/easy-pdf-html-word-export-to-custom-documents?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1223298/agile-risk-management-for-jira-cloud?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1226195/align-okr-with-roadmap?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Bolt Technology OÜ (Bugcrowd) ===
+# === Bolt Technology OÜ ===
 # Program: https://bugcrowd.com/engagements/bolt-og
 # Scope: Website targets
 # STATUS: PENDING
 bolt.eu
 taxify.eu
-# Non-web target: https://apps.apple.com/ee/app/bolt-fast-affordable-rides/id675033630
-# Non-web target: https://apps.apple.com/ee/app/bolt-food/id1451492388
-# Non-web target: https://play.google.com/store/apps/details?id=com.bolt.deliveryclient
-# Non-web target: https://play.google.com/store/apps/details?id=ee.mtakso.client
 
-# === Broken Build Bug Bounty (Bugcrowd) ===
+# === Broken Build Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/brokenbuild
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: marketplace.atlassian.com # Pending - Marketplace/Plugin
+# Non-web targets only
 
-# === Bugcrowd (Bugcrowd) ===
+# === Bugcrowd ===
 # Program: https://bugcrowd.com/engagements/bugcrowd
 # Scope: Website targets
 # STATUS: PENDING
 gov.bugcrowd.net
-# Non-web target: *.bugcrowd.com/auth/*
-# Non-web target: https://api.bugcrowd.com
-# Non-web target: https://bugcrowd.com/programs
-# Non-web target: https://docs.bugcrowd.com/
-# Non-web target: https://identity.bugcrowd.com/
 
-# === Bullish Exchange (Bugcrowd) ===
+# === Bullish Exchange ===
 # Program: https://bugcrowd.com/engagements/bullish-exchange
 # Scope: Website targets
 # STATUS: PENDING
 api.simnext.bullish-test.com
 simnext.bullish-test.com
 
-# === Bullish.com (Bugcrowd) ===
+# === Bullish.com ===
 # Program: https://bugcrowd.com/engagements/bullish
 # Scope: Website targets
 # STATUS: PENDING
 bullish.com
 investor.bullish.com
 
-# === Canva (Bugcrowd) ===
+# === Canva ===
 # Program: https://bugcrowd.com/engagements/canva
 # Scope: Website targets
 # STATUS: PENDING
@@ -382,28 +278,21 @@ canva.cn
 canva.com
 canva.tech
 www.canva.com
-# Non-web target: 3rd-Party Provider Vulnerability
-# Non-web target: Apps SDK Sandboxing
-# Non-web target: Canva (Android)
-# Non-web target: Canva (Chrome Extension)
-# Non-web target: Canva (iOS)
 
-# === Cash App (Bugcrowd) ===
+# === Cash App ===
 # Program: https://bugcrowd.com/engagements/cashapp
 # Scope: Website targets
 # STATUS: PENDING
 cash.app
 cashstaging.app
-# Non-web target: https://itunes.apple.com/us/app/cash-app/id711923939?mt=8
-# Non-web target: https://play.google.com/store/apps/details?id=com.squareup.cash
 
-# === celix Solutions GmbH Marketplace Bug Bounty Program (Bugcrowd) ===
+# === celix Solutions GmbH Marketplace Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/celix-solutions-market
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/37658/column-order-gadget-plugin?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Centers for Medicare & Medicaid Services - Public Bug Bounty Program 2026 (Bugcrowd) ===
+# === Centers for Medicare & Medicaid Services - Public Bug Bounty Program 2026 ===
 # Program: https://bugcrowd.com/engagements/cms-bbpublic
 # Scope: Website targets
 # STATUS: PENDING
@@ -415,7 +304,7 @@ portal.cms.gov
 qpp.cms.gov
 www.cms.gov
 
-# === Chime Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Chime Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/chime
 # Scope: Website targets
 # STATUS: PENDING
@@ -433,138 +322,103 @@ chmfin.com
 member-qa.chime.com
 saltlabs.com
 www.chime.com
-# Non-web target: All Chime Assets
-# Non-web target: https://apps.apple.com/us/app/chime-mobile-banking/id836215269
-# Non-web target: https://apps.apple.com/us/app/salt-work-and-get-rewarded/id1668462142
 
-# === Cisco Networking (Bugcrowd) ===
+# === Cisco Networking ===
 # Program: https://bugcrowd.com/engagements/cisconetworking
 # Scope: Website targets
 # STATUS: PENDING
 ikarem.io
 meraki.com
 network-auth.com
-# Non-web target: Cisco Campus Gateways
-# Non-web target: Cisco Catalyst 9200L Series Switches (Cloud-Managed)
-# Non-web target: Cisco Meraki Dashboard Mobile Application (iOS and Android)
-# Non-web target: Cisco Meraki MG Fixed Wireless Access Devices
-# Non-web target: Cisco Meraki MR Access Points
 
-# === City of Vienna Managed Bug Bounty (Bugcrowd) ===
+# === City of Vienna Managed Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/city-of-vienna-mbb-og
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 wien.gv.at
 
-# === ClassDojo (Bugcrowd) ===
+# === ClassDojo ===
 # Program: https://bugcrowd.com/engagements/classdojo
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 classdojo.com
 
-# === ClickHouse (Bugcrowd) ===
+# === ClickHouse ===
 # Program: https://bugcrowd.com/engagements/clickhouse
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 clickhouse.com
 
-# === Cloudinary (Bugcrowd) ===
+# === Cloudinary ===
 # Program: https://bugcrowd.com/engagements/cloudinary
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 cloudinary.com
 
-# === Code.org (Bugcrowd) ===
+# === Code.org ===
 # Program: https://bugcrowd.com/engagements/codeorg
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 code.org
 support.code.org
 
-# === codeclou GmbH (Bugcrowd) ===
+# === codeclou GmbH ===
 # Program: https://bugcrowd.com/engagements/codeclou
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1211159/advanced-codeblocks-for-confluence/version-history
-# Non-web target: https://marketplace.atlassian.com/apps/1211159/advanced-codeblocks-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1211159/advanced-codeblocks-for-confluence?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1212096/customfield-editor-for-jira?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === codefortynine (Bugcrowd) ===
+# === codefortynine ===
 # Program: https://bugcrowd.com/engagements/codefortynine
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1215055/slack-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1218211/secure-google-calendar-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1218652/deep-clone-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1219288/comment-history-log-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1219476/comment-custom-fields-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1219514/merge-agent-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1219807/version-sync-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1219994/external-data-for-jira-fields?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1220136/quick-filters-for-jira-dashboards?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1220964/snipe-it-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1221733/external-data-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1222978/dynamic-fields-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1223455/advanced-bulk-edit-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1226627/prime-custom-fields-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1230689/easy-confluence-gadget-for-jira-dashboards?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1232630/external-data-for-jira-fields-extension?hosting=cloud
+# Non-web targets only
 
-# === CoinDesk Data - Data API (Bugcrowd) ===
+# === CoinDesk Data - Data API ===
 # Program: https://bugcrowd.com/engagements/CCData-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 data-api.coindesk.com
 tools-api.cryptocompare.com
 
-# === CoinDesk Mobile (Bugcrowd) ===
+# === CoinDesk Mobile ===
 # Program: https://bugcrowd.com/engagements/coindesk-mobile-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://apps.apple.com/us/app/coindesk-crypto-bitcoin-news/id6502816903
-# Non-web target: https://play.google.com/store/apps/details?id=com.coindesk.mobile
+# Non-web targets only
 
-# === CoinDesk.com (Bugcrowd) ===
+# === CoinDesk.com ===
 # Program: https://bugcrowd.com/engagements/coindesk-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 www.coindesk.com
 
-# === Colined (Bugcrowd) ===
+# === Colined ===
 # Program: https://bugcrowd.com/engagements/colined
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1215414/pivot-report?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1215414/pivot-report?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1215414/pivot-report?hosting=server&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1216516/worklogs-report?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1216516/worklogs-report?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1216516/worklogs-report?hosting=server&tab=overview
+# Non-web targets only
 
-# === Comcast Xfinity Bug Bounty (Bugcrowd) ===
+# === Comcast Xfinity Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/comcast-mbb
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: █████████
-# Non-web target: █████████████
-# Non-web target: ██████████████
-# Non-web target: ███████████████████████████████████████
+# Non-web targets only
 
-# === Comcast Xfinity Vulnerability Disclosure Program (Bugcrowd) ===
+# === Comcast Xfinity Vulnerability Disclosure Program ===
 # Program: https://bugcrowd.com/engagements/comcastvdp
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 comcast.com
 xfinity.com
 
-# === Consensus by CoinDesk (Bugcrowd) ===
+# === Consensus by CoinDesk ===
 # Program: https://bugcrowd.com/engagements/consensus-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 consensus2026.sandbox.events.coindesk.com
 
-# === Council on Foreign Relations (Bugcrowd) ===
+# === Council on Foreign Relations ===
 # Program: https://bugcrowd.com/engagements/cfr
 # Scope: Website targets
 # STATUS: SCANNED - DONE
@@ -572,111 +426,81 @@ cfr.org
 education.cfr.org
 thinkglobalhealth.org
 
-# === Craft Coders Marketplace Bug Bounty (Bugcrowd) ===
+# === Craft Coders Marketplace Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/craftcoders
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1223249/mailto-wiki-email-for-confluence?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1223249/mailto-wiki-send-emails-to-confluence?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1223249/mailto-wiki-send-emails-to-confluence?tab=overview&hosting=server
+# Non-web targets only
 
-# === Dell Technologies Application Bug Bounty (Bugcrowd) ===
+# === Dell Technologies Application Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/dell-com
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 dell.com
 delltechnologies.com
 
-# === Dell Technologies' Products Bug Bounty Program (Bugcrowd) ===
+# === Dell Technologies' Products Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/dell-product
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: █████████████████████████████████████████████████
-# Non-web target: █████████████████████████████████████████████████████
+# Non-web targets only
 
-# === DevAcrobats (Bugcrowd) ===
+# === DevAcrobats ===
 # Program: https://bugcrowd.com/engagements/devacrobats-market
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1218655/performance-objectives-charts-reports?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1218655/performance-objectives-charts-reports?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1234873/user-activity-timeline-history-for-jira?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Deviniti (Bugcrowd) ===
+# === Deviniti ===
 # Program: https://bugcrowd.com/engagements/deviniti
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1210820/dynamic-forms-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1211044/issue-templates-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1212161/extension-for-jira-service-desk?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1213346/issue-sync-integration-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1213697/actions-for-jira-service-management?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1216386/queues-for-jira-service-management?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1219647/my-requests-extension-for-jira-service-management?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1220294/requirements-test-management-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1220300/theme-extension-for-jira-service-management?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1220477/entra-id-azure-ad-attributes-sync-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1224763/coji-confluence-pages-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1229958/issue-sync-lite?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1233642/workflow-building-blocks-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1237787?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1238286/ai-ticket-assistant?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/22817756/procuro-complete-procurement-management-in-jsm?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Directly (Bugcrowd) ===
+# === Directly ===
 # Program: https://bugcrowd.com/engagements/directly
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 directly.com
 
-# === Dutch Beginners ZZP Marketplace Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Dutch Beginners ZZP Marketplace Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/dutch-beginners-market
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1220001/visualize-openapi-swagger-documentation?hosting=cloud
+# Non-web targets only
 
-# === Easy Agile (Bugcrowd) ===
+# === Easy Agile ===
 # Program: https://bugcrowd.com/engagements/easyagile
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: marketplace.atlassian.com # Pending - Marketplace/Plugin
+# Non-web targets only
 
-# === eazyBI (Bugcrowd) ===
+# === eazyBI ===
 # Program: https://bugcrowd.com/engagements/eazybi
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 eazybi.com
-# Non-web target: marketplace.atlassian.com # Pending - Marketplace/Plugin
 
-# === Electroneum Legacy Blockchain: EOL (Bugcrowd) ===
+# === Electroneum Legacy Blockchain: EOL ===
 # Program: https://bugcrowd.com/engagements/legacy-blockchain-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 legacy-blockexplorer.electroneum.com
-# Non-web target: https://github.com/electroneum/electroneum/
 
-# === Electroneum Smart Chain (ETN-SC) — EVM-Compatible Blockchain (Bugcrowd) ===
+# === Electroneum Smart Chain — EVM-Compatible Blockchain ===
 # Program: https://bugcrowd.com/engagements/smartchain-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 blockexplorer.electroneum.com
 testnet-blockexplorer.electroneum.com
-# Non-web target: https://github.com/electroneum/electroneum-sc/
 
-# === Elements (Bugcrowd) ===
+# === Elements ===
 # Program: https://bugcrowd.com/engagements/elements
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1211111/elements-copy-sync-jira-issue-sync?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1212486/elements-spreadsheet-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1225519/elements-publish-to-confluence-create-pages-from-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1226102/elements-publish-to-confluence-jira-helper-app?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1229459/elements-overview-custom-display-for-related-issues?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1232142/elements-connect-helper-app?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1234289/elements-pulse-customer-experience-insights-for-jsm?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/23337/elements-connect-external-data-fields?hosting=cloud
+# Non-web targets only
 
-# === Entain Game Logic Flaws Bug Bounty Program (Bugcrowd) ===
+# === Entain Game Logic Flaws Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/entain-glf-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -687,24 +511,17 @@ casino.sportingbet.com
 www.coral.co.uk
 www.ladbrokes.com
 
-# === Entain Public Managed Bug Bounty Engagement 2024 (Bugcrowd) ===
+# === Entain Public Managed Bug Bounty Engagement 2024 ===
 # Program: https://bugcrowd.com/engagements/entain-public-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 www.bwin.com
-www.coral.co.uk
 www.galabingo.com
 www.galacasino.com
-www.ladbrokes.com
 www.partycasino.com
 www.partypoker.com
-# Non-web target: http://media.itsfogo.com/media/upload/mobile/android/apk/partycasino_com.apk
-# Non-web target: https://apps.apple.com/gb/app/bwin-poker-and-casino-games/id410242773
-# Non-web target: https://apps.apple.com/gb/app/bwin-sports-betting/id393760245
-# Non-web target: https://apps.apple.com/gb/app/partycasino-play-casino-games/id818432894
-# Non-web target: https://apps.apple.com/gb/app/partypoker-texas-holdem-poker/id687740281
 
-# === eToro Managed Bug Bounty Engagement (Bugcrowd) ===
+# === eToro Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/etoro-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -712,12 +529,8 @@ delta.app
 etoro.com
 etoropartners.com
 etorox.com
-# Non-web target: https://com.etoro.openbook
-# Non-web target: https://com.etoro.wallet
-# Non-web target: https://io.getdelta.android
-# Non-web target: https://io.getdelta.ios
 
-# === Etsy (Bugcrowd) ===
+# === Etsy ===
 # Program: https://bugcrowd.com/engagements/etsy
 # Scope: Website targets
 # STATUS: PENDING
@@ -729,13 +542,13 @@ etsypayments.com
 help.etsy.com
 www.etsy.com
 
-# === Fireblocks MPC Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Fireblocks MPC Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/fireblocks-mbb-og2
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://github.com/fireblocks/mpc-lib
+# Non-web targets only
 
-# === Fireblocks Web Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Fireblocks Web Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/fireblocks-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -743,19 +556,19 @@ sandbox-api.fireblocks.io
 sb-console-api.fireblocks.io
 sb-mobile-api.fireblocks.io
 
-# === FIS (Bugcrowd) ===
+# === FIS ===
 # Program: https://bugcrowd.com/engagements/fis
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: Any FIS asset is in scope
+# Non-web targets only
 
-# === Fivetran (Bugcrowd) ===
+# === Fivetran ===
 # Program: https://bugcrowd.com/engagements/fivetran-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 fivetran.com
 
-# === Flourish (Bugcrowd) ===
+# === Flourish ===
 # Program: https://bugcrowd.com/engagements/flourish
 # Scope: Website targets
 # STATUS: PENDING
@@ -766,7 +579,7 @@ flourish.studio
 kiln.it
 xyzbmojn.net
 
-# === Gearset: Managed Bug Bounty (Bugcrowd) ===
+# === Gearset: Managed Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/gearset-mbb
 # Scope: Website targets
 # STATUS: PENDING
@@ -774,26 +587,19 @@ hipaa.staging.gearset.com
 staging.claytonapp.com
 staging.gearset.com
 
-# === Glean Technologies Public Engagement (Bugcrowd) ===
+# === Glean Technologies Public Engagement ===
 # Program: https://bugcrowd.com/engagements/glean-technologies-public
 # Scope: Website targets
 # STATUS: PENDING
 app.glean.com
-# Non-web target: Backend endpoint: bug-bounty-be.glean.com
-# Non-web target: https://marketplace.atlassian.com/apps/1222714/scio-search-crawler-for-confluence?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1222715/scio-search-crawler-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1229003/glean-activity-plugin-for-jira-cloud?hosting=cloud&tab=overview
 
-# === Gliffy (Bugcrowd) ===
+# === Gliffy ===
 # Program: https://bugcrowd.com/engagements/gliffy
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/254/gliffy-diagrams-for-confluence?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/254/gliffy-diagrams-for-confluence?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/254/gliffy-diagrams-for-confluence?hosting=server&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/3076252818/gliffy-zero-egress-compliance-ready-diagramming?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === HostGator LATAM Bug Bounty (Bugcrowd) ===
+# === HostGator LATAM Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/hostgator-latam-bb
 # Scope: Website targets
 # STATUS: SCANNED - DONE
@@ -802,26 +608,19 @@ hostgator.co
 hostgator.com.br
 hostgator.mx
 
-# === HotDoc (Bugcrowd) ===
+# === HotDoc ===
 # Program: https://bugcrowd.com/engagements/hotdoc
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: ██████████████████████████████████
-# Non-web target: █████████████████████████████████████████
-# Non-web target: ███████████████████████████████████████████████████████████
+# Non-web targets only
 
-# === HPE Networking Product Public Program (Bugcrowd) ===
+# === HPE Networking Product Public Program ===
 # Program: https://bugcrowd.com/engagements/hpe-networking-product-public
 # Scope: Website targets
 # STATUS: PENDING
 central.arubanetworks.com
-# Non-web target: Aruba AirWave AMP
-# Non-web target: Aruba InstantOn Switches
-# Non-web target: Aruba User Experience Insight Sensors
-# Non-web target: ArubaOS-CX Switches
-# Non-web target: HPE Aruba Networking Central - New UI (see Scope Details)
 
-# === Hypixel Studios Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Hypixel Studios Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/hypixel-studios-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -830,19 +629,14 @@ arcanitegames.ca
 hytale.com
 hytale.dev
 store.hytale.com
-# Non-web target: 3rd Party Integrations (Hytale-side issues only)
-# Non-web target: Hypixel Public APIs
-# Non-web target: Hytale Game Client
-# Non-web target: Hytale Game Server
-# Non-web target: Hytale Launcher
 
-# === iFood: Bug Bounty Program (Bugcrowd) ===
+# === iFood: Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/ifood-og
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 ifood.com.br
 
-# === Immutable Bug Bounty (Bugcrowd) ===
+# === Immutable Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/immutable
 # Scope: Website targets
 # STATUS: PENDING
@@ -852,15 +646,14 @@ auth.immutable.com
 hub.immutable.com
 passport.immutable.com
 play.immutable.com
-# Non-web target: https://github.com/immutable/ts-immutable-sdk/tree/main/packages/passport/
 
-# === Imperva - Thales Bug Bounty (Bugcrowd) ===
+# === Imperva - Thales Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/imperva-mbb
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 imperva.com
 
-# === Indeed (Bugcrowd) ===
+# === Indeed ===
 # Program: https://bugcrowd.com/engagements/indeed
 # Scope: Website targets
 # STATUS: PENDING
@@ -871,20 +664,14 @@ indeed.tech
 indeedflex.com
 resume.com
 wowjobs.ca
-# Non-web target: Any host/web property/mobile app verified to be owned by Indeed
-# Non-web target: Career Scout
-# Non-web target: chromewebstore.google.com
-# Non-web target: https://apps.apple.com/gb/app/indeed-flex-job-search/id1013812731
-# Non-web target: https://apps.apple.com/us/app/%E5%B1%A5%E6%AD%B4%E6%9B%B8%E4%BD%9C%E6%88%90-%E3%82%A4%E3%83%B3%E3%83%87%E3%82%A3%E3%83%BC%E3%83%89/id1484451230
-# Non-web target: https://apps.apple.com/us/app/indeed-connect-for-employers/id6443822731
 
-# === Inprowiser Bug Bounty (Bugcrowd) ===
+# === Inprowiser Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/inprowiser
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1218151/capacity-tracker?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Intercom (Bugcrowd) ===
+# === Intercom ===
 # Program: https://bugcrowd.com/engagements/intercom
 # Scope: Website targets
 # STATUS: PENDING
@@ -898,10 +685,8 @@ intercomassets.com
 mcp.intercom.com
 mobile-messenger.intercom.com
 www.intercom.com
-# Non-web target: https://developers.intercom.com/installing-intercom/docs/about-the-sdk-android
-# Non-web target: https://developers.intercom.com/installing-intercom/docs/about-the-sdk-ios
 
-# === Internet Brands Public (Bugcrowd) ===
+# === Internet Brands Public ===
 # Program: https://bugcrowd.com/engagements/internetbrands-public
 # Scope: Website targets
 # STATUS: SCANNED - DONE
@@ -910,8 +695,6 @@ carsdirect.com
 demandforced3.com
 exchange.pulsepoint.com
 globalacademycme.com
-ibconnect.internetbrands.com # pending - marketplace
-internetbrands.com # pending - marketplace
 life.pulsepoint.com
 lifeapi.pulsepoint.com
 login.medscape.com
@@ -926,56 +709,33 @@ profreg.medscape.com
 signal.pulsepoint.com
 webmd.com
 
-# === Izymes (Bugcrowd) ===
+# === Izymes ===
 # Program: https://bugcrowd.com/engagements/izymes
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: marketplace.atlassian.com # Pending - Marketplace/Plugin
+# Non-web targets only
 
-# === Jora (Bugcrowd) ===
+# === Jora ===
 # Program: https://bugcrowd.com/engagements/jora
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 jora.com
 jora.xyz
-# Non-web target: https://apps.apple.com/us/app/jora-jobs-job-search-app/id917565665	 # Mobile App
-# Non-web target: https://play.google.com/store/apps/details?id=com.jora.android&hl=en_US	 # Mobile App
 
-# === Just Eat Takeaway (Bugcrowd) ===
+# === Just Eat Takeaway ===
 # Program: https://bugcrowd.com/engagements/justeattakeaway
 # Scope: Website targets
 # STATUS: PENDING
 just-eat.com
 justeattakeaway.com
 
-# === K15t (Bugcrowd) ===
+# === K15t ===
 # Program: https://bugcrowd.com/engagements/k15t
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1210818/scroll-versions-for-confluence?hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/1211616/scroll-translations-for-confluence?hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/1211636/scroll-viewport-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1211636/scroll-viewport-for-confluence?hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/1215199/backbone-issue-sync-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1215199/backbone-issue-sync-for-jira?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1217037/scroll-exporter-extensions?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1217608/scroll-documents-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1217608/scroll-documents-for-confluence?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1224799/scroll-content-quality-for-confluence
-# Non-web target: https://marketplace.atlassian.com/apps/1226295/variants-for-scroll-documents?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1226295/variants-for-scroll-documents?hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/1227238/translations-for-scroll-documents?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1227238/translations-for-scroll-documents?hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/24982/scroll-word-exporter-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/24982/scroll-word-exporter-for-confluence?hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/253/scroll-imagemap-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/253/scroll-imagemap-for-confluence?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/420604/scroll-html-exporter-for-confluence?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/420604/scroll-html-exporter-for-confluence?hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/7019/scroll-pdf-exporter-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/7019/scroll-pdf-exporter-for-confluence?hosting=datacenter
+# Non-web targets only
 
-# === Kaleido (Bugcrowd) ===
+# === Kaleido ===
 # Program: https://bugcrowd.com/engagements/kaleido
 # Scope: Website targets
 # STATUS: PENDING
@@ -984,23 +744,13 @@ www.kaleido.ai
 www.remove.bg
 www.unscreen.com
 
-# === Kantega SSO (Bugcrowd) ===
+# === Kantega SSO ===
 # Program: https://bugcrowd.com/engagements/kantega
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1211923/k-sso-saml-sso-oauth-kerberos-user-management-for-jira?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1212126/k-sso-saml-sso-oauth-kerberos-user-management-for-confluence?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1213019/k-sso-saml-sso-oauth-kerberos-user-management-for-bitbucket?hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/1215262/k-sso-saml-sso-oauth-kerberos-user-management-for-bamboo?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1215263/k-sso-saml-sso-oauth-kerberos-user-management-for-fecru?hosting=server&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1228920/issue-work-item-summary-description-templates-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1230481/kantega-user-management-license-optimizer-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1230481/kantega-user-management-license-optimizer-for-jira?hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/1233591/kantega-user-management-license-optimizer-for-confluence?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1233591/kantega-user-management-license-optimizer-for-confluence?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/2121739236/kantega-user-management-license-optimizer-for-bitbucket?hosting=datacenter
+# Non-web targets only
 
-# === Keeper Security Public Bounty Program (Bugcrowd) ===
+# === Keeper Security Public Bounty Program ===
 # Program: https://bugcrowd.com/engagements/keepersecurity
 # Scope: Website targets
 # STATUS: PENDING
@@ -1008,38 +758,32 @@ docs.keeper.io
 keepersecurity.com
 www.keepersecurity.com
 www.microsoft.com
-# Non-web target: https://apps.apple.com/app/id1216446440
-# Non-web target: https://apps.apple.com/us/app/keeperchat/id1273303729?mt=12
-# Non-web target: https://play.google.com/store/apps/details?id=com.callpod.android_apps.keeper&hl=en_US&gl=US
-# Non-web target: https://play.google.com/store/apps/details?id=com.keepersecurity.chat&hl=en_US&gl=US
 
-# === Kiteworks (Bugcrowd) ===
+# === Kiteworks ===
 # Program: https://bugcrowd.com/engagements/kiteworks-public
 # Scope: Website targets
 # STATUS: PENDING
 kw-bugcrowd-pub.bounty.kiteworks.dev
 
-# === Klaviyo Managed Bug Bounty (Bugcrowd) ===
+# === Klaviyo Managed Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/klaviyo-og
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 klaviyo.com
 
-# === Kohl's (Bugcrowd) ===
+# === Kohl's ===
 # Program: https://bugcrowd.com/engagements/kohls
 # Scope: Website targets
 # STATUS: PENDING
 kohls.com
 
-# === KuCoin Managed Bug Bounty Program (Bugcrowd) ===
+# === KuCoin Managed Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/kucoin
 # Scope: Website targets
 # STATUS: PENDING
 kucoin.com
-# Non-web target: https://apps.apple.com/us/app/kucoin-buy-bitcoin-crypto/id1378956601?mt=8
-# Non-web target: https://play.google.com/store/apps/details?id=com.kubi.kucoin
 
-# === LastPass (Bugcrowd) ===
+# === LastPass ===
 # Program: https://bugcrowd.com/engagements/lastpass
 # Scope: Website targets
 # STATUS: PENDING
@@ -1050,13 +794,8 @@ blog.lastpass.com
 lastpass.com
 support.lastpass.com
 www.lastpass.com
-# Non-web target: Workstation MFA (WMFA)
-# Non-web target: https://apps.apple.com/us/app/lastpass-authenticator/id1079110004
-# Non-web target: https://apps.apple.com/us/app/lastpass-password-manager/id324613447
-# Non-web target: https://play.google.com/store/apps/details?id=com.lastpass.authenticator&hl=en_US&gl=US
-# Non-web target: https://play.google.com/store/apps/details?id=com.lastpass.lpandroid
 
-# === Latitude Financial Services Bug Bounty (Bugcrowd) ===
+# === Latitude Financial Services Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/latitude-financial-service-bugbounty
 # Scope: Website targets
 # STATUS: PENDING
@@ -1087,7 +826,7 @@ sandbox.*.lfscnp.com
 test.*.lfscnp.com
 umiloans.com.au
 
-# === LaunchDarkly Managed Bug Bounty Engagement (Bugcrowd) ===
+# === LaunchDarkly Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/launchdarkly-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -1096,9 +835,8 @@ docs.launchdarkly.com
 events.launchdarkly.com
 launchdarkly.com
 stream.launchdarkly.com
-# Non-web target: LaunchDarkly Open Source SDKs
 
-# === Lightspeed Hospitality (Bugcrowd) ===
+# === Lightspeed Hospitality ===
 # Program: https://bugcrowd.com/engagements/lightspeed-hospitality
 # Scope: Website targets
 # STATUS: PENDING
@@ -1106,7 +844,7 @@ hq.breadcrumb.com
 manager.trial.lsk.lightspeed.app
 mylightspeed.app
 
-# === Lightspeed Retail (Bugcrowd) ===
+# === Lightspeed Retail ===
 # Program: https://bugcrowd.com/engagements/lightspeed-retail
 # Scope: Website targets
 # STATUS: PENDING
@@ -1114,10 +852,8 @@ app.ecwid.com
 developers.retail.lightspeed.app
 payment-connectors.vendhq.com
 store.retail.lightspeed.app
-# Non-web target: https://apps.apple.com/us/app/ecwid-ecommerce/id626731456
-# Non-web target: https://play.google.com/store/apps/details?id=com.ecwid.android&pli=1
 
-# === Lime (Bugcrowd) ===
+# === Lime ===
 # Program: https://bugcrowd.com/engagements/lime
 # Scope: Website targets
 # STATUS: PENDING
@@ -1136,12 +872,8 @@ web-message-high.lime.bike
 web-message.lime.bike
 web-production.lime.bike
 www.li.me
-# Non-web target: https://apps.apple.com/ca/app/lime-ridegreen/id1199780189
-# Non-web target: https://apps.apple.com/ca/app/lime-supply/id1620058457
-# Non-web target: https://play.google.com/store/apps/details?id=com.lime.supply&hl=en_US
-# Non-web target: https://play.google.com/store/apps/details?id=com.limebike
 
-# === Linktree (Bugcrowd) ===
+# === Linktree ===
 # Program: https://bugcrowd.com/engagements/linktree-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -1160,10 +892,8 @@ pods.link
 song.link
 songlink.io
 tr.ee
-# Non-web target: https://apps.apple.com/au/app/plann-preview-for-instagram/id1106201141
-# Non-web target: https://play.google.com/store/search?q=plann&c=apps
 
-# === Luno Bug Bounty Program (Bugcrowd) ===
+# === Luno Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/luno-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -1172,51 +902,45 @@ app.staging.luno.com
 mobileapi.staging.luno.com
 staging.luno.com
 staging.luno.com.ng
-# Non-web target: https://apps.apple.com/app/bitx-wallet/id927362479
-# Non-web target: https://play.google.com/store/apps/details?hl=en&id=co.bitx.android.wallet
 
-# === Magic Labs Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Magic Labs Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/magiclabs-mbb-og
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 magic.link
 
-# === Majid Al Futtaim Entertainment (Bugcrowd) ===
+# === Majid Al Futtaim Entertainment ===
 # Program: https://bugcrowd.com/engagements/vox
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 voxcinemas.com
 
-# === Majid Al Futtaim Lifestyle (Bugcrowd) ===
+# === Majid Al Futtaim Lifestyle ===
 # Program: https://bugcrowd.com/engagements/maffashion
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 mafidalfuttaim.com
 
-# === Majid Al Futtaim Loyalty Program (Share Rewards) and MPASS (Bugcrowd) ===
+# === Majid Al Futtaim Loyalty Program and MPASS ===
 # Program: https://bugcrowd.com/engagements/majidalfuttaim-loyalty
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 share-rewards.com
 
-# === Majid Al Futtaim Properties (Bugcrowd) ===
+# === Majid Al Futtaim Properties ===
 # Program: https://bugcrowd.com/engagements/mallofemirates
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 majidalfuttaim.com
 malloftheemirates.com
 
-# === Marvelution (Bugcrowd) ===
+# === Marvelution ===
 # Program: https://bugcrowd.com/engagements/marvelutionbv
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1211376/jenkins-integration-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1211376/jenkins-integration-for-jira?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1211376/jenkins-integration-for-jira?hosting=server&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1234756/jenkins-for-compass?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1236248/jenkins-for-confluence/?tab=overview&hosting=cloud
+# Non-web targets only
 
-# === Mastercard Public Bug Bounty (Bugcrowd) ===
+# === Mastercard Public Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/mastercard
 # Scope: Website targets
 # STATUS: PENDING
@@ -1233,23 +957,14 @@ www.mastercard.ch
 www.mastercard.com.au
 www.mastercard.nl
 www.mastercard.us
-# Non-web target: Finicity - OBB (Open Banking Business Service)
-# Non-web target: Finicity Connect
-# Non-web target: Finicity Decisioning
-# Non-web target: Finicity- Data Services
-# Non-web target: Finicity- Open Banking Payment History application
 
-# === Mattermost Public Bug Bounty Engagement  (Bugcrowd) ===
+# === Mattermost Public Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/mattermost-mbb-public
 # Scope: Website targets
 # STATUS: PENDING
 bugcrowd-*your-own-instance*.cloud.mattermost.com
-github.com # pending - marketplace
-mattermost.com # pending - marketplace
-# Non-web target: https://apps.apple.com/us/app/mattermost/id1257222717 # Mobile App
-# Non-web target: https://play.google.com/store/search?q=mattermost&c=apps # Mobile App
 
-# === MGM China Holdings Limited Managed Bug Bounty Program (Bugcrowd) ===
+# === MGM China Holdings Limited Managed Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/mgmmacau-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -1262,10 +977,8 @@ mobileapp-non-gaming.mgm.mo
 static.mgm.mo
 www.mgmmacau.com
 www.tickets.mgm.mo
-# Non-web target: https://apps.apple.com/mo/app/%E7%BE%8E%E9%AB%98%E6%A2%85%E6%9C%83%E5%93%A1%E6%9C%8D%E5%8B%99-mgm-membership-rewards/id6444925665?l=en-GB
-# Non-web target: https://play.google.com/store/apps/details?id=mo.mgm.app
 
-# === Monash University Bug Bounty (Bugcrowd) ===
+# === Monash University Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/monash-mbb
 # Scope: Website targets
 # STATUS: PENDING
@@ -1310,12 +1023,8 @@ studentplacements.monash.edu
 unihub.monash.edu
 www.monash.edu
 www.monashprofessional.edu.au
-# Non-web target: https://apps.apple.com/au/app/monash-bsafe/id1462241951
-# Non-web target: https://apps.apple.com/us/app/monash-study/id1462126829
-# Non-web target: https://play.google.com/store/apps/details?id=com.scu.bsafe
-# Non-web target: https://play.google.com/store/apps/details?id=edu.monash.monashmobile
 
-# === Moneytree KK (Bugcrowd) ===
+# === Moneytree KK ===
 # Program: https://bugcrowd.com/engagements/moneytreekkog
 # Scope: Website targets
 # STATUS: PENDING
@@ -1326,51 +1035,44 @@ myaccount-staging.getmoneytree.com
 redash-staging.getmoneytree.com
 vault-staging.getmoneytree.com
 wwws-staging.moneytree.jp
-# Non-web target: https://apps.apple.com/vc/app/moneytree-finance-made-easy/id586847189
-# Non-web target: https://play.google.com/store/apps/details?id=jp.moneytree.moneytree&hl=en_AU&gl=US
 
-# === Moovit Managed Bug Bounty Program (Bugcrowd) ===
+# === Moovit Managed Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/moovit-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 support.moovitapp.com
-# Non-web target: All In Scope Targets
-# Non-web target: https://apps.apple.com/us/app/moovit-all-transit-options/id498477945
-# Non-web target: https://play.google.com/store/apps/details?id=com.tranzmate&hl=en_US
 
-# === Motorola Mobility Hardware Engagement (Bugcrowd) ===
+# === Motorola Mobility Hardware Engagement ===
 # Program: https://bugcrowd.com/engagements/motorolamobility-iot
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: All Motorola Devices running Android 13 and above.
+# Non-web targets only
 
-# === MyFitnessPal (Bugcrowd) ===
+# === MyFitnessPal ===
 # Program: https://bugcrowd.com/engagements/myfitnesspal-mbb
 # Scope: Website targets
 # STATUS: PENDING
 myfitnesspal.com
 
-# === Navan (Bugcrowd) ===
+# === Navan ===
 # Program: https://bugcrowd.com/engagements/navan
 # Scope: Website targets
 # STATUS: PENDING
 app.navan.com
 
-# === Nemetschek (Bugcrowd) ===
+# === Nemetschek ===
 # Program: https://bugcrowd.com/engagements/nemetschek
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1219230/advanced-portal-reports-for-service-desk?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1234378/modify-my-request?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1238203/self-service-portal-report?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === NEOGOV Public Assets (Bugcrowd) ===
+# === NEOGOV Public Assets ===
 # Program: https://bugcrowd.com/engagements/neohrms
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 neogov.com
 
-# === New Relic Public Bug Bounty Program (Bugcrowd) ===
+# === New Relic Public Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/newrelic-mbb-og-public
 # Scope: Website targets
 # STATUS: PENDING
@@ -1384,10 +1086,8 @@ nr-data.net
 nr-ops.net
 one.newrelic.com
 support.newrelic.com
-# Non-web target: https://apps.apple.com/ie/app/new-relic/id594038638
-# Non-web target: https://play.google.com/store/apps/details?id=com.newrelic.rpm
 
-# === Northwestern Mutual - Public Bug Bounty (Bugcrowd) ===
+# === Northwestern Mutual - Public Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/northwestern-mutual-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -1395,25 +1095,20 @@ support.newrelic.com
 nmfn.com
 nml.com
 northwesternmutual.com
-# Non-web target: Anything Owned by Northwestern Mutual on the Public Internet Not Listed as Out of Scope
-# Non-web target: Anything that Clearly Affects Northwestern Mutual But is Not Own by Northwestern Mutual
-# Non-web target: https://apps.apple.com/us/app/northwestern-mutual/id1132579006
-# Non-web target: https://play.google.com/store/apps/details?id=com.nm.nm&hl=en_US&gl=US
 
-# === Octopus (Bugcrowd) ===
+# === Octopus ===
 # Program: https://bugcrowd.com/engagements/octopus-og
 # Scope: Website targets
 # STATUS: PENDING
 octopus.com
-# Non-web target: https://github.com/OctopusDeploy
 
-# === Octopus Deploy (Bugcrowd) ===
+# === Octopus Deploy ===
 # Program: https://bugcrowd.com/engagements/octopus-deploy
 # Scope: Website targets
 # STATUS: PENDING
-octopus.com
+# Non-web targets only
 
-# === Okta (Bugcrowd) ===
+# === Okta ===
 # Program: https://bugcrowd.com/engagements/okta
 # Scope: Website targets
 # STATUS: PENDING
@@ -1423,19 +1118,14 @@ bugcrowd-pam-###.pam.oktapreview.com
 help.okta.com
 support.okta.com
 www.okta.com
-# Non-web target: Desktop MFA for Windows
-# Non-web target: Desktop MFA for macOS
-# Non-web target: Okta On-Prem Agents ( AD, LDAP, RDP, IWA )
-# Non-web target: Okta Verify (Windows)
-# Non-web target: Password Sync for macOS
 
-# === OneTrust (Bugcrowd) ===
+# === OneTrust ===
 # Program: https://bugcrowd.com/engagements/onetrust
 # Scope: Website targets
 # STATUS: PENDING
 pentest-app.onetrust.com
 
-# === OpenAI (Bugcrowd) ===
+# === OpenAI ===
 # Program: https://bugcrowd.com/engagements/openai
 # Scope: Website targets
 # STATUS: PENDING
@@ -1444,12 +1134,8 @@ chat.openai.com
 openai.com
 openai.org
 platform.openai.com
-# Non-web target: Codex Desktop
-# Non-web target: OpenAI API Keys
-# Non-web target: Other
-# Non-web target: Third Party Targets
 
-# === OpenSea Managed Bug Bounty Program (Bugcrowd) ===
+# === OpenSea Managed Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/opensea
 # Scope: Website targets
 # STATUS: PENDING
@@ -1457,12 +1143,8 @@ etherscan.io
 mcp.opensea.io
 opensea.io
 wallet.opensea.io
-# Non-web target: Broken Link
-# Non-web target: https://apps.apple.com/us/app/opensea-nft-marketplace/id1582861796
-# Non-web target: https://github.com/ProjectOpenSea/seaport#deployments
-# Non-web target: https://play.google.com/store/apps/details?id=io.opensea&hl=en_US&gl=US
 
-# === Opera Public Bug Bounty (Bugcrowd) ===
+# === Opera Public Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/opera
 # Scope: Website targets
 # STATUS: PENDING
@@ -1534,19 +1216,14 @@ www.gamemaker.io
 www.opera.com
 www.operaneon.com
 yoyogames.com
-# Non-web target: GameMaker Studio 2
-# Non-web target: https://apps.apple.com/pl/app/opera-gx/id1559740799
-# Non-web target: https://apps.apple.com/us/app/opera-ai-browser-with-vpn/id1411869974
-# Non-web target: https://play.google.com/store/apps/details?id=com.opera.app.news
-# Non-web target: https://play.google.com/store/apps/details?id=com.opera.app.sports
 
-# === Optimizely (Bugcrowd) ===
+# === Optimizely ===
 # Program: https://bugcrowd.com/engagements/optimizely
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 optimizely.com
 
-# === Optus Managed Bug Bounty (Bugcrowd) ===
+# === Optus Managed Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/optus-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -1566,109 +1243,94 @@ www.optus.com.au
 www.outsourcing.optus.net.au
 www.outsourcing2.optus.net.au
 
-# === Opus Guard Marketplace Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Opus Guard Marketplace Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/opus-guard-market
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1233769/content-retention-manager-for-confluence?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1234057/content-retention-manager-for-jira?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1237739?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1237740?tab=overview&hosting=cloud
+# Non-web targets only
 
-# === Orderly Network Public Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Orderly Network Public Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/orderlynetwork-mbb-og2
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: ████████████████████████
-# Non-web target: ████████████████████████████
+# Non-web targets only
 
-# === Orderly Network: Bug Bounty Program (Bugcrowd) ===
+# === Orderly Network: Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/orderlynetwork-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: ████████████████████████
-# Non-web target: ████████████████████████████
+# Non-web targets only
 
-# === Origin Energy (Bugcrowd) ===
+# === Origin Energy ===
 # Program: https://bugcrowd.com/engagements/originenergy-og1
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 originenergy.com.au
 
-# === OSL Managed Public Bug Bounty Engagement  (Bugcrowd) ===
+# === OSL Managed Public Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/osl-mbb-og1
 # Scope: Website targets
 # STATUS: PE
 osl.com
 
-# === Pexels (Bugcrowd) ===
+# === Pexels ===
 # Program: https://bugcrowd.com/engagements/pexels
 # Scope: Website targets
 # STATUS: PENDING
 www.pexels.com
 
-# === Pinterest (Bugcrowd) ===
+# === Pinterest ===
 # Program: https://bugcrowd.com/engagements/pinterest
 # Scope: Website targets
 # STATUS: PENDING
 addons.mozilla.org
 api.pinterest.com
 microsoftedge.microsoft.com
-pinterest.com web apps
 www.shffls.com
-# Non-web target: chrome.google.com
-# Non-web target: https://apps.apple.com/us/app/pinterest/id429047995
-# Non-web target: https://apps.apple.com/us/app/save-to-pinterest/id6473649042
-# Non-web target: https://apps.apple.com/us/app/shuffles-by-pinterest/id1573869498
-# Non-web target: https://github.com/pinterest/
-# Non-web target: https://play.google.com/store/apps/details?id=com.pinterest&hl=en_US&gl=US
 
-# === Pixabay (Bugcrowd) ===
+# === Pixabay ===
 # Program: https://bugcrowd.com/engagements/pixabay
 # Scope: Website targets
 # STATUS: PENDING
 pixabay.com
 
-# === PlanetHoster Bug Bounty (Bugcrowd) ===
+# === PlanetHoster Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/planethosterinc
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 planethoster.com
 
-# === Plusgrade Loyalty Public Program (Bugcrowd) ===
+# === Plusgrade Loyalty Public Program ===
 # Program: https://bugcrowd.com/engagements/plusgrade-mbb-public
 # Scope: Website targets
 # STATUS: PENDING
 points.com
-# Non-web target: Additional Loyalty scope included under resources tab
 
-# === PNI Media (Bugcrowd) ===
+# === PNI Media ===
 # Program: https://bugcrowd.com/engagements/pnimedia-bb
 # Scope: Website targets
 # STATUS: PENDING
 pnimedia.com
 
-# === Programmer Hat Marketplace Bug Bounty Program (Bugcrowd) ===
+# === Programmer Hat Marketplace Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/programmer-hat-market
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: marketplace.atlassian.com # Pending - Marketplace/Plugin
+# Non-web targets only
 
-# === ProjectBalm (Bugcrowd) ===
+# === ProjectBalm ===
 # Program: https://bugcrowd.com/engagements/projectbalm
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: marketplace.atlassian.com # Pending - Marketplace/Plugin
+# Non-web targets only
 
-# === Quizlet (Bugcrowd) ===
+# === Quizlet ===
 # Program: https://bugcrowd.com/engagements/quizlet
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 quizlet.com
-# Non-web target: https://itunes.apple.com/us/app/quizlet-flashcards/id546473125 # Mobile App
-# Non-web target: https://play.google.com/store/apps/details?id=com.quizlet.quizletandroid # Mobile App 3.0 api
 
-# === Rapyd (Bugcrowd) ===
+# === Rapyd ===
 # Program: https://bugcrowd.com/engagements/rapyd
 # Scope: Website targets
 # STATUS: PENDING
@@ -1683,7 +1345,7 @@ rapyd.net
 rapyd.org
 verify.rapyd.net
 
-# === REA Group | realestate.com.au, realcommercial.com.au, property.com.au (Bugcrowd) ===
+# === REA Group | realestate.com.au, realcommercial.com.au, property.com.au ===
 # Program: https://bugcrowd.com/engagements/rea-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -1713,17 +1375,14 @@ www.developersites.com.au
 www.proptrack.com
 www.proptrack.com.au
 www.realcommercial.com.au
-# Non-web target: https://apps.apple.com/au/app/realestate-com-au-property/id404667893
-# Non-web target: https://play.google.com/store/apps/details?id=au.com.realestate.app
-# Non-web target: sftp://ftp.developersites.com.au:45875
 
-# === Rec Room Video Games (Bugcrowd) ===
+# === Rec Room Video Games ===
 # Program: https://bugcrowd.com/engagements/recroom-og
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 recroom.com
 
-# === Recorded Future Public Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Recorded Future Public Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/recorded-future-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
@@ -1745,92 +1404,65 @@ vendor.riskrecon.com
 vendor.riskrecon.eu
 www.recordedfuture.com
 www.riskrecon.com
-# Non-web target: https://apps.apple.com/us/app/recorded-future/id1435597894
-# Non-web target: https://play.google.com/store/apps/details?id=com.recordedfuture.mobile&hl=en_US
 
-# === Redmoon (Bugcrowd) ===
+# === Redmoon ===
 # Program: https://bugcrowd.com/engagements/redmoon
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1211639/comment-history-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1211880/document-vault-secure-attachments-in-jira?tab=installation&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1213649/custom-fields-for-jira-cloud?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1213851/watch-it-for-jira-cloud?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1214056/sub-task-manager-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1219653/sub-task-manager-lite-for-jira-cloud?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Refined (Bugcrowd) ===
+# === Refined ===
 # Program: https://bugcrowd.com/engagements/refined2
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-bugbounty-refined-test-<bugcrowd-name>.refined.site
 refined.site
 refinedsites.refinedwiki.com
-# Non-web target: marketplace.atlassian.com # Pending - Marketplace/Plugin
 
-# === Release Management (by Y2 ENGR) (Bugcrowd) ===
+# === Release Management ===
 # Program: https://bugcrowd.com/engagements/releasemanagement
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1221946/release-management-roadmap-jira-cloud?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1222474/work-status-time-tracking-calendar-for-jira?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1223487/gadgets-for-release-management-roadmap?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1223487/gadgets-for-release-management-roadmap?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1223487/gadgets-for-release-management-roadmap?hosting=server&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1223877/advanced-agile-boards?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1228657/easy-peasy-roadmap-for-jira?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Requirement Yogi (Bug bounty) (Bugcrowd) ===
+# === Requirement Yogi ===
 # Program: https://bugcrowd.com/engagements/requirement-yogi
 # Scope: Website targets
 # STATUS: PENDING
 requirementyogi.cloud
 requirementyogi.com
-# Non-web target: https://marketplace.atlassian.com/apps/1212523/requirements-yogi?hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1214094/requirement-yogi-for-jira?hosting=cloud
 
-# === RV Softwares Marketplace Bug Bounty Program (Bugcrowd) ===
+# === RV Softwares Marketplace Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/rv-softwares
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1223200/agile-tools-epic-tree-links-tree-time-in-status-worklogs?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1226187/time-in-status-reports?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1228019/issue-hierarchy-structure?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1230243/worklogs-time-tracking-timesheets?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Safety Bug Bounty (Bugcrowd) ===
+# === Safety Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/openai-safety
 # Scope: Website targets
 # STATUS: PENDING
-openai.com
-# Non-web target: Agentic Tools
-# Non-web target: Other
+# Non-web targets only
 
-# === SAP Invitational Bug Bounty Program (Bugcrowd) ===
+# === SAP Invitational Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/sap-private-invite
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: Gardener
-# Non-web target: SAP AI Core
-# Non-web target: SAP Business Network for Asset Collaboration
-# Non-web target: SAP Business Network for Logistics
-# Non-web target: SAP BusinessObjects Business Intelligence platform
+# Non-web targets only
 
-# === SecureDrop (Bugcrowd) ===
+# === SecureDrop ===
 # Program: https://bugcrowd.com/engagements/freedomofpress
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 docs.securedrop.org
 securedrop.org
 
-# === SecureFlag Marketplace Bug Bounty (Bugcrowd) ===
+# === SecureFlag Marketplace Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/secureflag-mbb-market
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1226453/secureflag-knowledge-base?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1232491?tab=overview&hosting=cloud
+# Non-web targets only
 
-# === SEEK (Bugcrowd) ===
+# === SEEK ===
 # Program: https://bugcrowd.com/engagements/seek
 # Scope: Website targets
 # STATUS: PENDING
@@ -1848,122 +1480,90 @@ seekcdn.com
 seekpass.co
 skinfra.xyz
 sol-data.com
-# Non-web target: https://apps.apple.com/au/app/certsy/id1617796159
-# Non-web target: https://apps.apple.com/au/app/seek-jobs-job-search/id520400855
-# Non-web target: https://play.google.com/store/apps/details?id=au.com.seek&hl=en_AU&gl=US
-# Non-web target: https://play.google.com/store/apps/details?id=com.certsy.app
 
-# === Seek.com (Bugcrowd) ===
+# === Seek.com ===
 # Program: https://bugcrowd.com/engagements/seek-com
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: ████████████
-# Non-web target: ██████████████
-# Non-web target: ███████████████
-# Non-web target: █████████████████
-# Non-web target: ██████████████████
+# Non-web targets only
 
-# === SimpliSafe Managed Bug Bounty Engagement (Bugcrowd) ===
+# === SimpliSafe Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/simplisafe
 # Scope: Website targets
 # STATUS: PENDING
 api.prd.commerce.simplisafe.com
-api.services.simplisafe.com (app endpoints)
-api.services.simplisafe.com (hsp endpoints)
-api.simplisafe.com (app endpoints)
-api.simplisafe.com (hsp endpoints)
+api.services.simplisafe.com
+api.simplisafe.com
 bb1.simplisafe.com
 bb2.simplisafe.com
 cb.simplisafe.com
 media.simplisafe.com
 mfa.simplisafe.com
 prd.aser.simplisafe.com
-prd.cam.simplisafe.com (app endpoints)
-prd.cam.simplisafe.com (hsp endpoints)
-prd.platform.simplisafe.com (app endpoints)
-prd.platform.simplisafe.com (hsp endpoints)
-prd.services.simplisafe.com (app endpoints)
-prd.services.simplisafe.com (hsp endpoints)
+prd.cam.simplisafe.com
+prd.platform.simplisafe.com
+prd.services.simplisafe.com
 prd.webapps.simplisafe.com
 simplisafe.co.uk
 simplisafe.com
 webapp.simplisafe.co.uk
 webapp.simplisafe.com
-# Non-web target: https://apps.apple.com/us/app/simplisafe-home-security-app/id555798051
-# Non-web target: https://play.google.com/store/search?q=simplisafe&c=apps
 
-# === Skroutz Public Managed Bug Bounty (Bugcrowd) ===
+# === Skroutz Public Managed Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/skroutz
 # Scope: Website targets
 # STATUS: PENDING
 www.skroutz.gr
 
-# === Skyscanner (Bugcrowd) ===
+# === Skyscanner ===
 # Program: https://bugcrowd.com/engagements/skyscanner
 # Scope: Website targets
 # STATUS: PENDING
 gateway.skyscanner.net
 partnerportal.skyscanner.net
 skyscanner.net
-# Non-web target: AWS Infrastructure
-# Non-web target: Skyscanner Android App
-# Non-web target: Skyscanner Android app
-# Non-web target: Skyscanner iOS App
-# Non-web target: Skyscanner iOS app
 
-# === SnapNames Bug Bounty (Bugcrowd) ===
+# === SnapNames Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/snapnames
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 namejet.com
 snapnames.com
 
-# === Sophos (Bugcrowd) ===
+# === Sophos ===
 # Program: https://bugcrowd.com/engagements/sophos
 # Scope: Website targets
 # STATUS: PENDING
-3rd party services hosted at *.sophos.com
 central.sophos.com
 www.sophos.com
-# Non-web target: Any Other Sophos Product or Service
-# Non-web target: SOPHOS/Secureworks : Redcloak
-# Non-web target: SOPHOS/Secureworks : Taegis
-# Non-web target: Sophos Firewall (XG/XGS, SFOS) - Pre-auth RCE
-# Non-web target: Sophos IT Infrastructure (all other Sophos domains)
 
-# === SpaceX/Starlink (Bugcrowd) ===
+# === SpaceX/Starlink ===
 # Program: https://bugcrowd.com/engagements/spacex
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: SpaceX and Starlink assets (target information and rewards detailed above on the brief)
+# Non-web targets only
 
-# === Square (Bugcrowd) ===
+# === Square ===
 # Program: https://bugcrowd.com/engagements/square
 # Scope: Website targets
 # STATUS: PENDING
 square.online
 squareup.com
 www.weebly.com
-# Non-web target: Square Register
-# Non-web target: Square Terminal
-# Non-web target: https://apps.apple.com/us/app/square-point-of-sale-pos/id335393788
-# Non-web target: https://play.google.com/store/apps/details?id=com.squareup&hl=en_US&gl=US
 
-# === STAGIL Marketplace Bug Bounty (Bugcrowd) ===
+# === STAGIL Marketplace Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/stagil
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1211243/timetracker-time-tracking-timesheet-reporting-for-jira?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1215311/stagil-assets-advanced-links-data-model-matrix-structure?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1219099/stagil-tables-todo-checklists-reports-statistics?hosting=cloud&tab=overview
+# Non-web targets only
 
-# === Stiltsoft (Bugcrowd) ===
+# === Stiltsoft ===
 # Program: https://bugcrowd.com/engagements/stiltsoft
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: marketplace.atlassian.com # Pending - Marketplace/Plugin
+# Non-web targets only
 
-# === T-Mobile (Bugcrowd) ===
+# === T-Mobile ===
 # Program: https://bugcrowd.com/engagements/t-mobile
 # Scope: Website targets
 # STATUS: PENDING
@@ -2033,60 +1633,44 @@ uscellular.com
 wiki.atom-lens.com
 wmaudience.com
 www.assurancewireless.com
-# Non-web target: Assets labeled as in-scope
-# Non-web target: Cellular Network Auth Bypass via Web/Mobile App
-# Non-web target: Full Corporate Network Access or Access to Sensitive Network Segments
-# Non-web target: Self Register Account on T-Mobile Microsoft Entra ID
-# Non-web target: T&P Servers
 
-# === Tamedia (Bugcrowd) ===
+# === Tamedia ===
 # Program: https://bugcrowd.com/engagements/tamedia
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 tamedia.ch
 
-# === Tempus Ex (Bugcrowd) ===
+# === Tempus Ex ===
 # Program: https://bugcrowd.com/engagements/tempusex-public-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 tempusex.com
 
-# === Tesla (Bugcrowd) ===
+# === Tesla ===
 # Program: https://bugcrowd.com/engagements/tesla
 # Scope: Website targets
 # STATUS: PENDING
-any host verified to be owned by tesla motors inc. (domains
 solarcity.com
 tesla.cn
 tesla.com
 tesla.services
 teslainsuranceservices.com
 teslamotors.com
-# Non-web target: Tesla Energy hardware you own
-# Non-web target: Tesla vehicle hardware that you own
-# Non-web target: https://apps.apple.com/us/app/tesla/id582007913
-# Non-web target: https://play.google.com/store/apps/details?id=com.teslamotors.tesla&hl=en_US&gl=US
 
-# === The Hut Group: Public Managed Bug Bounty Engagement (Bugcrowd) ===
+# === The Hut Group: Public Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/hutgroup-public
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 thehutgroup.com
 thg.com
 
-# === The Plugin People (Bugcrowd) ===
+# === The Plugin People ===
 # Program: https://bugcrowd.com/engagements/plugin-people
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/133/custom-space-user-management-csum-for-dc-and-cloud?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/133/custom-space-user-management-csum-for-dc-and-cloud?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/207/latex-and-mathjax?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/4832/enterprise-mail-handler-for-jira-cloud-jemhc-and-dc?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/4832/enterprise-mail-handler-for-jira-jemh?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/5043/switch-user-su-for-jira?hosting=datacenter&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/9475/switch-user-su-for-confluence?hosting=datacenter&tab=overview
+# Non-web targets only
 
-# === The Trade Desk (Bugcrowd) ===
+# === The Trade Desk ===
 # Program: https://bugcrowd.com/engagements/thetradedesk-mbb
 # Scope: Website targets
 # STATUS: PENDING
@@ -2129,47 +1713,44 @@ www.thecurrent.com
 www.thetradedesk.com
 www.venturatvos.com
 
-# === TheFork - B2B - TFM3 (Bugcrowd) ===
+# === TheFork - B2B - TFM3 ===
 # Program: https://bugcrowd.com/engagements/lafourchette
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 lafourchette.com
 thefork.com
 
-# === TheFork - B2C - WNG (Bugcrowd) ===
+# === TheFork - B2C - WNG ===
 # Program: https://bugcrowd.com/engagements/thefork-b2c-wng
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-thefork.com
+# Non-web targets only
 
-# === TheFork Managed Bug Bounty Engagement (Bugcrowd) ===
+# === TheFork Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/thefork-mbb-og
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-thefork.com
+# Non-web targets only
 
-# === ThousandEyes (Cisco) (Bugcrowd) ===
+# === ThousandEyes ===
 # Program: https://bugcrowd.com/engagements/thousandeyes-og
 # Scope: Website targets
 # STATUS: PENDING
 thousandeyes.com
 
-# === TIDAL (Bugcrowd) ===
+# === TIDAL ===
 # Program: https://bugcrowd.com/engagements/tidal-bugbounty
 # Scope: Website targets
 # STATUS: PENDING
 api.tidal.com
 offer.tidal.com
 tdl.sh
-tidal official clients (e.g. sonos integration, tesla integration, etc.)
 tidal.com
 tidalhi.fi
 tidalhifi.com
 wimpmusic.com
-# Non-web target: Tidal Client for Android
-# Non-web target: Tidal Client for iOS
 
-# === Trello (Bugcrowd) ===
+# === Trello ===
 # Program: https://bugcrowd.com/engagements/trello
 # Scope: Website targets
 # STATUS: PENDING
@@ -2177,16 +1758,11 @@ api.trello.com
 butlerfortrello.com
 trello.com
 trello.services
-# Non-web target: Trello Desktop Client
-# Non-web target: Trello Mobile App for Android
-# Non-web target: Trello Mobile App for iOS
-# Non-web target: Trello Third Party Powerups
 
-# === Tripadvisor (Bugcrowd) ===
+# === Tripadvisor ===
 # Program: https://bugcrowd.com/engagements/tripadvisor-bb-og
 # Scope: Website targets
 # STATUS: PENDING
-any publicly accessible tripadvisor web asset or host (domains, ip space, etc) - except for assets listed as out-of-scope below.
 api.production.cde.tamg.cloud
 api.tripadvisor.com
 bokundemo.com
@@ -2197,7 +1773,6 @@ gwapi1.tripadvisor.com
 gwapi2.tripadvisor.com
 holidaylettings.com
 housetrip.com
-localized versions of www.tripadvisor.com available from the site's header or footer
 marlo.ext.tripadvisor.com
 niumba.com
 partnerapi.tapayments.com
@@ -2210,74 +1785,65 @@ walletproxy.tapayments.com
 walletproxy1.tapayments.com
 walletproxy2.tapayments.com
 www.tripadvisor.com
-# Non-web target: https://apps.apple.com/us/app/tripadvisor-plan-book-trips/id284876795
-# Non-web target: https://itunes.apple.com/us/app/vacation-rentals-owner-app-by-tripadvisor/id1045663228?mt=8
-# Non-web target: https://play.google.com/store/apps/details?id=com.tripadvisor.tripadvisor&hl=en
 
-# === Tyler Technologies Data & Insights (Bugcrowd) ===
+# === Tyler Technologies Data & Insights ===
 # Program: https://bugcrowd.com/engagements/tyler-tech-data-insights
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 socrata.com
 tylertech.com
 
-# === Ultra Mobile E-Commerce (Bugcrowd) ===
+# === Ultra Mobile E-Commerce ===
 # Program: https://bugcrowd.com/engagements/ultramobile-ecomm
 # Scope: Website targets
 # STATUS: PENDING
 ultramobile.com
 
-# === Ultra Mobile Public (Bugcrowd) ===
+# === Ultra Mobile Public ===
 # Program: https://bugcrowd.com/engagements/ultramobile-public
 # Scope: Website targets
 # STATUS: PENDING
-ultramobile.com
+# Non-web targets only
 
-# === Ultra Mobile Retailer Portal Bug Bounty Engagement (Bugcrowd) ===
+# === Ultra Mobile Retailer Portal Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/ultramobile-retailer-portal
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-ultramobile.com
+# Non-web targets only
 
-# === Under Armour Corporate (Bugcrowd) ===
+# === Under Armour Corporate ===
 # Program: https://bugcrowd.com/engagements/underarmour-corp
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 underarmour.com
 
-# === Under Armour Product Security (Bugcrowd) ===
+# === Under Armour Product Security ===
 # Program: https://bugcrowd.com/engagements/underarmour
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 careers.underarmour.com
 
-# === Unilever Managed Bug Bounty (Bugcrowd) ===
+# === Unilever Managed Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/unilever-mbb
 # Scope: Website targets
 # STATUS: CLOSED / NOT FOUND
-# Targets available on platform
+# Non-web targets only
 
-# === Unity Technologies (Bugcrowd) ===
+# === Unity Technologies ===
 # Program: https://bugcrowd.com/engagements/unity
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 unity.com
 unity3d.com
 
-# === Upwork (Bugcrowd) ===
+# === Upwork ===
 # Program: https://bugcrowd.com/engagements/upwork
 # Scope: Website targets
 # STATUS: PENDING
 api.upwork.com
-upwork - api.upwork.com
 www.upwork.com
-# Non-web target: Direct Contracts
-# Non-web target: Upwork - Android Application
-# Non-web target: Upwork - Marketplace Portal
-# Non-web target: Upwork - Messages
-# Non-web target: Upwork - Mobile Application Android
 
-# === USAA (Bugcrowd) ===
+# === USAA ===
 # Program: https://bugcrowd.com/engagements/usaa
 # Scope: Website targets
 # STATUS: PENDING
@@ -2328,74 +1894,49 @@ ws.usaa.com
 wsmbr.usaa.com
 www.usaa.com
 www.usaainsurance.com
-# Non-web target: https://apps.apple.com/us/app/usaa-mobile/id312325565
-# Non-web target: https://play.google.com/store/apps/details?id=com.usaa.mobile.android.usaa&hl=en
 
-# === Verisign Bug Bounty (Bugcrowd) ===
+# === Verisign Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/verisign
 # Scope: Website targets
 # STATUS: PENDING
-a.root-servers.net (dns service; dns related)
+a.root-servers.net
 blog.verisign.com
-epptool-ctld.verisign-grs.com (epp service; dns related)
-gtld-servers.net (dns service; dns related)
-j.root-servers.net (dns service; dns related)
+epptool-ctld.verisign-grs.com
+gtld-servers.net
+j.root-servers.net
 namestudio.com
 namestudioforsocial.com
-verisign-grs.com (dns service; dns related)
+verisign-grs.com
 www.verisign.com
 youcouldbe.com
 
-# === Volkswagen (Bugcrowd) ===
+# === Volkswagen ===
 # Program: https://bugcrowd.com/engagements/volkswagen-og
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 volkswagen.com
 vw.com
 
-# === Volkswagen Financial Services (VWFS) (Bugcrowd) ===
+# === Volkswagen Financial Services ===
 # Program: https://bugcrowd.com/engagements/volkswagen-vwfs-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 vwfs.com
 vwfs.de
 
-# === Web.com Bug Bounty (Bugcrowd) ===
+# === Web.com Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/webdotcom
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 web.com
 
-# === weweave UG Marketplace Bug Bounty (Bugcrowd) ===
+# === weweave UG Marketplace Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/we-weave
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: https://marketplace.atlassian.com/apps/1220302/data-tables-for-confluence?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1221789/youtube-for-confluence?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1221832/jsfiddle-for-confluence?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1221973/content-tools-for-confluence?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1222532/prism-syntax-highlighter-for-confluence?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1222562/flowchart-processes-for-confluence?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1222572/mermaid-charts-diagrams-for-confluence?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1222572/mermaid-charts-diagrams-for-confluence?tab=overview&hosting=datacenter
-# Non-web target: https://marketplace.atlassian.com/apps/1222572/mermaid-charts-diagrams-for-confluence?tab=overview&hosting=server
-# Non-web target: https://marketplace.atlassian.com/apps/1222612/chart-js-diagrams-for-confluence-cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1222737/jsbarcode-for-confluence?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1223493/custom-css-code-for-confluence?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1223533/?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1224009/content-mirror-for-confluence?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1224394/?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1224537/?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1225264/?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1226668/dynamic-status-labels-for-confluence?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1226741/?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1227226/?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1228296/rapidoc-openapi-swagger-specification-ui-for-confluence?hosting=cloud&tab=overview
-# Non-web target: https://marketplace.atlassian.com/apps/1229317/?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1235463/?tab=overview&hosting=cloud
-# Non-web target: https://marketplace.atlassian.com/apps/1236260/?tab=overview&hosting=cloud
+# Non-web targets only
 
-# === Wyze Bug Bounty (Bugcrowd) ===
+# === Wyze Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/wyze
 # Scope: Website targets
 # STATUS: SCANNED - DONE
@@ -2403,95 +1944,93 @@ api.wyzecam.com
 auth.wyze.com
 my.wyze.com
 www.wyze.com
-# Non-web target: Wyze Cam V3 # hardware
 
-# === Xfinity Home & xFi (Bugcrowd) ===
+# === Xfinity Home & xFi ===
 # Program: https://bugcrowd.com/engagements/xfinity-home
 # Scope: Website targets
 # STATUS: PENDING
-# Non-web target: ████████
-# Non-web target: ███████████
-# Non-web target: █████████████████
-# Non-web target: ██████████████████
-# Non-web target: ████████████████████
+# Non-web targets only
 
-# === YNAB (Bugcrowd) ===
+# === YNAB ===
 # Program: https://bugcrowd.com/engagements/ynab
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 ynab.com
 youneedabudget.com
 
+# === ════════════════════════════════════════════════════════════════════ ===
+# Scope: Website targets
+# STATUS: PENDING
+# Non-web targets only
+
 
 # ════════════════════════════════════════════════════════════════════
-# 🟢 SECTION 2: COMPLETED / NON-WEB PROGRAM TARGETS
+# SECTION 2: COMPLETED PROGRAM TARGETS
 # ════════════════════════════════════════════════════════════════════
 
-# === Acorns Grow, Inc. (Bugcrowd) ===
+# === Acorns Grow, Inc. ===
 # Program: https://bugcrowd.com/engagements/acorns
 # Scope: Website targets
 # STATUS: DONE
 # acorns.com
 
-# === Atlassian-Built Apps (Bugcrowd) ===
+# === Atlassian-Built Apps ===
 # Program: https://bugcrowd.com/engagements/atlassianapps
 # Scope: Website targets
 # STATUS: DONE
 # developer.atlassian.com
-# trello.com
-# Non-web target: marketplace.atlassian.com # Pending - Marketplace/Plugin
 
-# === Aurory Managed Bug Bounty Engagement (Public) (Bugcrowd) ===
+# === Aurory Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/aurory-mbb-og2
 # Scope: Website targets
 # STATUS: DONE
 # aurory.io
 
-# === Blofin Crypto Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Blofin Crypto Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/blofin-crypto-mbb-og
 # Scope: Website targets
 # STATUS: DONE
 # blofin.com
 
-# === Certinia (formerly FinancialForce) (Bugcrowd) ===
+# === Certinia ===
 # Program: https://bugcrowd.com/engagements/financialforce
 # Scope: Website targets
 # STATUS: DONE
 # certinia.com
 # financialforce.com
 
-# === Chipotle Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Chipotle Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/chipotle-mbb-og
 # Scope: Website targets
 # STATUS: DONE
 # chipotle.com
 
-# === Elementor: Bug Bounty Program (Bugcrowd) ===
+# === Elementor: Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/elementor
 # Scope: Website targets
 # STATUS: DONE
 # elementor.com
 
-# === Empower Personal Wealth (Personal Capital) (Bugcrowd) ===
+# === Empower Personal Wealth ===
 # Program: https://bugcrowd.com/engagements/personalcapital
 # Scope: Website targets
 # STATUS: DONE
 # empower.com
 # personalcapital.com
 
-# === EPAM Systems (Bugcrowd) ===
+# === EPAM Systems ===
 # Program: https://bugcrowd.com/engagements/epam-mbb-og
-# Scope: *.epam.com (wildcards)
+# Scope: *.epam.com
 # STATUS: DONE
 # epam.com
 
-# === Felix Health Managed Bug Bounty Engagement (Bugcrowd) ===
+# === Felix Health Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/felix-health-mbb-og
 # Scope: Website targets
 # STATUS: DONE
 # felixforyou.ca
 
-# === Ibotta (Bugcrowd) ===
+# === Ibotta ===
 # Program: https://bugcrowd.com/engagements/ibotta
 # Scope: Website targets
 # STATUS: DONE
@@ -2503,51 +2042,51 @@ youneedabudget.com
 # content-server.ibotta.com
 # ibotta.com
 
-# === iRobot (Bugcrowd) ===
+# === iRobot ===
 # Program: https://bugcrowd.com/engagements/irobot
 # Scope: Website targets
 # STATUS: DONE
 # irobot.com
 
-# === lululemon (Bugcrowd) ===
+# === lululemon ===
 # Program: https://bugcrowd.com/engagements/lululemon
 # Scope: Website targets
 # STATUS: DONE
 # lululemon.com
 
-# === Majid Al Futtaim Retail (Carrefour) (Bugcrowd) ===
+# === Majid Al Futtaim Retail ===
 # Program: https://bugcrowd.com/engagements/carrefour
 # Scope: Website targets
 # STATUS: DONE
 # carrefour.com
 # carrefouruae.com
 
-# === Nextup.ai (Bugcrowd) ===
+# === Nextup.ai ===
 # Program: https://bugcrowd.com/engagements/nextupai
 # Scope: Website targets
 # STATUS: DONE
 # No active web targets
 
-# === Nubank Brasil Managed Bug Bounty Program (Bugcrowd) ===
+# === Nubank Brasil Managed Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/nubank
 # Scope: Website targets
 # STATUS: DONE
 # nubank.com.br
 
-# === Opsgenie (Bugcrowd) ===
+# === Opsgenie ===
 # Program: https://bugcrowd.com/engagements/opsgenie
 # Scope: Website targets
 # STATUS: DONE
 # docs.opsgenie.com
 # opsgenie.com
 
-# === Pantheon (Bugcrowd) ===
+# === Pantheon ===
 # Program: https://bugcrowd.com/engagements/pantheon
 # Scope: Website targets
 # STATUS: DONE
 # dashboard.pantheon.io
 
-# === Prosus (Bugcrowd) ===
+# === Prosus ===
 # Program: https://bugcrowd.com/engagements/prosus-og
 # Scope: Website targets
 # STATUS: DONE
@@ -2561,7 +2100,7 @@ youneedabudget.com
 # peopleview.naspers.com
 # tracker.naspers.com
 
-# === QuintoAndar (Bugcrowd) ===
+# === QuintoAndar ===
 # Program: https://bugcrowd.com/engagements/quintoandar
 # Scope: Website targets
 # STATUS: DONE
@@ -2571,63 +2110,63 @@ youneedabudget.com
 # www.quintoandar.com.br
 # www.user.quintoandar.com.br
 
-# === Sky DACH (Bugcrowd) ===
+# === Sky DACH ===
 # Program: https://bugcrowd.com/engagements/sky-plc-mbb-og2
 # Scope: All internet facing Sky DACH assets
 # STATUS: DONE
 # sky.de
 
-# === Sky Italy (Bugcrowd) ===
+# === Sky Italy ===
 # Program: https://bugcrowd.com/engagements/sky-plc-mbb-og1
 # Scope: All internet facing Sky Italy assets
 # STATUS: DONE
 # sky.it
 
-# === Sky UK/ROI (Bugcrowd) ===
+# === Sky UK/ROI ===
 # Program: https://bugcrowd.com/engagements/sky-plc-mbb-og
 # Scope: All internet facing Sky UK/ROI assets
 # STATUS: DONE
 # sky.com
 
-# === Soteri Marketplace Bug Bounty (Bugcrowd) ===
+# === Soteri Marketplace Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/soteri
 # Scope: Website targets
 # STATUS: DONE
-# Non-web target: marketplace.atlassian.com # Pending - Marketplace/Plugin
+# No active web targets
 
-# === SoundCloud (Bugcrowd) ===
+# === SoundCloud ===
 # Program: https://bugcrowd.com/engagements/soundcloud
 # Scope: Website targets
 # STATUS: DONE
 # soundcloud.com
 
-# === Statuspage (Bugcrowd) ===
+# === Statuspage ===
 # Program: https://bugcrowd.com/engagements/statuspage
 # Scope: Website targets
 # STATUS: DONE
 # manage.statuspage.io
 # statuspage.io
 
-# === TRM Labs (Bugcrowd) ===
+# === TRM Labs ===
 # Program: https://bugcrowd.com/engagements/trm-labs-public-mbb
 # Scope: Website targets
 # STATUS: DONE
 # api.chainabuse-staging.com
 # chainabuse-staging.com
 
-# === Ultra Mobile Mobile Apps Bug Bounty Engagement (Bugcrowd) ===
+# === Ultra Mobile Mobile Apps Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/ultramobile-mobile-apps
 # Scope: Website targets
 # STATUS: DONE
-# ultramobile.com # mobile apps
+# No active web targets
 
-# === Viator (Bugcrowd) ===
+# === Viator ===
 # Program: https://bugcrowd.com/engagements/viator
 # Scope: Website targets
 # STATUS: DONE
 # viator.com
 
-# === Wise (ex-TransferWise) (Bugcrowd) ===
+# === Wise ===
 # Program: https://bugcrowd.com/engagements/wise
 # Scope: Website targets
 # STATUS: DONE
