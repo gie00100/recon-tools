@@ -307,17 +307,15 @@ def _collect_exposed_ports(scan_dirs: List[Path]) -> List[dict]:
                 if entry.get('cdn', False) or is_cdn_ip(ip):
                     continue
 
-                # Skip 8080/8443 without domain association (CDN web noise)
-                domains = entry.get('domains', [])
-                if port in (8080, 8443) and not domains:
+                # Require protocol verification or non-empty banner (eliminates TCP-open false positives)
+                if not entry.get('verified', False) and not entry.get('banner'):
                     continue
 
-                # Prioritize high-value ports
-                if port in HIGH_VALUE_PORTS:
-                    entry['tier'] = 1
-                else:
-                    entry['tier'] = 2  # Web ports with domains
+                # Filter out Alt-Web ports (8080/8443) — these are standard web servers, not exposed DBs
+                if port not in HIGH_VALUE_PORTS:
+                    continue
 
+                entry['tier'] = 1
                 entry['source_dir'] = str(scan_dir)
                 ports.append(entry)
         except Exception:
@@ -437,10 +435,9 @@ def generate_triage_report(findings: List[dict], exposed_ports: List[dict],
 
     # Exposed Ports section (always Tier 1)
     if exposed_ports:
-        lines.append("\n---\n## 🔴 Exposed Database Ports (Tier 1)")
+        lines.append("\n---\n## 🔴 Exposed Database & Infrastructure Ports (Tier 1)")
         lines.append("> [!CAUTION]")
-        lines.append("> These are the highest-impact findings. Exposed database ports have the")
-        lines.append("> highest acceptance rate on HackerOne.")
+        lines.append("> Unauthenticated database and management infrastructure ports (PostgreSQL, MySQL, Redis, MongoDB, Elastic, Docker API).")
         lines.append("")
         lines.append("| IP | Port | Service | Domains |")
         lines.append("|---|---|---|---|")
