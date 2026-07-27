@@ -2,14 +2,22 @@
 # ║     BUGCROWD PROGRAMS                                           ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
+# === # ╔══════════════════════════════════════════════════════════════════╗
+# ║     BUGCROWD PROGRAMS                                           ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# === # ╔══════════════════════════════════════════════════════════════════╗
+# ║     BUGCROWD PROGRAMS                                           ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
 # === BitGo Mobile Apps Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/bitgo-mobileapps-mbb-og
 # Scope: Website targets
-# STATUS: DONE
-# Non-web / Mobile target: https://apps.apple.com/us/app/bitgo-verify/id1608937235
-# Non-web / Mobile target: https://apps.apple.com/us/app/bitgo/id6739010408
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.bitgo.mobileapp
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.bitgo.verify&hl=en_US
+# STATUS: PENDING
+https://apps.apple.com/us/app/bitgo-verify/id1608937235
+https://apps.apple.com/us/app/bitgo/id6739010408
+https://play.google.com/store/apps/details?id=com.bitgo.mobileapp
+https://play.google.com/store/apps/details?id=com.bitgo.verify&hl=en_US
 
 # === Navan (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/navan
@@ -63,14 +71,14 @@ www.developersites.com.au
 www.proptrack.com
 www.proptrack.com.au
 www.realcommercial.com.au
-# Non-web / Mobile target: https://apps.apple.com/au/app/realestate-com-au-property/id404667893
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=au.com.realestate.app
-# Non-web / Mobile target: sftp://ftp.developersites.com.au:45875
+https://apps.apple.com/au/app/realestate-com-au-property/id404667893
+https://play.google.com/store/apps/details?id=au.com.realestate.app
+sftp://ftp.developersites.com.au:45875
 
 # === Motorola Mobility Hardware Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/motorolamobility-iot
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: All Motorola Devices running Android 13 and above.
 
 # === Entain Public Managed Bug Bounty Engagement 2024 (Bugcrowd) ===
@@ -84,11 +92,11 @@ www.galacasino.com
 www.ladbrokes.com
 www.partycasino.com
 www.partypoker.com
-# Non-web / Mobile target: http://media.itsfogo.com/media/upload/mobile/android/apk/partycasino_com.apk
-# Non-web / Mobile target: https://apps.apple.com/gb/app/bwin-poker-and-casino-games/id410242773
-# Non-web / Mobile target: https://apps.apple.com/gb/app/bwin-sports-betting/id393760245
-# Non-web / Mobile target: https://apps.apple.com/gb/app/partycasino-play-casino-games/id818432894
-# Non-web / Mobile target: https://apps.apple.com/gb/app/partypoker-texas-holdem-poker/id687740281
+http://media.itsfogo.com/media/upload/mobile/android/apk/partycasino_com.apk
+https://apps.apple.com/gb/app/bwin-poker-and-casino-games/id410242773
+https://apps.apple.com/gb/app/bwin-sports-betting/id393760245
+https://apps.apple.com/gb/app/partycasino-play-casino-games/id818432894
+https://apps.apple.com/gb/app/partypoker-texas-holdem-poker/id687740281
 
 # === Recorded Future Public Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/recorded-future-mbb-og
@@ -112,13 +120,13 @@ vendor.riskrecon.com
 vendor.riskrecon.eu
 www.recordedfuture.com
 www.riskrecon.com
-# Non-web / Mobile target: https://apps.apple.com/us/app/recorded-future/id1435597894
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.recordedfuture.mobile&hl=en_US
+https://apps.apple.com/us/app/recorded-future/id1435597894
+https://play.google.com/store/apps/details?id=com.recordedfuture.mobile&hl=en_US
 
 # === Dell Technologies' Products Bug Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/dell-product
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: █████████████████████████████████████████████████
 # Non-web / Mobile target: █████████████████████████████████████████████████████
 
@@ -145,8 +153,8 @@ myaccount-staging.getmoneytree.com
 redash-staging.getmoneytree.com
 vault-staging.getmoneytree.com
 wwws-staging.moneytree.jp
-# Non-web / Mobile target: https://apps.apple.com/vc/app/moneytree-finance-made-easy/id586847189
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=jp.moneytree.moneytree&hl=en_AU&gl=US
+https://apps.apple.com/vc/app/moneytree-finance-made-easy/id586847189
+https://play.google.com/store/apps/details?id=jp.moneytree.moneytree&hl=en_AU&gl=US
 
 # === HPE Networking Product Public Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/hpe-networking-product-public
@@ -187,9 +195,9 @@ walletproxy.tapayments.com
 walletproxy1.tapayments.com
 walletproxy2.tapayments.com
 www.tripadvisor.com
-# Non-web / Mobile target: https://apps.apple.com/us/app/tripadvisor-plan-book-trips/id284876795
-# Non-web / Mobile target: https://itunes.apple.com/us/app/vacation-rentals-owner-app-by-tripadvisor/id1045663228?mt=8
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.tripadvisor.tripadvisor&hl=en
+https://apps.apple.com/us/app/tripadvisor-plan-book-trips/id284876795
+https://itunes.apple.com/us/app/vacation-rentals-owner-app-by-tripadvisor/id1045663228?mt=8
+https://play.google.com/store/apps/details?id=com.tripadvisor.tripadvisor&hl=en
 
 # === LastPass (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/lastpass
@@ -203,10 +211,10 @@ lastpass.com
 support.lastpass.com
 www.lastpass.com
 # Non-web / Mobile target: Workstation MFA (WMFA)
-# Non-web / Mobile target: https://apps.apple.com/us/app/lastpass-authenticator/id1079110004
-# Non-web / Mobile target: https://apps.apple.com/us/app/lastpass-password-manager/id324613447
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.lastpass.authenticator&hl=en_US&gl=US
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.lastpass.lpandroid
+https://apps.apple.com/us/app/lastpass-authenticator/id1079110004
+https://apps.apple.com/us/app/lastpass-password-manager/id324613447
+https://play.google.com/store/apps/details?id=com.lastpass.authenticator&hl=en_US&gl=US
+https://play.google.com/store/apps/details?id=com.lastpass.lpandroid
 
 # === Opera Public Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/opera
@@ -281,15 +289,15 @@ www.opera.com
 www.operaneon.com
 yoyogames.com
 # Non-web / Mobile target: GameMaker Studio 2
-# Non-web / Mobile target: https://apps.apple.com/pl/app/opera-gx/id1559740799
-# Non-web / Mobile target: https://apps.apple.com/us/app/opera-ai-browser-with-vpn/id1411869974
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.opera.app.news
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.opera.app.sports
+https://apps.apple.com/pl/app/opera-gx/id1559740799
+https://apps.apple.com/us/app/opera-ai-browser-with-vpn/id1411869974
+https://play.google.com/store/apps/details?id=com.opera.app.news
+https://play.google.com/store/apps/details?id=com.opera.app.sports
 
 # === Bitdefender Box v2 (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/bitdefenderbox2
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: Bitdefender BOX v2
 
 # === TIDAL (Bugcrowd) ===
@@ -333,12 +341,12 @@ www.mastercard.us
 # === Block Open Source (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/blockopensource
 # Scope: Website targets
-# STATUS: DONE
-# Non-web / Mobile target: https://github.com/afterpay/sdk-android
-# Non-web / Mobile target: https://github.com/afterpay/sdk-ios
-# Non-web / Mobile target: https://github.com/cashapp/cash-app-pay-android-sdk
-# Non-web / Mobile target: https://github.com/cashapp/cash-app-pay-ios-sdk
-# Non-web / Mobile target: https://github.com/cashapp/hermit
+# STATUS: PENDING
+https://github.com/afterpay/sdk-android
+https://github.com/afterpay/sdk-ios
+https://github.com/cashapp/cash-app-pay-android-sdk
+https://github.com/cashapp/cash-app-pay-ios-sdk
+https://github.com/cashapp/hermit
 
 # === The Trade Desk (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/thetradedesk-mbb
@@ -417,11 +425,11 @@ webmail.optusnet.com.au
 www.optus.com.au
 www.outsourcing.optus.net.au
 www.outsourcing2.optus.net.au
-# Non-web / Mobile target: 172.24.250.128
-# Non-web / Mobile target: 172.26.2.133
-# Non-web / Mobile target: 172.26.39.9
-# Non-web / Mobile target: 198.142.152.100
-# Non-web / Mobile target: 198.142.152.101
+172.24.250.128
+172.26.2.133
+172.26.39.9
+198.142.152.100
+198.142.152.101
 
 # === Afterpay Bug Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/afterpay
@@ -439,10 +447,10 @@ portal.clearpay.co.uk
 portal.clearpay.com
 portalapi.eu.clearpay.co.uk
 portalapi.us.afterpay.com
-# Non-web / Mobile target: https://apps.apple.com/au/app/afterpay-shop-now-pay-later/id1230286588
-# Non-web / Mobile target: https://apps.apple.com/gb/app/clearpay-buy-now-pay-later/id1474022186
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.afterpaymobile.uk
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.afterpaymobile.us&hl=en_US&gl=US
+https://apps.apple.com/au/app/afterpay-shop-now-pay-later/id1230286588
+https://apps.apple.com/gb/app/clearpay-buy-now-pay-later/id1474022186
+https://play.google.com/store/apps/details?id=com.afterpaymobile.uk
+https://play.google.com/store/apps/details?id=com.afterpaymobile.us&hl=en_US&gl=US
 
 # === Glean Technologies Public Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/glean-technologies-public
@@ -450,14 +458,14 @@ portalapi.us.afterpay.com
 # STATUS: PENDING
 app.glean.com
 # Non-web / Mobile target: Backend endpoint: bug-bounty-be.glean.com
-# Non-web / Mobile target: https://marketplace.atlassian.com/apps/1222714/scio-search-crawler-for-confluence?hosting=cloud&tab=overview
-# Non-web / Mobile target: https://marketplace.atlassian.com/apps/1222715/scio-search-crawler-for-jira?hosting=cloud&tab=overview
-# Non-web / Mobile target: https://marketplace.atlassian.com/apps/1229003/glean-activity-plugin-for-jira-cloud?hosting=cloud&tab=overview
+https://marketplace.atlassian.com/apps/1222714/scio-search-crawler-for-confluence?hosting=cloud&tab=overview
+https://marketplace.atlassian.com/apps/1222715/scio-search-crawler-for-jira?hosting=cloud&tab=overview
+https://marketplace.atlassian.com/apps/1229003/glean-activity-plugin-for-jira-cloud?hosting=cloud&tab=overview
 
 # === Xfinity Home & xFi (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/xfinity-home
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: ████████
 # Non-web / Mobile target: ███████████
 # Non-web / Mobile target: █████████████████
@@ -467,7 +475,7 @@ app.glean.com
 # === Comcast Xfinity Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/comcast-mbb
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: █████████
 # Non-web / Mobile target: █████████████
 # Non-web / Mobile target: ██████████████
@@ -499,8 +507,8 @@ simplisafe.co.uk
 simplisafe.com
 webapp.simplisafe.co.uk
 webapp.simplisafe.com
-# Non-web / Mobile target: https://apps.apple.com/us/app/simplisafe-home-security-app/id555798051
-# Non-web / Mobile target: https://play.google.com/store/search?q=simplisafe&c=apps
+https://apps.apple.com/us/app/simplisafe-home-security-app/id555798051
+https://play.google.com/store/search?q=simplisafe&c=apps
 
 # === Octopus Deploy (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/octopus-deploy
@@ -559,8 +567,8 @@ ws.usaa.com
 wsmbr.usaa.com
 www.usaa.com
 www.usaainsurance.com
-# Non-web / Mobile target: https://apps.apple.com/us/app/usaa-mobile/id312325565
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.usaa.mobile.android.usaa&hl=en
+https://apps.apple.com/us/app/usaa-mobile/id312325565
+https://play.google.com/store/apps/details?id=com.usaa.mobile.android.usaa&hl=en
 
 # === Pixabay (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/pixabay
@@ -581,7 +589,7 @@ staging.gearset.com
 # Scope: Website targets
 # STATUS: PENDING
 octopus.com
-# Non-web / Mobile target: https://github.com/OctopusDeploy
+https://github.com/OctopusDeploy
 
 # === Pexels (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/pexels
@@ -603,8 +611,8 @@ nr-data.net
 nr-ops.net
 one.newrelic.com
 support.newrelic.com
-# Non-web / Mobile target: https://apps.apple.com/ie/app/new-relic/id594038638
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.newrelic.rpm
+https://apps.apple.com/ie/app/new-relic/id594038638
+https://play.google.com/store/apps/details?id=com.newrelic.rpm
 
 # === Intercom (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/intercom
@@ -620,8 +628,8 @@ intercomassets.com
 mcp.intercom.com
 mobile-messenger.intercom.com
 www.intercom.com
-# Non-web / Mobile target: https://developers.intercom.com/installing-intercom/docs/about-the-sdk-android
-# Non-web / Mobile target: https://developers.intercom.com/installing-intercom/docs/about-the-sdk-ios
+https://developers.intercom.com/installing-intercom/docs/about-the-sdk-android
+https://developers.intercom.com/installing-intercom/docs/about-the-sdk-ios
 
 # === Kaleido (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/kaleido
@@ -635,7 +643,7 @@ www.unscreen.com
 # === Seek.com (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/seek-com
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: ████████████
 # Non-web / Mobile target: ██████████████
 # Non-web / Mobile target: ███████████████
@@ -652,8 +660,8 @@ nml.com
 northwesternmutual.com
 # Non-web / Mobile target: Anything Owned by Northwestern Mutual on the Public Internet Not Listed as Out of Scope
 # Non-web / Mobile target: Anything that Clearly Affects Northwestern Mutual But is Not Own by Northwestern Mutual
-# Non-web / Mobile target: https://apps.apple.com/us/app/northwestern-mutual/id1132579006
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.nm.nm&hl=en_US&gl=US
+https://apps.apple.com/us/app/northwestern-mutual/id1132579006
+https://play.google.com/store/apps/details?id=com.nm.nm&hl=en_US&gl=US
 
 # === Flourish (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/flourish
@@ -675,8 +683,8 @@ asana.biz
 asana.com
 form.asana.com
 subdomain takeover at *asana.biz
-# Non-web / Mobile target: https://apps.apple.com/us/app/asana-mobile/id489969512
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.asana.app&hl=en
+https://apps.apple.com/us/app/asana-mobile/id489969512
+https://play.google.com/store/apps/details?id=com.asana.app&hl=en
 
 # === Backblaze (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/backblaze
@@ -727,10 +735,10 @@ platform.openai.com
 # STATUS: PENDING
 bolt.eu
 taxify.eu
-# Non-web / Mobile target: https://apps.apple.com/ee/app/bolt-fast-affordable-rides/id675033630
-# Non-web / Mobile target: https://apps.apple.com/ee/app/bolt-food/id1451492388
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.bolt.deliveryclient
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=ee.mtakso.client
+https://apps.apple.com/ee/app/bolt-fast-affordable-rides/id675033630
+https://apps.apple.com/ee/app/bolt-food/id1451492388
+https://play.google.com/store/apps/details?id=com.bolt.deliveryclient
+https://play.google.com/store/apps/details?id=ee.mtakso.client
 
 # === Centers for Medicare & Medicaid Services - Public Bug Bounty Program 2026 (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/cms-bbpublic
@@ -763,19 +771,19 @@ web-message-high.lime.bike
 web-message.lime.bike
 web-production.lime.bike
 www.li.me
-# Non-web / Mobile target: https://apps.apple.com/ca/app/lime-ridegreen/id1199780189
-# Non-web / Mobile target: https://apps.apple.com/ca/app/lime-supply/id1620058457
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.lime.supply&hl=en_US
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.limebike
+https://apps.apple.com/ca/app/lime-ridegreen/id1199780189
+https://apps.apple.com/ca/app/lime-supply/id1620058457
+https://play.google.com/store/apps/details?id=com.lime.supply&hl=en_US
+https://play.google.com/store/apps/details?id=com.limebike
 
 # === Moovit Managed Bug Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/moovit-mbb-og
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: All In Scope Targets
-# Non-web / Mobile target: https://apps.apple.com/us/app/moovit-all-transit-options/id498477945
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.tranzmate&hl=en_US
-# Non-web / Mobile target: https://support.moovitapp.com/hc/en-us/articles/11389054527122-WayFinder-Augmented-Reality-helper-to-find-your-stop-iPhone-only
+https://apps.apple.com/us/app/moovit-all-transit-options/id498477945
+https://play.google.com/store/apps/details?id=com.tranzmate&hl=en_US
+https://support.moovitapp.com/hc/en-us/articles/11389054527122-WayFinder-Augmented-Reality-helper-to-find-your-stop-iPhone-only
 
 # === Lightspeed Retail (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/lightspeed-retail
@@ -785,8 +793,8 @@ app.ecwid.com
 developers.retail.lightspeed.app
 payment-connectors.vendhq.com
 store.retail.lightspeed.app
-# Non-web / Mobile target: https://apps.apple.com/us/app/ecwid-ecommerce/id626731456
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.ecwid.android&pli=1
+https://apps.apple.com/us/app/ecwid-ecommerce/id626731456
+https://play.google.com/store/apps/details?id=com.ecwid.android&pli=1
 
 # === CoinDesk Data - Data API (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/CCData-mbb-og
@@ -863,10 +871,10 @@ studentplacements.monash.edu
 unihub.monash.edu
 www.monash.edu
 www.monashprofessional.edu.au
-# Non-web / Mobile target: https://apps.apple.com/au/app/monash-bsafe/id1462241951
-# Non-web / Mobile target: https://apps.apple.com/us/app/monash-study/id1462126829
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.scu.bsafe
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=edu.monash.monashmobile
+https://apps.apple.com/au/app/monash-bsafe/id1462241951
+https://apps.apple.com/us/app/monash-study/id1462126829
+https://play.google.com/store/apps/details?id=com.scu.bsafe
+https://play.google.com/store/apps/details?id=edu.monash.monashmobile
 
 # === Bitso Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/bitso-mbb-og
@@ -875,17 +883,17 @@ www.monashprofessional.edu.au
 bitso.com
 nvio.ar
 nvio.mx
-# Non-web / Mobile target: https://apps.apple.com/us/app/bitso-alpha-crypto-trade-pro/id1539469172
-# Non-web / Mobile target: https://apps.apple.com/us/app/bitso-buy-bitcoin-easily/id1292836438
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.bitso.alpha
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.bitso.wallet&pcampaignid=web_share
+https://apps.apple.com/us/app/bitso-alpha-crypto-trade-pro/id1539469172
+https://apps.apple.com/us/app/bitso-buy-bitcoin-easily/id1292836438
+https://play.google.com/store/apps/details?id=com.bitso.alpha
+https://play.google.com/store/apps/details?id=com.bitso.wallet&pcampaignid=web_share
 
 # === CoinDesk Mobile (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/coindesk-mobile-mbb-og
 # Scope: Website targets
-# STATUS: DONE
-# Non-web / Mobile target: https://apps.apple.com/us/app/coindesk-crypto-bitcoin-news/id6502816903
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.coindesk.mobile
+# STATUS: PENDING
+https://apps.apple.com/us/app/coindesk-crypto-bitcoin-news/id6502816903
+https://play.google.com/store/apps/details?id=com.coindesk.mobile
 
 # === Lightspeed Hospitality (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/lightspeed-hospitality
@@ -910,8 +918,8 @@ app.staging.luno.com
 mobileapi.staging.luno.com
 staging.luno.com
 staging.luno.com.ng
-# Non-web / Mobile target: https://apps.apple.com/app/bitx-wallet/id927362479
-# Non-web / Mobile target: https://play.google.com/store/apps/details?hl=en&id=co.bitx.android.wallet
+https://apps.apple.com/app/bitx-wallet/id927362479
+https://play.google.com/store/apps/details?hl=en&id=co.bitx.android.wallet
 
 # === Latitude Financial Services Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/latitude-financial-service-bugbounty
@@ -963,8 +971,8 @@ mobileapp-non-gaming.mgm.mo
 static.mgm.mo
 www.mgmmacau.com
 www.tickets.mgm.mo
-# Non-web / Mobile target: https://apps.apple.com/mo/app/%E7%BE%8E%E9%AB%98%E6%A2%85%E6%9C%83%E5%93%A1%E6%9C%8D%E5%8B%99-mgm-membership-rewards/id6444925665?l=en-GB
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=mo.mgm.app
+https://apps.apple.com/mo/app/%E7%BE%8E%E9%AB%98%E6%A2%85%E6%9C%83%E5%93%A1%E6%9C%8D%E5%8B%99-mgm-membership-rewards/id6444925665?l=en-GB
+https://play.google.com/store/apps/details?id=mo.mgm.app
 
 # === Linktree (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/linktree-mbb-og
@@ -984,9 +992,9 @@ pods.link
 song.link
 songlink.io
 tr.ee
-# Non-web / Mobile target: https://apps.apple.com/au/app/plann-preview-for-instagram/id1106201141
-# Non-web / Mobile target: https://linktree.app.link/LinktreeWebsite?utm_medium=Linktree_Footer
-# Non-web / Mobile target: https://play.google.com/store/search?q=plann&c=apps
+https://apps.apple.com/au/app/plann-preview-for-instagram/id1106201141
+https://linktree.app.link/LinktreeWebsite?utm_medium=Linktree_Footer
+https://play.google.com/store/search?q=plann&c=apps
 
 # === LaunchDarkly Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/launchdarkly-mbb-og
@@ -1015,7 +1023,7 @@ skyscanner.net
 # === HotDoc (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/hotdoc
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: ██████████████████████████████████
 # Non-web / Mobile target: █████████████████████████████████████████
 # Non-web / Mobile target: ███████████████████████████████████████████████████████████
@@ -1023,14 +1031,14 @@ skyscanner.net
 # === Orderly Network Public Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/orderlynetwork-mbb-og2
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: ████████████████████████
 # Non-web / Mobile target: ████████████████████████████
 
 # === Orderly Network: Bug Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/orderlynetwork-mbb-og
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: ████████████████████████
 # Non-web / Mobile target: ████████████████████████████
 
@@ -1045,18 +1053,18 @@ etsy.com
 etsypayments.com
 help.etsy.com
 www.etsy.com
-# Non-web / Mobile target: https://www.etsy.com/mobile
+https://www.etsy.com/mobile
 
 # === Bugcrowd (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/bugcrowd
 # Scope: Website targets
 # STATUS: PENDING
 gov.bugcrowd.net
-# Non-web / Mobile target: *.bugcrowd.com/auth/*
-# Non-web / Mobile target: https://api.bugcrowd.com
-# Non-web / Mobile target: https://bugcrowd.com/programs
-# Non-web / Mobile target: https://docs.bugcrowd.com/
-# Non-web / Mobile target: https://identity.bugcrowd.com/
+*.bugcrowd.com/auth/*
+https://api.bugcrowd.com
+https://bugcrowd.com/programs
+https://docs.bugcrowd.com/
+https://identity.bugcrowd.com/
 
 # === Blockchain.com Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/blockchain-dot-com
@@ -1065,8 +1073,8 @@ gov.bugcrowd.net
 api.blockchain.info
 ws.blockchain.info
 www.blockchain.com
-# Non-web / Mobile target: https://apps.apple.com/us/app/blockchain-com-buy-btc-sol/id493253309
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=piuk.blockchain.android
+https://apps.apple.com/us/app/blockchain-com-buy-btc-sol/id493253309
+https://play.google.com/store/apps/details?id=piuk.blockchain.android
 
 # === Keeper Security Public Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/keepersecurity
@@ -1076,11 +1084,11 @@ docs.keeper.io
 keepersecurity.com
 www.keepersecurity.com
 www.microsoft.com
-# Non-web / Mobile target: https://apps.apple.com/app/id1216446440
-# Non-web / Mobile target: https://apps.apple.com/us/app/keeperchat/id1273303729?mt=12
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.callpod.android_apps.keeper&hl=en_US&gl=US
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.keepersecurity.chat&hl=en_US&gl=US
-# Non-web / Mobile target: https://www.keepersecurity.com/download.html
+https://apps.apple.com/app/id1216446440
+https://apps.apple.com/us/app/keeperchat/id1273303729?mt=12
+https://play.google.com/store/apps/details?id=com.callpod.android_apps.keeper&hl=en_US&gl=US
+https://play.google.com/store/apps/details?id=com.keepersecurity.chat&hl=en_US&gl=US
+https://www.keepersecurity.com/download.html
 
 # === Indeed (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/indeed
@@ -1096,9 +1104,9 @@ resume.com
 wowjobs.ca
 # Non-web / Mobile target: Any host/web property/mobile app verified to be owned by Indeed
 # Non-web / Mobile target: Career Scout
-# Non-web / Mobile target: https://apps.apple.com/gb/app/indeed-flex-job-search/id1013812731
-# Non-web / Mobile target: https://apps.apple.com/us/app/%E5%B1%A5%E6%AD%B4%E6%9B%B8%E4%BD%9C%E6%88%90-%E3%82%A4%E3%83%B3%E3%83%87%E3%82%A3%E3%83%BC%E3%83%89/id1484451230
-# Non-web / Mobile target: https://apps.apple.com/us/app/indeed-connect-for-employers/id6443822731
+https://apps.apple.com/gb/app/indeed-flex-job-search/id1013812731
+https://apps.apple.com/us/app/%E5%B1%A5%E6%AD%B4%E6%9B%B8%E4%BD%9C%E6%88%90-%E3%82%A4%E3%83%B3%E3%83%87%E3%82%A3%E3%83%BC%E3%83%89/id1484451230
+https://apps.apple.com/us/app/indeed-connect-for-employers/id6443822731
 
 # === Binance (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/binance
@@ -1143,7 +1151,7 @@ auth.immutable.com
 hub.immutable.com
 passport.immutable.com
 play.immutable.com
-# Non-web / Mobile target: https://github.com/immutable/ts-immutable-sdk/tree/main/packages/passport/
+https://github.com/immutable/ts-immutable-sdk/tree/main/packages/passport/
 
 # === Verisign Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/verisign
@@ -1178,17 +1186,17 @@ seekcdn.com
 seekpass.co
 skinfra.xyz
 sol-data.com
-# Non-web / Mobile target: https://apps.apple.com/au/app/certsy/id1617796159
-# Non-web / Mobile target: https://apps.apple.com/au/app/seek-jobs-job-search/id520400855
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=au.com.seek&hl=en_AU&gl=US
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.certsy.app
+https://apps.apple.com/au/app/certsy/id1617796159
+https://apps.apple.com/au/app/seek-jobs-job-search/id520400855
+https://play.google.com/store/apps/details?id=au.com.seek&hl=en_AU&gl=US
+https://play.google.com/store/apps/details?id=com.certsy.app
 
 # === Electroneum Legacy Blockchain: EOL (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/legacy-blockchain-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
 legacy-blockexplorer.electroneum.com
-# Non-web / Mobile target: https://github.com/electroneum/electroneum/
+https://github.com/electroneum/electroneum/
 
 # === Electroneum Smart Chain (ETN-SC) — EVM-Compatible Blockchain (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/smartchain-mbb-og
@@ -1196,7 +1204,7 @@ legacy-blockexplorer.electroneum.com
 # STATUS: PENDING
 blockexplorer.electroneum.com
 testnet-blockexplorer.electroneum.com
-# Non-web / Mobile target: https://github.com/electroneum/electroneum-sc/
+https://github.com/electroneum/electroneum-sc/
 
 # === Fireblocks Web Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/fireblocks-mbb-og
@@ -1228,9 +1236,9 @@ www.npmjs.com
 www.sourcetreeapp.com
 # Non-web / Mobile target: Forge Platform
 # Non-web / Mobile target: Other - (all other Atlassian targets)
-# Non-web / Mobile target: https://apps.apple.com/us/app/confluence-cloud/id1006971684
-# Non-web / Mobile target: https://apps.apple.com/us/app/confluence-server/id1288365159
-# Non-web / Mobile target: https://apps.apple.com/us/app/jira-cloud-by-atlassian/id1006972087
+https://apps.apple.com/us/app/confluence-cloud/id1006971684
+https://apps.apple.com/us/app/confluence-server/id1288365159
+https://apps.apple.com/us/app/jira-cloud-by-atlassian/id1006972087
 
 # === Bullish.com (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/bullish
@@ -1266,10 +1274,10 @@ delta.app
 etoro.com
 etoropartners.com
 etorox.com
-# Non-web / Mobile target: https://com.etoro.openbook
-# Non-web / Mobile target: https://com.etoro.wallet
-# Non-web / Mobile target: https://io.getdelta.android
-# Non-web / Mobile target: https://io.getdelta.ios
+https://com.etoro.openbook
+https://com.etoro.wallet
+https://io.getdelta.android
+https://io.getdelta.ios
 
 # === Canva (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/canva
@@ -1293,8 +1301,8 @@ www.canva.com
 # Scope: Website targets
 # STATUS: PENDING
 kucoin.com
-# Non-web / Mobile target: https://apps.apple.com/us/app/kucoin-buy-bitcoin-crypto/id1378956601?mt=8
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.kubi.kucoin
+https://apps.apple.com/us/app/kucoin-buy-bitcoin-crypto/id1378956601?mt=8
+https://play.google.com/store/apps/details?id=com.kubi.kucoin
 
 # === Bitpanda Ongoing Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/bitpanda-og-bb
@@ -1306,9 +1314,9 @@ blog.bitpanda.com
 web.bitpanda.com
 www.bitpanda.com
 # Non-web / Mobile target: All the Blockchain Infrastructure
-# Non-web / Mobile target: https://apps.apple.com/app/bitpanda-buy-bitcoin-crypto/id1449018960
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.bitpanda.bitpanda
-# Non-web / Mobile target: wss://socket.bitpanda.com
+https://apps.apple.com/app/bitpanda-buy-bitcoin-crypto/id1449018960
+https://play.google.com/store/apps/details?id=com.bitpanda.bitpanda
+wss://socket.bitpanda.com
 
 # === Bitdefender (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/bitdefender
@@ -1329,8 +1337,8 @@ squareup.com
 www.weebly.com
 # Non-web / Mobile target: Square Register
 # Non-web / Mobile target: Square Terminal
-# Non-web / Mobile target: https://apps.apple.com/us/app/square-point-of-sale-pos/id335393788
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.squareup&hl=en_US&gl=US
+https://apps.apple.com/us/app/square-point-of-sale-pos/id335393788
+https://play.google.com/store/apps/details?id=com.squareup&hl=en_US&gl=US
 
 # === Cash App (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/cashapp
@@ -1338,13 +1346,13 @@ www.weebly.com
 # STATUS: PENDING
 cash.app
 cashstaging.app
-# Non-web / Mobile target: https://itunes.apple.com/us/app/cash-app/id711923939?mt=8
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.squareup.cash
+https://itunes.apple.com/us/app/cash-app/id711923939?mt=8
+https://play.google.com/store/apps/details?id=com.squareup.cash
 
 # === SAP Invitational Bug Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/sap-private-invite
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: Gardener
 # Non-web / Mobile target: SAP AI Core
 # Non-web / Mobile target: SAP Business Network for Asset Collaboration
@@ -1354,7 +1362,7 @@ cashstaging.app
 # === FIS (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/fis
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: Any FIS asset is in scope
 
 # === Chime Managed Bug Bounty Engagement (Bugcrowd) ===
@@ -1375,10 +1383,10 @@ member-qa.chime.com
 saltlabs.com
 www.chime.com
 # Non-web / Mobile target: All Chime Assets
-# Non-web / Mobile target: https://app.bitrise.io/app/5bec038cb1e318cd/installable-artifacts/00b806e389a27a0e/public-install-page/945cffa9854b0bde1e1be7ba7f770c2e
-# Non-web / Mobile target: https://app.bitrise.io/app/5bec038cb1e318cd/installable-artifacts/0eb2f51fc0172fde/public-install-page/487597a06ddfcd4667285d53796de623
-# Non-web / Mobile target: https://apps.apple.com/us/app/chime-mobile-banking/id836215269
-# Non-web / Mobile target: https://apps.apple.com/us/app/salt-work-and-get-rewarded/id1668462142
+https://app.bitrise.io/app/5bec038cb1e318cd/installable-artifacts/00b806e389a27a0e/public-install-page/945cffa9854b0bde1e1be7ba7f770c2e
+https://app.bitrise.io/app/5bec038cb1e318cd/installable-artifacts/0eb2f51fc0172fde/public-install-page/487597a06ddfcd4667285d53796de623
+https://apps.apple.com/us/app/chime-mobile-banking/id836215269
+https://apps.apple.com/us/app/salt-work-and-get-rewarded/id1668462142
 
 # === Bullish Exchange (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/bullish-exchange
@@ -1418,11 +1426,11 @@ chrome.google.com
 microsoftedge.microsoft.com
 pinterest.com web apps
 www.shffls.com
-# Non-web / Mobile target: https://apps.apple.com/us/app/pinterest/id429047995
-# Non-web / Mobile target: https://apps.apple.com/us/app/save-to-pinterest/id6473649042
-# Non-web / Mobile target: https://apps.apple.com/us/app/shuffles-by-pinterest/id1573869498
-# Non-web / Mobile target: https://github.com/pinterest/
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.pinterest&hl=en_US&gl=US
+https://apps.apple.com/us/app/pinterest/id429047995
+https://apps.apple.com/us/app/save-to-pinterest/id6473649042
+https://apps.apple.com/us/app/shuffles-by-pinterest/id1573869498
+https://github.com/pinterest/
+https://play.google.com/store/apps/details?id=com.pinterest&hl=en_US&gl=US
 
 # === Hypixel Studios Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/hypixel-studios-mbb-og
@@ -1442,7 +1450,7 @@ store.hytale.com
 # === AXIS OS (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/axis-os-public
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: AXIS OS
 
 # === Auth0 by Okta (Bugcrowd) ===
@@ -1464,10 +1472,10 @@ play.fga.dev
 samltool.io
 webauthn.me
 # Non-web / Mobile target: MFA Integrations
-# Non-web / Mobile target: https://apps.apple.com/us/app/auth0-guardian/id1093447833
-# Non-web / Mobile target: https://github.com/auth0/Auth0.Net
-# Non-web / Mobile target: https://github.com/auth0/auth0-java
-# Non-web / Mobile target: https://github.com/auth0/auth0-php
+https://apps.apple.com/us/app/auth0-guardian/id1093447833
+https://github.com/auth0/Auth0.Net
+https://github.com/auth0/auth0-java
+https://github.com/auth0/auth0-php
 
 # === Okta (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/okta
@@ -1501,7 +1509,7 @@ www.sophos.com
 # === SpaceX/Starlink (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/spacex
 # Scope: Website targets
-# STATUS: DONE
+# STATUS: PENDING
 # Non-web / Mobile target: SpaceX and Starlink assets (target information and rewards detailed above on the brief)
 
 # === Tesla (Bugcrowd) ===
@@ -1517,8 +1525,8 @@ teslainsuranceservices.com
 teslamotors.com
 # Non-web / Mobile target: Tesla Energy hardware you own
 # Non-web / Mobile target: Tesla vehicle hardware that you own
-# Non-web / Mobile target: https://apps.apple.com/us/app/tesla/id582007913
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=com.teslamotors.tesla&hl=en_US&gl=US
+https://apps.apple.com/us/app/tesla/id582007913
+https://play.google.com/store/apps/details?id=com.teslamotors.tesla&hl=en_US&gl=US
 
 # === T-Mobile (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/t-mobile
@@ -1599,8 +1607,8 @@ www.assurancewireless.com
 # === Fireblocks MPC Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/fireblocks-mbb-og2
 # Scope: Website targets
-# STATUS: DONE
-# Non-web / Mobile target: https://github.com/fireblocks/mpc-lib
+# STATUS: PENDING
+https://github.com/fireblocks/mpc-lib
 
 # === OpenSea Managed Bug Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/opensea
@@ -1611,9 +1619,9 @@ mcp.opensea.io
 opensea.io
 wallet.opensea.io
 # Non-web / Mobile target: Broken Link
-# Non-web / Mobile target: https://apps.apple.com/us/app/opensea-nft-marketplace/id1582861796
-# Non-web / Mobile target: https://github.com/ProjectOpenSea/seaport#deployments
-# Non-web / Mobile target: https://play.google.com/store/apps/details?id=io.opensea&hl=en_US&gl=US
+https://apps.apple.com/us/app/opensea-nft-marketplace/id1582861796
+https://github.com/ProjectOpenSea/seaport#deployments
+https://play.google.com/store/apps/details?id=io.opensea&hl=en_US&gl=US
 
 # === Pantheon (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/pantheon
