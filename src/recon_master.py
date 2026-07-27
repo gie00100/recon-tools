@@ -962,18 +962,30 @@ class ReconMaster:
                 }, f, indent=2)
             log_info(f"Bounty targets: {len(bounty_findings)} actionable findings")
 
-        # 2. Save staging environments to separate file for deep-dive
+        # 2. Save staging environments to separate file for deep-dive (deduplicated by host)
         if staging_findings:
+            # Deduplicate by hostname to ensure zero duplicate host entries
+            seen_staging_hosts = set()
+            unique_staging_findings = []
+            for sf in staging_findings:
+                u_host = urlparse(sf.get('url', '')).netloc.lower()
+                if u_host and u_host not in seen_staging_hosts:
+                    seen_staging_hosts.add(u_host)
+                    unique_staging_findings.append(sf)
+                elif not u_host and sf.get('url') not in seen_staging_hosts:
+                    seen_staging_hosts.add(sf.get('url'))
+                    unique_staging_findings.append(sf)
+
             staging_file = self.output_dir / "staging_environments.json"
             with open(staging_file, "w", encoding="utf-8") as f:
                 json.dump({
                     "domain": self.domain,
-                    "total": len(staging_findings),
+                    "total": len(unique_staging_findings),
                     "note": "Staging/sandbox/test/preprod environments for manual deep-dive. "
                             "These often have weaker access controls but connect to production data.",
-                    "environments": staging_findings,
+                    "environments": unique_staging_findings,
                 }, f, indent=2)
-            log_info(f"Staging environments: {len(staging_findings)} live environments saved")
+            log_info(f"Staging environments: {len(unique_staging_findings)} unique live environments saved")
 
         # 3. Save JS URL credentials to separate file for manual inspection
         if js_url_cred_findings:

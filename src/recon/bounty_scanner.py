@@ -2111,6 +2111,8 @@ def _finding_group_key(vuln_id: str, url: str) -> str:
     try:
         parsed = urlparse(url)
         host = parsed.netloc.lower()
+        if vuln_id == 'Staging_Environment':
+            return f'{vuln_id}::{host}'
         parts = [p for p in parsed.path.split('/') if p]
         # Use first 2 path segments as the group prefix
         path_prefix = '/' + '/'.join(parts[:2]) if parts else '/'
@@ -2129,7 +2131,7 @@ class BountyScanner:
     # — avoids N findings for N different query-param variants of the same endpoint
     PATH_DEDUP_CHECKS = {
         'Password_Reset_UUID', 'API_Spec_Exposed', 'Metrics_Endpoint', 'IDOR_Endpoint',
-        'Password_Reset_Param', 'Keycloak_Action_Token',
+        'Password_Reset_Param', 'Keycloak_Action_Token', 'Staging_Environment',
     }
     # Checks where we dedup on (type, evidence_prefix) — same token value on many paths = 1 finding
     TOKEN_DEDUP_CHECKS = {'Token_Leak', 'JWT_In_URL', 'Signed_Document_URL'}
