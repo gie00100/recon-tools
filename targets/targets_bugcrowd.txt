@@ -859,112 +859,175 @@
 # STATUS: SCANNED - DONE
 # cloudinary.com
 
-# === Nubank Brasil Managed Bug Bounty Program (Bugcrowd) ===
+# === # Nubank Brasil Managed Bug Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/nubank
 # Scope: Website targets
-nubank.com.br
-
-# === Majid Al Futtaim Retail (Carrefour) (Bugcrowd) ===
+# STATUS: DONE
+# nubank.com.br
+# === # Majid Al Futtaim Retail (Carrefour) (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/carrefour
 # Scope: Website targets
-carrefour.com
-carrefouruae.com
-
-# === Atlassian-Built Apps (Bugcrowd) ===
+# STATUS: DONE
+# carrefour.com
+# carrefouruae.com
+# === # Atlassian-Built Apps (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/atlassianapps
 # Scope: Website targets
-trello.com
-developer.atlassian.com
+# STATUS: DONE
+# trello.com
+# developer.atlassian.com
 # marketplace.atlassian.com # Pending - Marketplace/Plugin
-
-# === Blofin Crypto Managed Bug Bounty Engagement (Bugcrowd) ===
+# === # Blofin Crypto Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/blofin-crypto-mbb-og
 # Scope: Website targets
-blofin.com
-
-# === Opsgenie (Bugcrowd) ===
+# STATUS: DONE
+# blofin.com
+# === # Opsgenie (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/opsgenie
 # Scope: Website targets
-opsgenie.com
-docs.opsgenie.com
-
-# === Acorns Grow, Inc. (Bugcrowd) ===
+# STATUS: DONE
+# opsgenie.com
+# docs.opsgenie.com
+# === # Acorns Grow, Inc. (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/acorns
 # Scope: Website targets
-acorns.com
-
-# === lululemon (Bugcrowd) ===
+# STATUS: DONE
+# acorns.com
+# === # lululemon (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/lululemon
 # Scope: Website targets
-lululemon.com
-
-# === Elementor: Bug Bounty Program (Bugcrowd) ===
+# STATUS: DONE
+# lululemon.com
+# === # Elementor: Bug Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/elementor
 # Scope: Website targets
-elementor.com
-
-# === Statuspage (Bugcrowd) ===
+# STATUS: DONE
+# elementor.com
+# === # Statuspage (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/statuspage
 # Scope: Website targets
-statuspage.io
-manage.statuspage.io
-
-# === Wise (ex-TransferWise) (Bugcrowd) ===
+# STATUS: DONE
+# statuspage.io
+# manage.statuspage.io
+# === # Wise (ex-TransferWise) (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/wise
 # Scope: Website targets
-wise.com
-
-# === Empower Personal Wealth (Personal Capital) (Bugcrowd) ===
+# STATUS: DONE
+# wise.com
+# === # Empower Personal Wealth (Personal Capital) (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/personalcapital
 # Scope: Website targets
-personalcapital.com
-empower.com
-
-# === Aurory Managed Bug Bounty Engagement (Public) (Bugcrowd) ===
+# STATUS: DONE
+# personalcapital.com
+# empower.com
+# === # Aurory Managed Bug Bounty Engagement (Public) (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/aurory-mbb-og2
 # Scope: Website targets
-aurory.io
-
-# === iRobot (Bugcrowd) ===
+# STATUS: DONE
+# aurory.io
+# === # iRobot (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/irobot
 # Scope: Website targets
-irobot.com
-
-# === Chipotle Managed Bug Bounty Engagement (Bugcrowd) ===
+# STATUS: DONE
+# irobot.com
+# === # Chipotle Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/chipotle-mbb-og
 # Scope: Website targets
-chipotle.com
-
-# === Felix Health Managed Bug Bounty Engagement (Bugcrowd) ===
+# STATUS: DONE
+# chipotle.com
+# === # Felix Health Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/felix-health-mbb-og
 # Scope: Website targets
-felixforyou.ca
-
-# === Certinia (formerly FinancialForce) (Bugcrowd) ===
+# STATUS: DONE
+# felixforyou.ca
+# === # Certinia (formerly FinancialForce) (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/financialforce
 # Scope: Website targets
-financialforce.com
-certinia.com
-
-# === SoundCloud (Bugcrowd) ===
+# STATUS: DONE
+# financialforce.com
+# certinia.com
+# === # SoundCloud (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/soundcloud
 # Scope: Website targets
-soundcloud.com
-
-# === Viator (Bugcrowd) ===
+# STATUS: DONE
+# soundcloud.com
+# === # Viator (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/viator
 # Scope: Website targets
-viator.com
-
-# === Ultra Mobile Mobile Apps Bug Bounty Engagement (Bugcrowd) ===
+# STATUS: DONE
+# viator.com
+# === # Ultra Mobile Mobile Apps Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/ultramobile-mobile-apps
 # Scope: Website targets
+# STATUS: DONE
 # ultramobile.com # Mobile Apps
-
-# === Soteri Marketplace Bug Bounty (Bugcrowd) ===
+# === # Soteri Marketplace Bug Bounty (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/soteri
 # Scope: Website targets
+# STATUS: DONE
 # marketplace.atlassian.com # Pending - Marketplace/Plugin
 
 
 
+
+# === Arlo Technologies (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/arlo
+# Scope: Website targets
+# STATUS: PENDING
+arlo.com
+
+# === ThousandEyes (Cisco) (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/thousandeyes-og
+# Scope: Website targets
+# STATUS: PENDING
+thousandeyes.com
+
+# === Just Eat Takeaway (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/justeattakeaway
+# Scope: Website targets
+# STATUS: PENDING
+just-eat.com
+justeattakeaway.com
+
+# === Tempus Ex (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/tempusex-public-mbb-og
+# Scope: Website targets
+# STATUS: PENDING
+tempusex.com
+
+# === MyFitnessPal (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/myfitnesspal-mbb
+# Scope: Website targets
+# STATUS: PENDING
+myfitnesspal.com
+
+# === Volkswagen Financial Services (VWFS) (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/volkswagen-vwfs-mbb-og
+# Scope: Website targets
+# STATUS: PENDING
+vwfs.com
+vwfs.de
+
+# === PNI Media (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/pnimedia-bb
+# Scope: Website targets
+# STATUS: PENDING
+pnimedia.com
+
+# === Ultra Mobile Public (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/ultramobile-public
+# Scope: Website targets
+# STATUS: PENDING
+ultramobile.com
+
+# === Kohl's (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/kohls
+# Scope: Website targets
+# STATUS: PENDING
+kohls.com
+
+# === Ultra Mobile E-Commerce (Bugcrowd) ===
+# Program: https://bugcrowd.com/engagements/ultramobile-ecomm
+# Scope: Website targets
+# STATUS: PENDING
+ultramobile.com
