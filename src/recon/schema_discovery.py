@@ -39,13 +39,15 @@ SWAGGER_PATHS = [
     '/swagger/v1/swagger.json', '/swagger/v2/swagger.json',
     '/api/v1/swagger.json', '/api/v2/swagger.json',
     '/_swagger', '/swagger-ui/swagger.json',
-    # v9.0 BruteCat-inspired: Google Discovery Documents
+    # v9.0 BruteCat-inspired: Google Discovery Documents & REST Catalogs
     '/$discovery/rest', '/$discovery/rest?version=v1',
-    '/$discovery/rest?version=v2',
+    '/$discovery/rest?version=v2', '/$discovery/rpc',
+    '/_catalog', '/v1/_catalog', '/v2/_catalog',
     # WADL (XML-based API description)
     '/application.wadl',
-    # OpenAPI v3 YAML variants
-    '/openapi.yaml', '/api/openapi.yaml',
+    # OpenAPI v3 YAML & JSON variants
+    '/openapi.yaml', '/api/openapi.yaml', '/v1/openapi.json', '/v2/openapi.json',
+    '/api/v1/openapi.json', '/api/v2/openapi.json', '/api/v3/openapi.json',
 ]
 
 GRAPHQL_PATHS = [
@@ -76,9 +78,12 @@ FEATURE_FLAG_PATHS = [
     '/api/client/features', '/api/frontend',
 ]
 
-# v9.0 BruteCat-inspired: Server headers indicating Google/Cloud API backends
+# v9.0 BruteCat-inspired: Server headers indicating Google/Cloud API backends & API gateways
 # Finding these means the host is a live API service worth deeper testing
-API_BACKEND_SERVERS = {'esf', 'gse', 'scaffolding on httpserver2', 'envoy', 'openresty'}
+API_BACKEND_SERVERS = {
+    'esf', 'gse', 'scaffolding on httpserver2', 'envoy', 'openresty',
+    'kong', 'apigee', 'traefik', 'istio-envoy', 'akamaighost', 'fastly'
+}
 
 # Infrastructure subdomains that never host real apps
 INFRA_PREFIXES = (

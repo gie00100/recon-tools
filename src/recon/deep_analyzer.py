@@ -54,6 +54,9 @@ TIER_2_TYPES = {
     'Cloud_Storage_Exposure',      # Pre-signed S3 URLs
     'API_Spec_Exposed',            # openapi.yaml on prod
     'Metrics_Endpoint',            # /metrics, /actuator on prod
+    'Staging_Environment',         # Live staging/test/preprod hosts
+    'JS_URL_with_Credentials',     # Embedded credentials in JS URLs
+    'URL with Credentials',
 }
 
 # Tier 3: Low priority — mostly noise from passive analysis
@@ -304,17 +307,15 @@ def _collect_exposed_ports(scan_dirs: List[Path]) -> List[dict]:
                 if entry.get('cdn', False) or is_cdn_ip(ip):
                     continue
 
-                # Skip 8080/8443 without domain association (CDN web noise)
-                domains = entry.get('domains', [])
-                if port in (8080, 8443) and not domains:
+                # Require protocol verification or non-empty banner (eliminates TCP-open false positives)
+                if not entry.get('verified', False) and not entry.get('banner'):
                     continue
 
-                # Prioritize high-value ports
-                if port in HIGH_VALUE_PORTS:
-                    entry['tier'] = 1
-                else:
-                    entry['tier'] = 2  # Web ports with domains
+                # Filter out Alt-Web ports (8080/8443) — these are standard web servers, not exposed DBs
+                if port not in HIGH_VALUE_PORTS:
+                    continue
 
+                entry['tier'] = 1
                 entry['source_dir'] = str(scan_dir)
                 ports.append(entry)
         except Exception:
@@ -349,32 +350,58 @@ def _collect_scan_dirs(output_root: Path) -> List[Path]:
 
 
 def collect_all_findings(scan_dirs: List[Path]) -> List[dict]:
-    """Collect and enrich all bounty_targets findings."""
+    """Collect and enrich all findings across bounty_targets.json, staging_environments.json, and js_url_credentials.json."""
     all_findings = []
 
     for scan_dir in scan_dirs:
+        # Extract program domain
+        parts = scan_dir.parts
+        program_domain = 'unknown'
+        for i, p in enumerate(parts):
+            if p in ('output', 'all_output') or p.startswith('output_'):
+                if i + 1 < len(parts):
+                    program_domain = parts[i + 1]
+                    break
+
+        # 1. Read bounty_targets.json
         bt_file = scan_dir / 'bounty_targets.json'
-        if not bt_file.exists():
-            continue
-        try:
-            data = json.loads(bt_file.read_text(encoding='utf-8', errors='replace'))
-            findings = data.get('findings', []) if isinstance(data, dict) else data
-            if not isinstance(findings, list):
-                continue
-            for f in findings:
-                f['source_dir'] = str(scan_dir)
-                # Extract domain from directory structure
-                parts = scan_dir.parts
-                # Could be output/domain/timestamp or all_output/batch/domain/timestamp
-                for i, p in enumerate(parts):
-                    if p in ('output', 'all_output') or p.startswith('output_'):
-                        if i + 1 < len(parts):
-                            f['program_domain'] = parts[i + 1]
-                            break
-                enriched = _enrich_finding(f)
-                all_findings.append(enriched)
-        except Exception:
-            continue
+        if bt_file.exists():
+            try:
+                data = json.loads(bt_file.read_text(encoding='utf-8', errors='replace'))
+                findings = data.get('findings', []) if isinstance(data, dict) else data
+                if isinstance(findings, list):
+                    for f in findings:
+                        f['source_dir'] = str(scan_dir)
+                        f['program_domain'] = program_domain
+                        all_findings.append(_enrich_finding(f))
+            except Exception:
+                pass
+
+        # 2. Read staging_environments.json
+        se_file = scan_dir / 'staging_environments.json'
+        if se_file.exists():
+            try:
+                data = json.loads(se_file.read_text(encoding='utf-8', errors='replace'))
+                envs = data.get('environments', []) if isinstance(data, dict) else []
+                for env in envs:
+                    env['source_dir'] = str(scan_dir)
+                    env['program_domain'] = program_domain
+                    all_findings.append(_enrich_finding(env))
+            except Exception:
+                pass
+
+        # 3. Read js_url_credentials.json
+        cred_file = scan_dir / 'js_url_credentials.json'
+        if cred_file.exists():
+            try:
+                data = json.loads(cred_file.read_text(encoding='utf-8', errors='replace'))
+                creds = data.get('credentials', []) if isinstance(data, dict) else []
+                for c in creds:
+                    c['source_dir'] = str(scan_dir)
+                    c['program_domain'] = program_domain
+                    all_findings.append(_enrich_finding(c))
+            except Exception:
+                pass
 
     return all_findings
 
@@ -408,10 +435,9 @@ def generate_triage_report(findings: List[dict], exposed_ports: List[dict],
 
     # Exposed Ports section (always Tier 1)
     if exposed_ports:
-        lines.append("\n---\n## 🔴 Exposed Database Ports (Tier 1)")
+        lines.append("\n---\n## 🔴 Exposed Database & Infrastructure Ports (Tier 1)")
         lines.append("> [!CAUTION]")
-        lines.append("> These are the highest-impact findings. Exposed database ports have the")
-        lines.append("> highest acceptance rate on HackerOne.")
+        lines.append("> Unauthenticated database and management infrastructure ports (PostgreSQL, MySQL, Redis, MongoDB, Elastic, Docker API).")
         lines.append("")
         lines.append("| IP | Port | Service | Domains |")
         lines.append("|---|---|---|---|")

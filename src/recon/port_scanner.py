@@ -111,6 +111,15 @@ _CDN_RANGES_RAW = [
     # Returns 403/400 on 8080/8443 for all domains proxied (confirmed FP pattern)
     "199.60.103.0/24",
     "199.60.102.0/24",
+    # Imperva / Incapsula CDN
+    "45.60.0.0/16",
+    "199.83.128.0/18",
+    "192.230.64.0/18",
+    "107.154.0.0/16",
+    # Tencent Cloud / Alibaba Cloud CDN shared proxy ranges
+    "43.152.0.0/15",
+    "43.174.0.0/15",
+    "43.175.0.0/15",
 ]
 
 _CDN_NETWORKS = [ipaddress.ip_network(r, strict=False) for r in _CDN_RANGES_RAW]
