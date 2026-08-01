@@ -862,99 +862,117 @@
 # === Nubank Brasil Managed Bug Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/nubank
 # Scope: Website targets
-nubank.com.br
+# STATUS: SCANNED - DONE
+# nubank.com.br
 
 # === Majid Al Futtaim Retail (Carrefour) (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/carrefour
 # Scope: Website targets
-carrefour.com
-carrefouruae.com
+# STATUS: SCANNED - DONE
+# carrefour.com
+# carrefouruae.com
 
 # === Atlassian-Built Apps (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/atlassianapps
 # Scope: Website targets
-trello.com
-developer.atlassian.com
+# STATUS: SCANNED - DONE
+# trello.com
+# developer.atlassian.com
 # marketplace.atlassian.com # Pending - Marketplace/Plugin
 
 # === Blofin Crypto Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/blofin-crypto-mbb-og
 # Scope: Website targets
-blofin.com
+# STATUS: SCANNED - DONE
+# blofin.com
 
 # === Opsgenie (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/opsgenie
 # Scope: Website targets
-opsgenie.com
-docs.opsgenie.com
+# STATUS: SCANNED - DONE
+# opsgenie.com
+# docs.opsgenie.com
 
 # === Acorns Grow, Inc. (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/acorns
 # Scope: Website targets
-acorns.com
+# STATUS: SCANNED - DONE
+# acorns.com
 
 # === lululemon (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/lululemon
 # Scope: Website targets
-lululemon.com
+# STATUS: SCANNED - DONE
+# lululemon.com
 
 # === Elementor: Bug Bounty Program (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/elementor
 # Scope: Website targets
-elementor.com
+# STATUS: SCANNED - DONE
+# elementor.com
 
 # === Statuspage (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/statuspage
 # Scope: Website targets
-statuspage.io
-manage.statuspage.io
+# STATUS: SCANNED - DONE
+# statuspage.io
+# manage.statuspage.io
 
 # === Wise (ex-TransferWise) (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/wise
 # Scope: Website targets
-wise.com
+# STATUS: SCANNED - DONE
+# wise.com
 
 # === Empower Personal Wealth (Personal Capital) (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/personalcapital
 # Scope: Website targets
-personalcapital.com
-empower.com
+# STATUS: SCANNED - DONE
+# personalcapital.com
+# empower.com
 
 # === Aurory Managed Bug Bounty Engagement (Public) (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/aurory-mbb-og2
 # Scope: Website targets
-aurory.io
+# STATUS: SCANNED - DONE
+# aurory.io
 
 # === iRobot (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/irobot
 # Scope: Website targets
-irobot.com
+# STATUS: SCANNED - DONE
+# irobot.com
 
 # === Chipotle Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/chipotle-mbb-og
 # Scope: Website targets
-chipotle.com
+# STATUS: SCANNED - DONE
+# chipotle.com
 
 # === Felix Health Managed Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/felix-health-mbb-og
 # Scope: Website targets
-felixforyou.ca
+# STATUS: SCANNED - DONE
+# felixforyou.ca
 
 # === Certinia (formerly FinancialForce) (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/financialforce
 # Scope: Website targets
-financialforce.com
-certinia.com
+# STATUS: SCANNED - DONE
+# financialforce.com
+# certinia.com
 
 # === SoundCloud (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/soundcloud
 # Scope: Website targets
-soundcloud.com
+# STATUS: SCANNED - DONE
+# soundcloud.com
 
 # === Viator (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/viator
 # Scope: Website targets
-viator.com
+# STATUS: SCANNED - DONE
+# viator.com
 
 # === Ultra Mobile Mobile Apps Bug Bounty Engagement (Bugcrowd) ===
 # Program: https://bugcrowd.com/engagements/ultramobile-mobile-apps
