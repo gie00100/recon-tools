@@ -12,7 +12,7 @@
 # STATUS: PENDING
 # api.20min.ch
 # audio.20min.ch
-coral.20min.ch
+# coral.20min.ch
 partner-feeds.20min.ch
 screenplayer.20min.ch
 videoplayer.20min.ch
@@ -32,7 +32,7 @@ www.20min.ch
 # api.clearpay.com
 # clearpay.co.uk
 # clearpay.com
-developers.afterpay.com
+# developers.afterpay.com
 mobileapi.afterpay.com
 mobileapi.clearpay.com
 portal.afterpay.com
@@ -59,8 +59,8 @@ portalapi.us.afterpay.com
 # STATUS: PENDING
 # aiven.io
 # api.aiven.io
-console.aiven.io
-falcon-bug-bounty-flag-pgsql-dev-sandbox.aivencloud.com
+# console.aiven.io
+# falcon-bug-bounty-flag-pgsql-dev-sandbox.aivencloud.com
 regatta.aiven.io
 
 # === AppFox ===
@@ -94,7 +94,7 @@ regatta.aiven.io
 # app.asana.com
 # asana.biz
 # asana.com
-form.asana.com
+# form.asana.com
 
 # === Atlassian ===
 # Program: https://bugcrowd.com/engagements/atlassian
@@ -104,7 +104,7 @@ form.asana.com
 # atlastunnel.com
 # bitbucket.org
 # confluence.atlassian.com
-id.atlassian.com
+# id.atlassian.com
 mcp.atlassian.com
 start.atlassian.com
 support.atlassian.com
@@ -122,8 +122,8 @@ www.sourcetreeapp.com
 # auth0.net
 # cic-bug-bounty.auth0app.com
 # config.cic-bug-bounty.auth0app.com
-customers.us1.fga.dev
-dashboard.fga.dev
+# customers.us1.fga.dev
+# dashboard.fga.dev
 jwt.io
 manage.cic-bug-bounty.auth0app.com
 marketplace.auth0.com
@@ -251,7 +251,7 @@ taxify.eu
 # Program: https://bugcrowd.com/engagements/bugcrowd
 # Scope: Website targets
 # STATUS: PENDING
-gov.bugcrowd.net
+# gov.bugcrowd.net
 
 # === Bullish Exchange ===
 # Program: https://bugcrowd.com/engagements/bullish-exchange
@@ -265,7 +265,7 @@ simnext.bullish-test.com
 # Scope: Website targets
 # STATUS: PENDING
 # bullish.com
-investor.bullish.com
+# investor.bullish.com
 
 # === Canva ===
 # Program: https://bugcrowd.com/engagements/canva
@@ -297,8 +297,8 @@ www.canva.com
 # Scope: Website targets
 # STATUS: PENDING
 # cmsnationaltrainingprogram.cms.gov
-csscoperations.com
-eua.cms.gov
+# csscoperations.com
+# eua.cms.gov
 nsa-idr.cms.gov
 portal.cms.gov
 qpp.cms.gov
@@ -327,7 +327,7 @@ www.chime.com
 # Program: https://bugcrowd.com/engagements/cisconetworking
 # Scope: Website targets
 # STATUS: PENDING
-ikarem.io
+# ikarem.io
 meraki.com
 network-auth.com
 
@@ -378,7 +378,7 @@ support.code.org
 # Program: https://bugcrowd.com/engagements/CCData-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
-data-api.coindesk.com
+# data-api.coindesk.com
 tools-api.cryptocompare.com
 
 # === CoinDesk Mobile ===
@@ -416,14 +416,14 @@ xfinity.com
 # Program: https://bugcrowd.com/engagements/consensus-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
-consensus2026.sandbox.events.coindesk.com
+# consensus2026.sandbox.events.coindesk.com
 
 # === Council on Foreign Relations ===
 # Program: https://bugcrowd.com/engagements/cfr
 # Scope: Website targets
 # STATUS: SCANNED - DONE
 # cfr.org
-education.cfr.org
+# education.cfr.org
 thinkglobalhealth.org
 
 # === Craft Coders Marketplace Bug Bounty ===
@@ -436,8 +436,8 @@ thinkglobalhealth.org
 # Program: https://bugcrowd.com/engagements/dell-com
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-dell.com
-delltechnologies.com
+# dell.com
+# delltechnologies.com
 
 # === Dell Technologies' Products Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/dell-product
@@ -461,7 +461,7 @@ delltechnologies.com
 # Program: https://bugcrowd.com/engagements/directly
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-directly.com
+# directly.com
 
 # === Dutch Beginners ZZP Marketplace Managed Bug Bounty Engagement ===
 # Program: https://bugcrowd.com/engagements/dutch-beginners-market
@@ -479,7 +479,7 @@ directly.com
 # Program: https://bugcrowd.com/engagements/eazybi
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-eazybi.com
+# eazybi.com
 
 # === Electroneum Legacy Blockchain: EOL ===
 # Program: https://bugcrowd.com/engagements/legacy-blockchain-mbb-og
@@ -525,10 +525,10 @@ www.partypoker.com
 # Program: https://bugcrowd.com/engagements/etoro-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
-delta.app
-etoro.com
-etoropartners.com
-etorox.com
+# delta.app
+# etoro.com
+# etoropartners.com
+# etorox.com
 
 # === Etsy ===
 # Program: https://bugcrowd.com/engagements/etsy
@@ -537,9 +537,9 @@ etorox.com
 # blog.etsy.com
 # careers.etsy.com
 # community.etsy.com
-etsy.com
-etsypayments.com
-help.etsy.com
+# etsy.com
+# etsypayments.com
+# help.etsy.com
 www.etsy.com
 
 # === Fireblocks MPC Managed Bug Bounty Engagement ===
@@ -566,16 +566,16 @@ sb-mobile-api.fireblocks.io
 # Program: https://bugcrowd.com/engagements/fivetran-mbb-og
 # Scope: Website targets
 # STATUS: PENDING
-fivetran.com
+# fivetran.com
 
 # === Flourish ===
 # Program: https://bugcrowd.com/engagements/flourish
 # Scope: Website targets
 # STATUS: PENDING
-flo.uri.sh
-flourish-user-preview.com
-flourish-user-templates.com
-flourish.studio
+# flo.uri.sh
+# flourish-user-preview.com
+# flourish-user-templates.com
+# flourish.studio
 kiln.it
 xyzbmojn.net
 
@@ -583,7 +583,7 @@ xyzbmojn.net
 # Program: https://bugcrowd.com/engagements/gearset-mbb
 # Scope: Website targets
 # STATUS: PENDING
-hipaa.staging.gearset.com
+# hipaa.staging.gearset.com
 staging.claytonapp.com
 staging.gearset.com
 
@@ -603,10 +603,10 @@ staging.gearset.com
 # Program: https://bugcrowd.com/engagements/hostgator-latam-bb
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-hostgator.cl
-hostgator.co
-hostgator.com.br
-hostgator.mx
+# hostgator.cl
+# hostgator.co
+# hostgator.com.br
+# hostgator.mx
 
 # === HotDoc ===
 # Program: https://bugcrowd.com/engagements/hotdoc
@@ -626,15 +626,15 @@ hostgator.mx
 # STATUS: PENDING
 # accounts.hytale.com
 # arcanitegames.ca
-hytale.com
-hytale.dev
+# hytale.com
+# hytale.dev
 store.hytale.com
 
 # === iFood: Bug Bounty Program ===
 # Program: https://bugcrowd.com/engagements/ifood-og
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-ifood.com.br
+# ifood.com.br
 
 # === Immutable Bug Bounty ===
 # Program: https://bugcrowd.com/engagements/immutable
@@ -643,7 +643,7 @@ ifood.com.br
 # api.immutable.com
 # api.x.immutable.com
 # auth.immutable.com
-hub.immutable.com
+# hub.immutable.com
 passport.immutable.com
 play.immutable.com
 
@@ -651,17 +651,17 @@ play.immutable.com
 # Program: https://bugcrowd.com/engagements/imperva-mbb
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-imperva.com
+# imperva.com
 
 # === Indeed ===
 # Program: https://bugcrowd.com/engagements/indeed
 # Scope: Website targets
 # STATUS: PENDING
 # apis.indeed.com
-indeed.com
-indeed.net
-indeed.tech
-indeedflex.com
+# indeed.com
+# indeed.net
+# indeed.tech
+# indeedflex.com
 resume.com
 wowjobs.ca
 
@@ -680,8 +680,8 @@ wowjobs.ca
 # app.fin.ai
 # app.intercom.com
 # app.intercom.io
-fin.ai
-intercomassets.com
+# fin.ai
+# intercomassets.com
 mcp.intercom.com
 mobile-messenger.intercom.com
 www.intercom.com
@@ -692,9 +692,9 @@ www.intercom.com
 # STATUS: SCANNED - DONE
 # accounts.webmd.com
 # carsdirect.com
-demandforced3.com
-exchange.pulsepoint.com
-globalacademycme.com
+# demandforced3.com
+# exchange.pulsepoint.com
+# globalacademycme.com
 life.pulsepoint.com
 lifeapi.pulsepoint.com
 login.medscape.com
@@ -754,7 +754,7 @@ www.unscreen.com
 # Program: https://bugcrowd.com/engagements/keepersecurity
 # Scope: Website targets
 # STATUS: PENDING
-docs.keeper.io
+# docs.keeper.io
 keepersecurity.com
 www.keepersecurity.com
 www.microsoft.com
@@ -806,14 +806,14 @@ www.lastpass.com
 # buyersedge.co.nz
 # carecredit.com.au
 dev.*.lfscnp.com
-gemcreditline.co.nz
-gemfinance.co.nz
-gemvisa.com.au
-genoapay.co.nz
-genoapay.com
-gomastercard.com.au
-images.latitudepayapps.com
-interestfree.com.au
+# gemcreditline.co.nz
+# gemfinance.co.nz
+# gemvisa.com.au
+# genoapay.co.nz
+# genoapay.com
+# gomastercard.com.au
+# images.latitudepayapps.com
+# interestfree.com.au
 latitudefinancial.co.nz
 latitudefinancial.com
 latitudefinancial.com.au
@@ -831,8 +831,8 @@ umiloans.com.au
 # Scope: Website targets
 # STATUS: PENDING
 # app.launchdarkly.com
-docs.launchdarkly.com
-events.launchdarkly.com
+# docs.launchdarkly.com
+# events.launchdarkly.com
 launchdarkly.com
 stream.launchdarkly.com
 
@@ -840,7 +840,7 @@ stream.launchdarkly.com
 # Program: https://bugcrowd.com/engagements/lightspeed-hospitality
 # Scope: Website targets
 # STATUS: PENDING
-hq.breadcrumb.com
+# hq.breadcrumb.com
 manager.trial.lsk.lightspeed.app
 mylightspeed.app
 
@@ -849,7 +849,7 @@ mylightspeed.app
 # Scope: Website targets
 # STATUS: PENDING
 # app.ecwid.com
-developers.retail.lightspeed.app
+# developers.retail.lightspeed.app
 payment-connectors.vendhq.com
 store.retail.lightspeed.app
 
@@ -858,11 +858,11 @@ store.retail.lightspeed.app
 # Scope: Website targets
 # STATUS: PENDING
 # admintool.lime.bike
-data.lime.bike
-data.limeinternal.com
-external-api.lime.bike
-gpt.lime.bike
-help.lime.bike
+# data.lime.bike
+# data.limeinternal.com
+# external-api.lime.bike
+# gpt.lime.bike
+# help.lime.bike
 juicer.lime.bike
 lp.lime.bike
 ops.lime.bike
@@ -944,10 +944,10 @@ malloftheemirates.com
 # Program: https://bugcrowd.com/engagements/mastercard
 # Scope: Website targets
 # STATUS: PENDING
-consumer.finicityreports.com
-demo.priceless.com
-developer.mastercard.com
-donate.mastercard.com
+# consumer.finicityreports.com
+# demo.priceless.com
+# developer.mastercard.com
+# donate.mastercard.com
 performancemarketing.mastercard.com
 pioneer.truata.com
 priceless.com
@@ -969,7 +969,7 @@ bugcrowd-*your-own-instance*.cloud.mattermost.com
 # Scope: Website targets
 # STATUS: PENDING
 # booking.mgm.mo
-jobs.mgm.mo
+# jobs.mgm.mo
 mgm.mo
 mlife.mo
 mobileapp-gaming.mgm.mo
@@ -989,17 +989,17 @@ www.tickets.mgm.mo
 # cms.mobile.monash
 # collections.monash.edu
 # compulsoryunits.monash.edu
-connect.monash.edu
-eassessment.monash.edu
-equella.monash.edu
-evigilation.monash.edu
-fileshare.ze.monash.edu
-formative.eassessment.monash.edu
-forms.apps.monash.edu
-gp.monash.edu
-identity.monash.edu
-ims.monash.edu
-interviews.monash.edu
+# connect.monash.edu
+# eassessment.monash.edu
+# equella.monash.edu
+# evigilation.monash.edu
+# fileshare.ze.monash.edu
+# formative.eassessment.monash.edu
+# forms.apps.monash.edu
+# gp.monash.edu
+# identity.monash.edu
+# ims.monash.edu
+# interviews.monash.edu
 mids.monash.edu
 mix-dev.monash.edu
 mix-qat.monash.edu
@@ -1076,9 +1076,9 @@ neogov.com
 # Program: https://bugcrowd.com/engagements/newrelic-mbb-og-public
 # Scope: Website targets
 # STATUS: PENDING
-developer.newrelic.com
-docs.newrelic.com
-forum.newrelic.com
+# developer.newrelic.com
+# docs.newrelic.com
+# forum.newrelic.com
 knowledge.newrelic.com
 learn.newrelic.com
 newrelic.com
@@ -1115,7 +1115,7 @@ octopus.com
 # app.scaleft.com
 # bugcrowd-pam-###.oktapreview.com
 # bugcrowd-pam-###.pam.oktapreview.com
-help.okta.com
+# help.okta.com
 support.okta.com
 www.okta.com
 
@@ -1139,7 +1139,7 @@ platform.openai.com
 # Program: https://bugcrowd.com/engagements/opensea
 # Scope: Website targets
 # STATUS: PENDING
-etherscan.io
+# etherscan.io
 mcp.opensea.io
 opensea.io
 wallet.opensea.io
@@ -1176,18 +1176,18 @@ wallet.opensea.io
 # cashback.opera.com
 # cdn-store.opera-api.com
 # cms.adx.opera.com
-create.gx.games
-cryptowallet.opera-api.com
-dailyadvent.com
-download.opera.com
-exchange.opera.com
-features.opera-api.com
-feednews.com
-flow.opera.com
-get.geo.opera.com
-gx.games
-gx.me
-gx.opera-api.com
+# create.gx.games
+# cryptowallet.opera-api.com
+# dailyadvent.com
+# download.opera.com
+# exchange.opera.com
+# features.opera-api.com
+# feednews.com
+# flow.opera.com
+# get.geo.opera.com
+# gx.games
+# gx.me
+# gx.opera-api.com
 marketplace.gamemaker.io
 merchandise.opera-api.com
 neon.opera.com
@@ -1232,7 +1232,7 @@ optimizely.com
 # 172.26.39.9
 # 198.142.152.100
 # 198.142.152.101
-gateway.optus.com.au
+# gateway.optus.com.au
 naasapi.optus.com.au
 oes.optusnet.com.au
 ogws.optusnet.com.au
@@ -1336,7 +1336,7 @@ quizlet.com
 # STATUS: PENDING
 # api.rapyd.net
 # checkout.rapyd.net
-dashboard.rapyd.net
+# dashboard.rapyd.net
 jointhemoment.net
 korta.is
 kortathjonustan.is
@@ -1354,10 +1354,10 @@ verify.rapyd.net
 # agent-contact.realestate.com.au
 # api-next.flatmates.com.au
 # api.id.realestate.com.au
-demo.bp.mortgagechoice.com.au
-desktop-sit.uat.proptrack.com
-explore-sit.uat.proptrack.com
-id.realestate.com.au
+# demo.bp.mortgagechoice.com.au
+# desktop-sit.uat.proptrack.com
+# explore-sit.uat.proptrack.com
+# id.realestate.com.au
 mclead.com.au
 mortgagechoice.com.au
 next.flatmates.com.au
@@ -1392,9 +1392,9 @@ recroom.com
 # app.recordedfuture.com
 # auth.riskrecon.com
 # auth.riskrecon.eu
-geminiadvisory.io
-hatching.io
-id.recordedfuture.com
+# geminiadvisory.io
+# hatching.io
+# id.recordedfuture.com
 mcp.recordedfuture.com
 portal.riskrecon.com
 portal.riskrecon.eu
@@ -1453,7 +1453,7 @@ requirementyogi.com
 # Program: https://bugcrowd.com/engagements/freedomofpress
 # Scope: Website targets
 # STATUS: SCANNED - DONE
-docs.securedrop.org
+# docs.securedrop.org
 securedrop.org
 
 # === SecureFlag Marketplace Bug Bounty ===
@@ -1468,11 +1468,11 @@ securedrop.org
 # STATUS: PENDING
 # aips-internal.com
 # auth.seek.com
-employer.seek.com
-graphql.seek.com
-jobapi.net
-jobsdb.com
-jobstreet.com
+# employer.seek.com
+# graphql.seek.com
+# jobapi.net
+# jobsdb.com
+# jobstreet.com
 myseek.xyz
 outfra.xyz
 seek.com
@@ -1519,7 +1519,7 @@ www.skroutz.gr
 # Program: https://bugcrowd.com/engagements/skyscanner
 # Scope: Website targets
 # STATUS: PENDING
-gateway.skyscanner.net
+# gateway.skyscanner.net
 partnerportal.skyscanner.net
 skyscanner.net
 
@@ -1581,27 +1581,27 @@ www.weebly.com
 # audiencelogos.blis.com
 # blis.com
 # clients.adstruc.com
-creative.infinity.blismedia.com
-creatives.vistarmedia.com
-dashboard-101.moengage.com
-demo.adstruc.com
-devedge.t-mobile.com
-development.wmaudience.com
-digits.t-mobile.com
-docker-staging.adstruc.com
-docsite.vistarmedia.com
-imply-pivot.blis.com
-imply-pivot.test.blis.com
-imply.blis.com
-imply.internal.platform.blis.com
-imply.platform.blis.com
-imply.platform.development.blis.com
-imply.platform.rc.blis.com
-imply.test.blis.com
-imply.wmaudience.com
-internal.platform.blis.com
-jenkins-github.gcp.blis.com
-job-svc-b.vistarmedia.com
+# creative.infinity.blismedia.com
+# creatives.vistarmedia.com
+# dashboard-101.moengage.com
+# demo.adstruc.com
+# devedge.t-mobile.com
+# development.wmaudience.com
+# digits.t-mobile.com
+# docker-staging.adstruc.com
+# docsite.vistarmedia.com
+# imply-pivot.blis.com
+# imply-pivot.test.blis.com
+# imply.blis.com
+# imply.internal.platform.blis.com
+# imply.platform.blis.com
+# imply.platform.development.blis.com
+# imply.platform.rc.blis.com
+# imply.test.blis.com
+# imply.wmaudience.com
+# internal.platform.blis.com
+# jenkins-github.gcp.blis.com
+# job-svc-b.vistarmedia.com
 maps.vistarmedia.com
 metrobyt-mobile.com
 packages.cortexpowered.com
@@ -1681,14 +1681,14 @@ thg.com
 # auth.thetradedesk.com
 # careers.thetradedesk.com
 # cdn.myopenpass.com
-core-prod.uidapi.com
-cstg-integ.uidapi.com
-desk.thetradedesk.com
-edgeacademy.thetradedesk.com
-esp-jssdk-integ.uidapi.com
-esp-srvonly-integ.uidapi.com
-example-jssdk-integ.uidapi.com
-example-srvonly-integ.uidapi.com
+# core-prod.uidapi.com
+# cstg-integ.uidapi.com
+# desk.thetradedesk.com
+# edgeacademy.thetradedesk.com
+# esp-jssdk-integ.uidapi.com
+# esp-srvonly-integ.uidapi.com
+# example-jssdk-integ.uidapi.com
+# example-srvonly-integ.uidapi.com
 myopenpass.com
 myopenpassdemo.com
 open.sincera.io
@@ -1767,12 +1767,12 @@ trello.services
 # api.tripadvisor.com
 # bokundemo.com
 # bokuntest.com
-flipkey.com
-gwapi.tripadvisor.com
-gwapi1.tripadvisor.com
-gwapi2.tripadvisor.com
-holidaylettings.com
-housetrip.com
+# flipkey.com
+# gwapi.tripadvisor.com
+# gwapi1.tripadvisor.com
+# gwapi2.tripadvisor.com
+# holidaylettings.com
+# housetrip.com
 marlo.ext.tripadvisor.com
 niumba.com
 partnerapi.tapayments.com
@@ -1855,11 +1855,11 @@ www.upwork.com
 # b2bapi.usaa.com
 # b2blsapi-a.usaa.com
 # b2blsapi.usaa.com
-content.usaa.com
-d1.utv.usaa.com
-d2.utv.usaa.com
-externalconnect.usaa.com
-guest.usaa.com
+# content.usaa.com
+# d1.utv.usaa.com
+# d2.utv.usaa.com
+# externalconnect.usaa.com
+# guest.usaa.com
 l.usaa.com
 liveassist.usaa.com
 liveassist11.usaa.com
@@ -1901,9 +1901,9 @@ www.usaainsurance.com
 # STATUS: PENDING
 # a.root-servers.net
 # blog.verisign.com
-epptool-ctld.verisign-grs.com
-gtld-servers.net
-j.root-servers.net
+# epptool-ctld.verisign-grs.com
+# gtld-servers.net
+# j.root-servers.net
 namestudio.com
 namestudioforsocial.com
 verisign-grs.com
