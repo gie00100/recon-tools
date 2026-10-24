@@ -36,6 +36,10 @@ SWAGGER_PATHS = [
     '/v2/swagger.json', '/v3/swagger.json',
     '/openapi.json', '/api/openapi.json',
     '/api-docs', '/v1/api-docs', '/v2/api-docs',
+    # tesco branch: Spring / springdoc default is /v3/api-docs. The old list
+    # stopped at v2, so Spring Boot services (common in Tesco's origin tier —
+    # a Whitelabel error leaked /relationship-service-war/graphql) were missed.
+    '/v3/api-docs', '/api/v3/api-docs', '/v3/api-docs/swagger-config',
     '/swagger/v1/swagger.json', '/swagger/v2/swagger.json',
     '/api/v1/swagger.json', '/api/v2/swagger.json',
     '/_swagger', '/swagger-ui/swagger.json',
@@ -78,11 +82,28 @@ FEATURE_FLAG_PATHS = [
     '/api/client/features', '/api/frontend',
 ]
 
+# tesco branch: Spring Boot Actuator. env/configprops/heapdump leak secrets
+# (CRITICAL); mappings/beans/loggers map internals (HIGH). Tesco's origin tier
+# runs Spring Boot services, so an exposed actuator is a direct, high-value find.
+ACTUATOR_PATHS = {
+    '/actuator/env': 'CRITICAL',
+    '/actuator/configprops': 'CRITICAL',
+    '/actuator/heapdump': 'CRITICAL',
+    '/actuator/mappings': 'HIGH',
+    '/actuator/beans': 'HIGH',
+    '/actuator/loggers': 'HIGH',
+    '/actuator': 'INFO',
+}
+
 # v9.0 BruteCat-inspired: Server headers indicating Google/Cloud API backends & API gateways
 # Finding these means the host is a live API service worth deeper testing
 API_BACKEND_SERVERS = {
     'esf', 'gse', 'scaffolding on httpserver2', 'envoy', 'openresty',
-    'kong', 'apigee', 'traefik', 'istio-envoy', 'akamaighost', 'fastly'
+    'kong', 'apigee', 'traefik', 'istio-envoy',
+    # 'akamaighost' / 'fastly' REMOVED on the tesco branch: on a CDN/WAF-fronted
+    # estate EVERY edge host returns these Server headers, so they flagged 73/73
+    # Tesco hosts as "API Backend Server" = pure noise. An edge/CDN is not a
+    # dedicated origin API backend, so it must not be treated as a lead.
 }
 
 # Infrastructure subdomains that never host real apps
@@ -192,6 +213,22 @@ class SchemaDiscovery:
                 continue
         return results
 
+    @staticmethod
+    def _looks_like_graphql_json(text: str) -> bool:
+        """tesco branch: FP-resistant GraphQL confirmation. A real GraphQL
+        response is JSON with a top-level 'data' or 'errors' key (the response
+        envelope). On an Akamai/WAF-fronted estate a /graphql GET/POST often
+        returns a 200 'Access Denied' HTML page whose body happens to contain
+        the word 'graphql' (echoed path) — the old substring check flagged those
+        as endpoints. Requiring the JSON envelope kills that false-positive class
+        while still catching introspection-disabled endpoints (they return
+        {'errors': [...]})."""
+        try:
+            obj = json.loads(text)
+        except Exception:
+            return False
+        return isinstance(obj, dict) and ("data" in obj or "errors" in obj)
+
     async def _check_graphql(self, domain: str) -> List[Dict]:
         """Probe for GraphQL endpoints and attempt introspection."""
         results = []
@@ -241,7 +278,7 @@ class SchemaDiscovery:
                             except Exception:
                                 pass
                             return results
-                        elif "graphql" in text.lower():
+                        elif self._looks_like_graphql_json(text):
                             log_finding(f"[+] GraphQL endpoint (no introspection): {url}")
                             results.append({
                                 "type": "GraphQL Endpoint",
@@ -353,6 +390,41 @@ class SchemaDiscovery:
             pass
         return results
 
+    async def _check_actuator(self, domain: str) -> List[Dict]:
+        """tesco branch: Spring Boot Actuator exposure. A 200 + JSON body on
+        /actuator/env|configprops|heapdump is a CRITICAL secret leak; mappings/
+        beans/loggers are HIGH (internal map). Requires a JSON content-type and,
+        for the bare /actuator index, the HAL '_links' envelope — so a generic
+        JSON 200 or a WAF page is not mistaken for an actuator."""
+        results = []
+        session = await self._get_session()
+        base = f"https://{domain}"
+        for path, sev in ACTUATOR_PATHS.items():
+            url = f"{base}{path}"
+            try:
+                await self.rate_limiter.acquire()
+                async with session.get(url) as resp:
+                    if resp.status != 200:
+                        continue
+                    ct = resp.headers.get("Content-Type", "").lower()
+                    if "json" not in ct:
+                        continue
+                    text = await resp.text(encoding="utf-8", errors="ignore")
+                    if path == '/actuator' and '"_links"' not in text:
+                        continue
+                    log_finding(f"[🔧 SPRING ACTUATOR {sev}] {url}")
+                    results.append({
+                        "type": "Spring Boot Actuator",
+                        "severity": sev,
+                        "url": url,
+                        "domain": domain,
+                        "note": "Exposed actuator — env/configprops/heapdump leak "
+                                "secrets; mappings/beans map internal routes.",
+                    })
+            except Exception:
+                continue
+        return results
+
     async def _scan_domain(self, domain: str):
         """Run all schema checks against a single domain."""
         if self._is_infra_subdomain(domain):
@@ -364,6 +436,7 @@ class SchemaDiscovery:
         results.extend(await self._check_feature_flags(domain))
         results.extend(await self._check_oidc(domain))
         results.extend(await self._check_server_fingerprint(domain))
+        results.extend(await self._check_actuator(domain))
         self.findings.extend(results)
 
     async def discover(self) -> Dict:
@@ -388,6 +461,7 @@ class SchemaDiscovery:
         flag_count = len([f for f in self.findings if f["type"] == "Feature Flag Config"])
         oidc_count = len([f for f in self.findings if f["type"] == "OIDC Discovery"])
         backend_count = len([f for f in self.findings if f["type"] == "API Backend Server"])
+        actuator_count = len([f for f in self.findings if f["type"] == "Spring Boot Actuator"])
 
         if self.findings:
             parts = []
@@ -396,6 +470,7 @@ class SchemaDiscovery:
             if flag_count: parts.append(f"{flag_count} Feature Flags")
             if oidc_count: parts.append(f"{oidc_count} OIDC")
             if backend_count: parts.append(f"{backend_count} API Backends")
+            if actuator_count: parts.append(f"{actuator_count} Spring Actuator")
             log_success(f"Schema discovery complete: {', '.join(parts)}")
             log_success(f"Extracted {len(self.api_endpoints)} API endpoints from schemas")
         else:

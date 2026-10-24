@@ -86,11 +86,19 @@ class LiveProber:
                 ttl_dns_cache=300,
                 resolver=aiohttp.ThreadedResolver(),
             )
-            timeout = aiohttp.ClientTimeout(total=self.timeout)
+            # Separate connect budget from the overall timeout so a slow full-body
+            # read on a big page doesn't get charged against connect/header time.
+            timeout = aiohttp.ClientTimeout(total=self.timeout, sock_connect=min(self.timeout, 10))
             self._session = aiohttp.ClientSession(
                 connector=connector,
                 timeout=timeout,
                 headers={"User-Agent": Config.USER_AGENT},
+                # Modern sites ship huge response headers (e.g. Content-Security-
+                # Policy well over 8 KB). aiohttp's 8190-byte default rejects the
+                # WHOLE response with a 400, so a live host is silently dropped.
+                # Raise the caps so large-header hosts are probed correctly.
+                max_line_size=65536,
+                max_field_size=65536,
             )
         return self._session
 
@@ -160,8 +168,6 @@ class LiveProber:
 
         return ""
 
-
-
     async def _fetch_extra(self, base_url: str, path: str, session: aiohttp.ClientSession) -> str:
         """Fetch extra files like robots.txt or sitemap.xml."""
         url = base_url.rstrip("/") + path
@@ -213,61 +219,71 @@ class LiveProber:
                 "alive": False,
             }
 
-            try:
-                session = await self._get_session()
-                start_time = time.time()
+            # Retry transient network failures a couple of times before giving up,
+            # so a single blip never drops a genuinely-live asset.
+            attempts = 3
+            for attempt in range(attempts):
+                try:
+                    session = await self._get_session()
+                    start_time = time.time()
 
-                async with session.get(
-                    url,
-                    allow_redirects=self.follow_redirects,
-                    max_redirects=5,
-                ) as resp:
-                    elapsed_ms = int((time.time() - start_time) * 1000)
-                    result["status"] = resp.status
-                    result["response_time_ms"] = elapsed_ms
-                    result["alive"] = True
+                    async with session.get(
+                        url,
+                        allow_redirects=self.follow_redirects,
+                        max_redirects=5,
+                    ) as resp:
+                        elapsed_ms = int((time.time() - start_time) * 1000)
+                        result["status"] = resp.status
+                        result["response_time_ms"] = elapsed_ms
+                        result["alive"] = True
 
-                    # Headers
-                    headers = {k: v for k, v in resp.headers.items()}
-                    result["headers"] = headers
-                    result["server"] = headers.get("Server", "")
-                    result["content_length"] = int(headers.get("Content-Length", 0))
+                        # Headers
+                        headers = {k: v for k, v in resp.headers.items()}
+                        result["headers"] = headers
+                        result["server"] = headers.get("Server", "")
+                        result["content_length"] = int(headers.get("Content-Length", 0))
 
-                    # Check for redirect
-                    if str(resp.url) != url:
-                        result["redirect_url"] = str(resp.url)
+                        # Check for redirect
+                        if str(resp.url) != url:
+                            result["redirect_url"] = str(resp.url)
 
-                    # Read body (limit to 500KB)
-                    try:
-                        body = await resp.text(encoding="utf-8", errors="ignore")
-                        body = body[:500_000]
-                    except Exception:
-                        body = ""
+                        # Read body (limit to 500KB)
+                        try:
+                            body = await resp.text(encoding="utf-8", errors="ignore")
+                            body = body[:500_000]
+                        except Exception:
+                            body = ""
 
-                    # Extract metadata
-                    result["title"] = self._extract_title(body)
-                    result["technologies"] = self._detect_tech(headers, body)
-                    result["waf"] = self._detect_waf(headers, body)
-                    result["js_files"] = self._extract_js_files(body, url)
+                        # Extract metadata
+                        result["title"] = self._extract_title(body)
+                        result["technologies"] = self._detect_tech(headers, body)
+                        result["waf"] = self._detect_waf(headers, body)
+                        result["js_files"] = self._extract_js_files(body, url)
 
-                    # Fetch robots/sitemap
-                    if result["status"] == 200:
-                        robots = await self._fetch_extra(url, "/robots.txt", session)
-                        if robots:
-                            result["technologies"].append("Robots.txt")
-                        sitemap = await self._fetch_extra(url, "/sitemap.xml", session)
-                        if sitemap:
-                            result["technologies"].append("Sitemap.xml")
+                        # Fetch robots/sitemap
+                        if result["status"] == 200:
+                            robots = await self._fetch_extra(url, "/robots.txt", session)
+                            if robots:
+                                result["technologies"].append("Robots.txt")
+                            sitemap = await self._fetch_extra(url, "/sitemap.xml", session)
+                            if sitemap:
+                                result["technologies"].append("Sitemap.xml")
 
-                    if not result["content_length"] and body:
-                        result["content_length"] = len(body)
+                        if not result["content_length"] and body:
+                            result["content_length"] = len(body)
+                    break  # success — leave the retry loop
 
-            except asyncio.TimeoutError:
-                result["title"] = "[Timeout]"
-            except aiohttp.ClientConnectorError:
-                result["title"] = "[Connection Error]"
-            except Exception as e:
-                result["title"] = f"[Error: {type(e).__name__}]"
+                except (asyncio.TimeoutError, aiohttp.ClientConnectorError,
+                        aiohttp.ClientOSError, aiohttp.ServerDisconnectedError) as e:
+                    result["title"] = "[Timeout]" if isinstance(e, asyncio.TimeoutError) \
+                        else "[%s]" % type(e).__name__
+                    if attempt < attempts - 1:
+                        await asyncio.sleep(0.4 * (attempt + 1))
+                        continue
+                except Exception as e:
+                    # Non-transient (e.g. malformed response) — don't retry.
+                    result["title"] = f"[Error: {type(e).__name__}]"
+                    break
 
             return result
 

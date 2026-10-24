@@ -308,7 +308,17 @@ class SubdomainEnumerator:
         if not self.subdomains:
             return []
             
-        words = ["api", "dev", "test", "staging", "prod", "internal", "admin", "vpn", "corp", "mail"]
+        # Tesco-tuned (tesco branch): lead with the lifecycle markers actually
+        # observed across the Tesco estate. `ppe` is the single highest-yield
+        # suffix (~290 live hosts) and was MISSING from the generic list, so the
+        # old permutations skipped Tesco's most common non-prod tier entirely.
+        # Order matters only cosmetically (set-dedup), but keeping the observed
+        # markers first documents intent.
+        words = [
+            "ppe", "dev", "sit", "pte", "uat", "stg", "stage", "staging",
+            "perf", "nft", "preview", "sandbox", "qa", "test", "prod",
+            "api", "internal", "admin", "vpn", "corp", "mail",
+        ]
         perms = set()
         
         for sub in self.subdomains:
