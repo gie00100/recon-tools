@@ -1,0 +1,24 @@
+# Tesco BBP in-scope recon targets (derived from config/scope.csv, 2026-08-01)
+# Core wildcard assets (*.<domain>/*) — full subdomain enumeration is in scope:
+tesco.com
+tesco.sk
+tesco.hu
+tesco.ie
+tesco.org
+itesco.cz
+itesco.sk
+tescocloud.com
+ourtesco.com
+tesco-europe.com
+tescoplc.com
+#
+# Subsidiary assets — scope is the www host + SUBDIRECTORIES ONLY, NOT other
+# subdomains. Target the exact in-scope host so enumeration stays in scope.
+www.tescomobile.com
+www.booker.co.uk
+www.onestop.co.uk
+#
+# NOTE: out-of-scope hosts (tescoinsiderportal.com, tescomobile.farill.io,
+# ourtesco.com/bams/*, ourtesco.com/brandlibrary/*, Tesco Bank, Dunnhumby) are
+# NOT listed. The impact engine's scope guard drops any OOS host found during
+# subdomain enumeration, so collection here is safe.

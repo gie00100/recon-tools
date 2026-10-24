@@ -1,0 +1,32 @@
+# Tesco OOS-but-ELIGIBLE scan targets (M/H/C reportable; valid Critical = up to $3k).
+# High-confidence Tesco-owned only. Tier-2/3 (uncertain/typosquat) are NOT here —
+# verify whois before scanning. Subsidiary apexes included to enumerate the
+# OOS-eligible non-www subdomains.
+#
+# Subsidiary apexes (scope covers www only; other subdomains are OOS-eligible):
+tescomobile.com
+onestop.co.uk
+booker.co.uk
+#
+# Tier-1 Central-Europe loyalty / finance cluster:
+clubcard.sk
+tescoclubcard.cz
+tescofinance.cz
+tescofinance.sk
+tescofinancie.sk
+tescovalue.sk
+tescokarta.cz
+tescopujcka.cz
+#
+# Tier-1 insurance / account / content:
+tescoinsurance.com
+mytesco.com
+tescomagazine.cz
+tescomagazin.cz
+tescomagazin.sk
+tescomagazin.hu
+tescokvalita.cz
+tesco-shop.cz
+tescomagyarorszag.hu
+tescobaby.hu
+tescochristmasgrotto.com
