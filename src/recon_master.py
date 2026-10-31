@@ -619,6 +619,14 @@ class ReconMaster:
             "-v",
             "-xcc",  # Exclude CommonCrawl (slow, often redundant with Wayback)
         ]
+        # Use OUR keyed config (URLScan + VirusTotal API keys) instead of waymore's
+        # default ~/.config/waymore/config.yml, which ships with EMPTY key values —
+        # otherwise waymore silently falls back to Wayback-only and returns ~0 URLs on
+        # low-archive domains (tesco.sk got 6, tescomobile 10, while the keyed sources
+        # return hundreds–thousands).
+        waymore_cfg = Path(__file__).parent / "waymore_config.yml"
+        if waymore_cfg.exists():
+            cmd += ["-c", str(waymore_cfg)]
 
         log_info(f"Running Waymore against {self.domain}...")
         log_info(f"  Command: {' '.join(cmd)}")
