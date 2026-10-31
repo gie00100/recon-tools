@@ -331,8 +331,22 @@ class SubdomainEnumerator:
                 perms.add(f"{part}.{w}")
                 perms.add(f"{w}-{part}")
                 perms.add(f"{w}.{part}")
-                
+
         return list(perms)
+
+    # Max permutation candidates to resolve. ABOVE this we SKIP permutations entirely
+    # (not truncate): a large candidate set means the estate is already well-enumerated
+    # and/or has sub-zone wildcards, so resolving it is hours of cost for ~0 new subs.
+    # tescocloud.com: 460 base subs -> 38,556 perms (apex is NOT wildcard, so the
+    # wildcard_ips check alone misses it — this count guard is what actually catches it).
+    PERM_CAP = 8000
+
+    def _should_permute(self) -> bool:
+        """Permutations are POINTLESS on an apex-wildcard domain: every candidate
+        resolves to the wildcard IP and is filtered out (0 real subs, hours of DNS).
+        (Sub-zone wildcards / well-enumerated estates are caught separately by the
+        PERM_CAP candidate-count guard in enumerate().)"""
+        return bool(self.permutations) and not self.wildcard_ips
 
     async def _dns_bruteforce(self, words_to_try: list, source_name: str = "DNS-Brute"):
         """Brute-force subdomains using async DNS resolution."""
@@ -420,11 +434,21 @@ class SubdomainEnumerator:
             words = read_lines(self.wordlist)
             await self._dns_bruteforce(words, "DNS-Brute")
             
-        # Optional permutations
-        if self.permutations:
-            log_info("Running Subdomain Permutations...")
+        # Optional permutations — NEVER on a wildcard domain (see _should_permute);
+        # cap the candidate count on sub-rich non-wildcard domains too.
+        if self.permutations and not self._should_permute():
+            log_warning(f"Wildcard DNS detected ({len(self.wildcard_ips)} IP(s)) — SKIPPING "
+                        f"permutations (0 real subs on a wildcard domain, hours of DNS cost).")
+        if self._should_permute():
             perms = self._generate_permutations()
-            await self._dns_bruteforce(perms, "Permutations")
+            if len(perms) > self.PERM_CAP:
+                # Large set = well-enumerated and/or sub-zone-wildcard estate (e.g.
+                # tescocloud 38k) -> hours of DNS for ~0 new. SKIP, don't resolve.
+                log_warning(f"Permutation candidate set {len(perms)} > cap {self.PERM_CAP} — "
+                            f"SKIPPING permutations (well-enumerated/wildcard estate, ~0 yield).")
+            else:
+                log_info("Running Subdomain Permutations...")
+                await self._dns_bruteforce(perms, "Permutations")
 
         await self.close()
 

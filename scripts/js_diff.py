@@ -26,7 +26,20 @@ _INTEREST = re.compile(
     r"download|search|profile|address|clubcard|voucher|token|oauth|auth|login|session|"
     r"export|report|manage|config|setting)s?(/|\?|$|\.)", re.I)
 _NOISE = re.compile(r"(w3\.org|schema\.org|github\.com|\.js\.org|mui\.com|googleapis|"
-                    r"gstatic|localhost|127\.0\.0\.1|sentry|newrelic)", re.I)
+                    r"gstatic|localhost|127\.0\.0\.1|sentry|newrelic|"
+                    r"oasis-open\.org|openoffice\.org|purl\.org|xmlns)", re.I)
+# Akamai Bot-Manager sensor telemetry embedded in the sensor JS: high-entropy random
+# path segments ending in /API/start/ or /API/noticeError — they rotate every page
+# load so they false-positive as NEW forever. Not app endpoints.
+_SENSOR = re.compile(r"/API/(start|noticeError)(/|$)", re.I)
+# iWork/Numbers/OpenOffice document-export artifacts mis-parsed as endpoints
+# (btool-test.ourtesco: .iwa, META-INF, mime-type strings, boolean literals).
+_DOCART = re.compile(
+    r"\.iwa(/|$)|/META-INF/|"
+    r"/(application|text|image|audio|video|font|multipart)/[a-z0-9.+-]+(/|$)|"
+    r"/(On/Off|True/False|Yes/No)(/|$)", re.I)
+# A path that is just a short fragment (e.g. /=8, /RH) — not a real route.
+_FRAG = re.compile(r"^/[=A-Za-z0-9]{1,3}$")
 # Third-party analytics/CDN JS loaded BY Tesco pages but not Tesco assets — they
 # rotate content every fetch, so they false-positive as "changed bundles" forever.
 _BUNDLE_NOISE = re.compile(
@@ -45,6 +58,26 @@ def _clean_ep(ep: str) -> bool:
     if any(m in ep for m in ("{", "}", "${", "%{", "<", ">", "`")):
         return False
     return True
+
+
+def _keep_ep(ep: str) -> bool:
+    """Keep only real, interesting APP endpoints. Drops extraction garbage, noise
+    hosts, Akamai sensor paths, document-export artifacts, and junk/fragment paths.
+    The INTEREST match is on the PATH (+query), NOT the whole URL — otherwise
+    https://admin.x.tesco.com/=8 is kept just because the HOST contains 'admin'."""
+    if not _clean_ep(ep):
+        return False
+    try:
+        sp = urlsplit(ep)
+    except Exception:
+        return False
+    path = sp.path or ""
+    pq = path + (("?" + sp.query) if sp.query else "")
+    if _NOISE.search(ep) or _SENSOR.search(path) or _DOCART.search(path):
+        return False
+    if len(path) <= 2 or _FRAG.match(path):
+        return False
+    return bool(_INTEREST.search(pq))
 
 
 def _jload(p, default):
@@ -139,8 +172,7 @@ def diff_domain(domain: str, prev: Path = None, curr: Path = None) -> dict:
     # JS endpoints
     cep = set(_jload(curr / "js_findings.json", {}).get("endpoints") or []) or _lines(curr / "js_endpoints.txt")
     pep = set() if first_baseline else (set(_jload(prev / "js_findings.json", {}).get("endpoints") or []) or _lines(prev / "js_endpoints.txt"))
-    new_eps = sorted(e for e in (cep - pep)
-                     if _clean_ep(e) and _INTEREST.search(e) and not _NOISE.search(e))
+    new_eps = sorted(e for e in (cep - pep) if _keep_ep(e))
 
     # live hosts
     ch, ph = _hosts(curr), ({} if first_baseline else _hosts(prev))
