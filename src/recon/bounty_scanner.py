@@ -167,6 +167,25 @@ def _jwt_evidence_with_claims(jwt_str: str, prefix: str = '') -> str:
     return ' | '.join(parts)
 
 
+def _url_jwt_expiry_state(url: str) -> str:
+    """Liveness check for token-in-URL findings: decode any JWT in the URL and
+    return 'valid' if its exp is in the future, 'expired' if in the past, else
+    'unknown' (no JWT / no exp claim). Used to downgrade DEAD tokens so historical
+    web-archive leaks (e.g. 5,702 expired MONORAIL SSO tokens on the Tesco estate,
+    all expired) stop dominating the CRITICAL list. Checks both the raw and
+    percent-decoded URL. Offline/pure — no network."""
+    import time as _t
+    best = 'unknown'
+    for text in (url, unquote(url)):
+        for m in JWT_REGEX.finditer(text or ''):
+            exp = _decode_jwt_claims(m.group(0)).get('exp')
+            if isinstance(exp, (int, float)):
+                if exp >= _t.time():
+                    return 'valid'      # any live token present -> keep severity
+                best = 'expired'
+    return best
+
+
 def _is_oauth_callback_jwt(url: str, params: dict) -> bool:
     """Return True if the JWT is in a standard OAuth2 authorization code callback.
     These are single-use, short-lived authorization codes — expected behavior.
@@ -2241,6 +2260,16 @@ class BountyScanner:
                 if not severity:
                     # _classify_token returned '' = no real token found
                     continue
+
+                # ── Liveness/expiry downgrade ──────────────────────────────
+                # A secret-in-URL that is a DEAD token (expired JWT) can't be used,
+                # so it is not CRITICAL. Decode any JWT in the URL and downgrade
+                # expired ones to INFO. Stops historical web-archive tokens
+                # (expired MONORAIL/OAuth JWTs) from flooding the CRITICAL list.
+                if vuln_id in ('JWT_In_URL', 'Token_Leak'):
+                    if _url_jwt_expiry_state(url) == 'expired':
+                        evidence = str(evidence) + f' [EXPIRED JWT — downgraded from {severity} (dead token)]'
+                        severity = 'INFO'
 
                 # ── Layer: Dedup ───────────────────────────────────────────
                 if vuln_id in self.PATH_DEDUP_CHECKS:
